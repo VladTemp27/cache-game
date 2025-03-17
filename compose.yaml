@@ -9,7 +9,6 @@ services:
       - ./server/rest-api:/app
       - node_modules:/app/node_modules
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
       - NODE_ENV=${NODE_ENV:-production}
       - CHOKIDAR_USEPOLLING=true
     networks:
@@ -18,7 +17,7 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "80:80"  # Changed from 80:80 to avoid conflict
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
@@ -29,6 +28,8 @@ services:
   mongo:
     image: mongo
     restart: always
+    volumes:
+      - mongo_data:/data/db  # Added persistent storage
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -45,9 +46,10 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongo  # Added explicit dependency
     networks:
       - internal
-
 
 networks:
   internal:
@@ -55,3 +57,4 @@ networks:
 
 volumes:
   node_modules:
+  mongo_data:  # Added volume for MongoDB data persistence
