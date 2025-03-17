@@ -7,6 +7,6 @@ app.get('/health', (req,res) => {
     res.send({message : "Server is up and running"});
 })
 
-app.listen(8000, () => {
+app.listen(8080, () => {
     console.log("Server is running on port 8000")
 })
