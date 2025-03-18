@@ -10,4 +10,6 @@ module org.amalzen.app {
 
     opens org.amalzen.app to javafx.fxml;
     exports org.amalzen.app;
+    exports org.amalzen.app.main_menu;
+    opens org.amalzen.app.main_menu to javafx.fxml;
 }
