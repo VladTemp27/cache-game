@@ -55,4 +55,23 @@ authRouter.post("/logout", async (req, res) => {
     }
 });
 
+/**
+ * Middleware for authentication
+ * To be added to the routes that will be used after login
+ */
+const authMiddleware = async (req, res, next) => {
+    const sessionId = req.headers["authorization"];
+    if (!sessionId) return res.status(401).json({ error: "Unauthorized" });
+
+    try {
+        const isValid = await dal.validateSession(sessionId);
+        if (!isValid) return res.status(401).json({ error: "Unauthorized" });
+
+        next();
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 module.exports = authRouter;
