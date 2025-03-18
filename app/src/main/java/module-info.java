@@ -12,4 +12,6 @@ module org.amalzen.app {
     exports org.amalzen.app;
     exports org.amalzen.app.main_menu;
     opens org.amalzen.app.main_menu to javafx.fxml;
+    exports org.amalzen.app.game_instructions;
+    opens org.amalzen.app.game_instructions to javafx.fxml;
 }

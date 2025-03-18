@@ -1,4 +1,11 @@
 .background-image {
-    -fx-background-image: url("../images/main_menu_background.png");
     -fx-background-size: cover;
+}
+
+.main-menu-background {
+    -fx-background-image: url("../images/main_menu_background.png");
+}
+
+.game-instructions-background {
+    -fx-background-image: url("../images/game_instructions_background.png");
 }

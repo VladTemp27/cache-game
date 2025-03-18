@@ -1,4 +1,4 @@
-package org.amalzen.app.main_menu;
+package org.amalzen.app.game_instructions;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,10 +7,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainmenuView extends Application {
+public class GameInstructionsView extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainmenuView.class.getResource("/org/amalzen/app/view/mainmenu-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(GameInstructionsView.class.getResource("/org/amalzen/app/view/game_instructions.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 500);
         stage.setTitle("Hello!");
         stage.setScene(scene);

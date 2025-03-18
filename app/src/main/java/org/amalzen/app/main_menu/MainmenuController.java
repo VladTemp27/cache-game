@@ -27,16 +27,16 @@ public class MainmenuController {
 
     // TODO: Insert fxml file paths of corresponding views
     public void initialize() {
-        userButton.setOnMouseClicked(event -> navigateToView(""));
-        howToPlayButton.setOnMouseClicked(event -> navigateToView(""));
+//        userButton.setOnMouseClicked(event -> navigateToView(""));
+        howToPlayButton.setOnMouseClicked(event -> navigateToView("/org/amalzen/app/view/game_instructions.fxml"));
         playButton.setOnMouseClicked(event -> navigateToView(""));
-        gameHistoryButton.setOnMouseClicked(event -> navigateToView(""));
-        leaderboardsButton.setOnMouseClicked(event -> navigateToView(""));
+//        gameHistoryButton.setOnMouseClicked(event -> navigateToView(""));
+//        leaderboardsButton.setOnMouseClicked(event -> navigateToView(""));
     }
 
     private void navigateToView(String file) {
         try {
-            Stage stage = (Stage) userButton.getScene().getWindow();
+            Stage stage = (Stage) playButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(file));
             Scene scene = new Scene(fxmlLoader.load());
             stage.setScene(scene);
