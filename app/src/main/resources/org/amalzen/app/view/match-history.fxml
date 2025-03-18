@@ -51,7 +51,7 @@
         <!-- Back Button -->
         <Button fx:id="backButton" layoutY="6.0" onAction="#handleBack" style="-fx-background-color: transparent;">
             <graphic>
-                <ImageView fitHeight="80.0" fitWidth="98.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../images/back-button.png" />
                     </image>
