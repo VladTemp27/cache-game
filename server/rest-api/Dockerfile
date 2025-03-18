@@ -19,4 +19,4 @@ EXPOSE 8080
 ENV CHOKIDAR_USEPOLLING=true
 
 # Command to run the application
-CMD ["sh", "-c", "if [\"$NODE_ENV\" = \"production\"]; then npm run start; else npm run dev; fi"]
+CMD ["sh", "-c", "if [ \"$NODE_ENV\" = \"production\" ]; then echo \"Running in production mode\" && npm start; else echo \"Running in development mode\" && npm run dev; fi"]
