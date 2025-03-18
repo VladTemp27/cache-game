@@ -10,4 +10,7 @@ module org.amalzen.app {
 
     opens org.amalzen.app to javafx.fxml;
     exports org.amalzen.app;
+
+    opens org.amalzen.app.match_history to javafx.fxml;
+    exports org.amalzen.app.match_history to javafx.graphics, javafx.fxml;
 }
