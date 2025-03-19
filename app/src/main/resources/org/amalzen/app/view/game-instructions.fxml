@@ -12,11 +12,11 @@
       <String fx:value="game-instructions-background" />
    </styleClass>
    <children>
-      <Button fx:id="backButton" layoutX="59.0" layoutY="47.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: transparent;" text="Button" textFill="TRANSPARENT" AnchorPane.leftAnchor="36.0" AnchorPane.topAnchor="30.0" />
       <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="46.0" layoutY="139.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="23.0">
          <image>
             <Image url="@../images/back-button.png" />
          </image>
       </ImageView>
+      <Button fx:id="backButton" layoutX="59.0" layoutY="47.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: transparent;" text="Button" AnchorPane.leftAnchor="36.0" AnchorPane.topAnchor="30.0" />
    </children>
 </AnchorPane>
