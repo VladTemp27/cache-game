@@ -28,4 +28,7 @@ module org.amalzen.app {
 
     opens org.amalzen.app.components to javafx.fxml;
     exports org.amalzen.app.components to javafx.graphics, javafx.fxml;
+
+    exports  org.amalzen.app.match_making;
+    opens org.amalzen.app.match_making to javafx.fxml;
 }
