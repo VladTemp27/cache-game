@@ -26,4 +26,4 @@ const getAllUsers = async () => {
     return await User.find();
 };
 
-module.exports = { upsertUser, getAllUsers };
+module.exports = { upsertUser, getAllUsers, updateUserJSON };
