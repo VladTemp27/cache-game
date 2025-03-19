@@ -20,4 +20,7 @@ module org.amalzen.app {
     opens org.amalzen.app.main_menu to javafx.fxml;
     exports org.amalzen.app.game_instructions;
     opens org.amalzen.app.game_instructions to javafx.fxml;
+
+    opens org.amalzen.app.components to javafx.fxml;
+    exports org.amalzen.app.components to javafx.graphics, javafx.fxml;
 }
