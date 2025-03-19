@@ -8,9 +8,19 @@ import (
     "encoding/json"
     "os"
     "time"
+    "os/signal"
+    "syscall"
 
     "github.com/gorilla/websocket"
 )
+
+// Map to store username to client ID mapping
+var usernameToClientID = make(map[string]string)
+var usernameMapMutex sync.Mutex
+
+// Add this global variable at the top of the file with your other globals
+var matchWorker *MatchWorker
+
 
 // WebSocket upgrader
 var upgrader = websocket.Upgrader{
@@ -56,7 +66,7 @@ func (manager *ClientManager) removeClient(id string) {
 }
 
 func main() {
-    fmt.Println("Matchmaking service started on port 8080")
+    fmt.Println("Matchmaking service started on port 8085")
 
     // Test database connection on startup
     _, err := connectToMongoDB()
@@ -67,11 +77,35 @@ func main() {
     manager := NewClientManager()
     clientCounter := 0
 
+    // Create and start the match worker
+    // Check for matches every 5 seconds with maximum score difference of 300
+    matchWorker = NewMatchWorker(5*time.Second, 500, manager)
+    matchWorker.Start()
+    
+    // Add a shutdown handler to gracefully stop the worker
+    c := make(chan os.Signal, 1)
+    signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+    go func() {
+        <-c
+        fmt.Println("Shutting down matchmaking service...")
+        matchWorker.Stop()
+        os.Exit(0)
+    }()
+
     // HTTP endpoint for info
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Matchmaking service - Connect via WebSocket at /ws")
     })
-
+    
+    // Add status endpoint
+    http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]interface{}{
+            "status":      "online",
+            "matchesMade": matchWorker.matchesMade,
+            "timestamp":   time.Now(),
+        })
+    })
     // WebSocket endpoint
     http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
         // Upgrade HTTP connection to WebSocket
@@ -97,13 +131,24 @@ func main() {
     })
 
     // Start the server
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    log.Fatal(http.ListenAndServe(":8085", nil))
 }
 
 func handleClient(client *Client, manager *ClientManager) {
     // Ensure we remove the client when the function exits
     defer func() {
         client.conn.Close()
+        
+        // Clean up username mapping
+        usernameMapMutex.Lock()
+        for username, clientID := range usernameToClientID {
+            if clientID == client.id {
+                delete(usernameToClientID, username)
+                break
+            }
+        }
+        usernameMapMutex.Unlock()
+        
         manager.removeClient(client.id)
     }()
 
@@ -187,6 +232,12 @@ func handleQueueRequest(client *Client, jsonMsg map[string]interface{}) {
         return
     }
     
+    // Store username to client ID mapping for match notifications
+    username := jsonMsg["username"].(string)
+    usernameMapMutex.Lock()
+    usernameToClientID[username] = client.id
+    usernameMapMutex.Unlock()
+    
     // Creates a user structure
     player := QueuePlayer{
         Username: jsonMsg["username"].(string),
@@ -259,6 +310,9 @@ func checkValidUser(jsonMessage map[string]interface{}) bool {
     // Score can be either int or float64 (JSON numbers are parsed as float64)
     _, scoreIntOk := jsonMessage["score"].(int)
     _, scoreFloatOk := jsonMessage["score"].(float64)
+
+    log.Print("Printing values of usernameOk, tokenOk, scoreIntOk, scoreFloatOk: ")
+    log.Printf("%v, %v, %v, %v", usernameOk, tokenOk, scoreIntOk, scoreFloatOk)
     
     return usernameOk && tokenOk && (scoreIntOk || scoreFloatOk)
 }
