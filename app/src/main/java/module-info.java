@@ -16,9 +16,6 @@ module org.amalzen.app {
     exports org.amalzen.app.game_instructions;
     opens org.amalzen.app.game_instructions to javafx.fxml;
 
-    opens org.amalzen.app.match_history to javafx.fxml;
-    exports org.amalzen.app.match_history to javafx.graphics, javafx.fxml;
-
     opens org.amalzen.app.game_room to javafx.fxml;
     exports org.amalzen.app.game_room to javafx.graphics, javafx.fxml;
 
