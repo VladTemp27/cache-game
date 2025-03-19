@@ -16,7 +16,7 @@
         </ImageView>
         <ImageView fitHeight="342.0" fitWidth="566.0" layoutX="1022.0" layoutY="167.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../images/game_logo_transparent.png" />
+                <Image url="@../images/game-logo-transparent.png" />
             </image>
         </ImageView>
         <ImageView fitHeight="280.0" fitWidth="637.0" layoutX="957.0" layoutY="550.0" pickOnBounds="true" preserveRatio="true">
