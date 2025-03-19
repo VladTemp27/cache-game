@@ -3,13 +3,45 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
+
+// This Card struct represents a card with a question and answer pair
+type Card struct {
+	PairID int `json:"pair_id"`
+	Pair   struct {
+		Question string `json:"question"`
+		Answer   string `json:"answer"`
+	} `json:"pair"`
+}
+
+// This function read cards from the JSON file
+func readCardsFromFile(filename string) ([]Card, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	var cards []Card
+	if err := json.Unmarshal(bytes, &cards); err != nil {
+		return nil, err
+	}
+
+	return cards, nil
+}
 
 // This is a Game struct which represents a single game instance
 type Game struct {
@@ -17,12 +49,15 @@ type Game struct {
 	Players     []*websocket.Conn // tracks the players in a game
 	Scores      []int             // tracks the scores of both players
 	Turn        int
-	Timer       int    // tracks the time left in a game
-	Difficulty  string // tracks the difficulty of a game
-	GameOver    bool   // tracks if a game is over
-	Active      bool   // tracks if a game is active
-	Round       int    // tracks the number of rounds in a game
-	LoopRunning bool   // indicates if the game loop is running
+	Timer       int        // tracks the time left in a game
+	Difficulty  string     // tracks the difficulty of a game
+	GameOver    bool       // tracks if a game is over
+	Active      bool       // tracks if a game is active
+	Round       int        // tracks the number of rounds in a game
+	LoopRunning bool       // indicates if the game loop is running
+	Cards       [16]string // stores the questions and answers
+	PairIDs     [16]int    // stores the pair IDs for matching
+	FlippedCard int        // stores the index of the first flipped card
 }
 
 // This section is for the global variables
@@ -34,7 +69,37 @@ var (
 	}
 )
 
-// This function is responsible for starting the game loop
+// This function fetches random 8 IDs from the JSON file and store them randomly in indexes 0-15
+func fetchAndStoreQuestions(game *Game) error {
+	cards, err := readCardsFromFile("../cards.json")
+	if err != nil {
+		return err
+	}
+
+	// This shuffles and select 8 random cards
+	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
+	selectedCards := cards[:8]
+
+	// This shuffles and store questions and answers in indexes 0-15
+	indices := rand.Perm(16)
+	for i, card := range selectedCards {
+		question := card.Pair.Question
+		answer := card.Pair.Answer
+		pairID := card.PairID
+
+		game.Cards[indices[i*2]] = question
+		game.Cards[indices[i*2+1]] = answer
+		game.PairIDs[indices[i*2]] = pairID
+		game.PairIDs[indices[i*2+1]] = pairID
+
+		// Log the assignment
+		fmt.Printf("[ASSIGN] Index %d: Question: %s, Pair ID: %d\n", indices[i*2], question, pairID)
+		fmt.Printf("[ASSIGN] Index %d: Answer: %s, Pair ID: %d\n", indices[i*2+1], answer, pairID)
+	}
+
+	return nil
+}
+
 func startGame(gameID string) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -50,6 +115,11 @@ func startGame(gameID string) {
 	}
 	game.LoopRunning = true
 	gamesMux.Unlock()
+
+	if err := fetchAndStoreQuestions(game); err != nil {
+		fmt.Println("[ERROR] Failed to fetch and store questions:", err)
+		return
+	}
 
 	rand.Seed(time.Now().UnixNano())
 	game.Turn = rand.Intn(2) // this is for randomly selecting the starting player
@@ -149,6 +219,50 @@ func (g *Game) broadcastState() {
 	}
 }
 
+// This function is responsible for flipping a card and checking for a match
+func handleFlip(gameID string, playerIndex int, cardIndex int) {
+	gamesMux.Lock()
+	game, exists := games[gameID]
+	gamesMux.Unlock()
+	if !exists {
+		fmt.Println("[ERROR] Game not found:", gameID)
+		return
+	}
+
+	game.Mutex.Lock()
+	defer game.Mutex.Unlock()
+
+	if game.GameOver {
+		fmt.Println("[INFO] Flip ignored, game is over")
+		return
+	}
+
+	if game.Turn != playerIndex {
+		fmt.Printf("[WARNING] Player %d tried to flip out of turn in Game ID: %s\n", playerIndex, gameID)
+		return
+	}
+
+	if game.FlippedCard == -1 {
+		game.FlippedCard = cardIndex
+		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
+	} else {
+		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
+		if game.PairIDs[game.FlippedCard] == game.PairIDs[cardIndex] {
+			scoreIncrement := map[string]int{"easy": 10, "medium": 16, "hard": 22}[game.Difficulty]
+			game.Scores[playerIndex] += scoreIncrement
+			fmt.Printf("[MATCH] Player %d matched! +%d points | Game ID: %s | Round: %d\n", playerIndex, scoreIncrement, gameID, game.Round)
+		} else {
+			game.Turn = 1 - playerIndex
+			game.Round++ // the game round increments when the turn is passed
+			fmt.Printf("[TURN SWITCH] Player %d failed to match | Game ID: %s | Round: %d | Turn goes to Player %d\n",
+				playerIndex, gameID, game.Round, game.Turn)
+		}
+		game.FlippedCard = -1
+	}
+
+	game.broadcastState()
+}
+
 // This section handles a player's move
 func handleMove(gameID string, playerIndex int, matched bool) {
 	gamesMux.Lock()
@@ -200,9 +314,10 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	game, exists := games[gameID]
 	if !exists {
 		games[gameID] = &Game{
-			Difficulty: "easy",
-			Players:    make([]*websocket.Conn, 2),
-			Scores:     make([]int, 2),
+			Difficulty:  "easy",
+			Players:     make([]*websocket.Conn, 2),
+			Scores:      make([]int, 2),
+			FlippedCard: -1,
 		}
 		game = games[gameID]
 		fmt.Printf("[NEW GAME] Created game %s\n", gameID)
@@ -276,8 +391,9 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var payload struct {
-				Action  string `json:"action"`
-				Matched bool   `json:"matched"`
+				Action    string `json:"action"`
+				Matched   bool   `json:"matched"`
+				CardIndex int    `json:"cardIndex"`
 			}
 			if err := json.Unmarshal(message, &payload); err == nil {
 				switch payload.Action {
@@ -285,6 +401,8 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 					handleMove(gameID, playerIdx, payload.Matched)
 				case "quit":
 					handleQuit(gameID, playerIdx)
+				case "flip":
+					handleFlip(gameID, playerIdx, payload.CardIndex)
 				}
 			}
 		}
@@ -346,6 +464,6 @@ func handleDisconnection(gameID string, playerIdx int) {
 // This function is responsible for starting the WebSocket server
 func main() {
 	http.HandleFunc("/ws", handleConnection)
-	fmt.Println("Server started on :8080")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("Server started on :8082")
+	http.ListenAndServe(":8082", nil)
 }

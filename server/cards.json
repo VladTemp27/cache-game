@@ -1,0 +1,241 @@
+[
+    {
+        "_id": "690c3d0119078b4cf4c227010",
+        "pair_id": 24,
+        "pair": {
+            "answer": "Swift",
+            "question": "Often described as “Objective C without the baggage of C”"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227011",
+        "pair_id": 25,
+        "pair": {
+            "answer": "Transpiler",
+            "question": "Translates one language into another"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227012",
+        "pair_id": 26,
+        "pair": {
+            "answer": "Lovelace",
+            "question": "Has a programming language named after her (Lastname)"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227013",
+        "pair_id": 27,
+        "pair": {
+            "answer": "FORTRAN",
+            "question": "A programming language used for scientific computing"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227014",
+        "pair_id": 28,
+        "pair": {
+            "answer": "Declarative",
+            "question": "Focuses on what the program should accomplish rather than how"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227015",
+        "pair_id": 29,
+        "pair": {
+            "answer": "Unix",
+            "question": "A multitasking, multiuser operating system with a modular design."
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227016",
+        "pair_id": 30,
+        "pair": {
+            "answer": "Debug",
+            "question": "To remove errors in a program"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227017",
+        "pair_id": 31,
+        "pair": {
+            "answer": "Bjarne",
+            "question": "First name of the creator of C++"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227018",
+        "pair_id": 32,
+        "pair": {
+            "answer": "Plankalkul",
+            "question": "The first programming language introduced in 1940’s"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227019",
+        "pair_id": 33,
+        "pair": {
+            "answer": "Simula",
+            "question": "The programming language that introduced object-oriented programming concepts"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22701a",
+        "pair_id": 34,
+        "pair": {
+            "answer": "Interpreted",
+            "question": "A language which executes without the need of a compiler"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22701b",
+        "pair_id": 35,
+        "pair": {
+            "answer": "McCarthy",
+            "question": "Last name of the developer of the LISP programming language. This person created a programming language that became very important for artificial intelligence research."
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22701c",
+        "pair_id": 36,
+        "pair": {
+            "answer": "Matsumoto",
+            "question": "Last name of the creator of Ruby Programming Language"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22701d",
+        "pair_id": 37,
+        "pair": {
+            "answer": "ADA",
+            "question": "A high level language used in defense and aerospace"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22701e",
+        "pair_id": 38,
+        "pair": {
+            "answer": "Functional",
+            "question": "Treats computation as function evaluation."
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22701f",
+        "pair_id": 39,
+        "pair": {
+            "answer": "Java",
+            "question": "Minecraft edition made with this programming language"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227020",
+        "pair_id": 40,
+        "pair": {
+            "answer": "Alan Turing",
+            "question": "A test was named after this person"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227021",
+        "pair_id": 41,
+        "pair": {
+            "answer": "Ruby",
+            "question": "A dynamic, object-oriented language named after a gemstone"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227022",
+        "pair_id": 42,
+        "pair": {
+            "answer": "John Backus",
+            "question": "Developed the Formula Translator and Backus Naur Form"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227023",
+        "pair_id": 43,
+        "pair": {
+            "answer": "Compiler",
+            "question": "Translates code to machine language"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227024",
+        "pair_id": 44,
+        "pair": {
+            "answer": "MUMPS",
+            "question": "Language from Massachusetts General Hospital"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227025",
+        "pair": {
+            "answer": "Nygaard",
+            "question": "Lastname of one of the developers/designers of Simula"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227026",
+        "pair_id": 46,
+        "pair": {
+            "answer": "COBOL",
+            "question": "Used by American Express for their banking system"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227027",
+        "pair_id": 47,
+        "pair": {
+            "answer": "Grace Hopper",
+            "question": "Designer of COBOL"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227028",
+        "pair_id": 48,
+        "pair": {
+            "answer": "Kotlin",
+            "question": "Android mobile app development programming language"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c227029",
+        "pair_id": 49,
+        "pair": {
+            "answer": "Python",
+            "question": "Created in 1991, popular for AI and automation"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22702a",
+        "pair_id": 50,
+        "pair": {
+            "answer": "Guido",
+            "question": "First name of the creator of Python"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22702b",
+        "pair_id": 51,
+        "pair": {
+            "answer": "Framework",
+            "question": "Pre-built tools for faster software development"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22702c",
+        "pair_id": 52,
+        "pair": {
+            "answer": "JavaScript",
+            "question": "Powers interactive web pages, mainly for client-side behavior"
+        }
+    },
+    {
+        "_id": "690c3d0119078b4cf4c22702d",
+        "pair_id": 53,
+        "pair": {
+            "answer": "Lisp",
+            "question": "A programming language used for data manipulation and AI research"
+        }
+    }
+]
