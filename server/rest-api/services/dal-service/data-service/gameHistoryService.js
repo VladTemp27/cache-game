@@ -28,4 +28,4 @@ const getGameHistoryById = async (id) => {
     return await GameHistory.findById(id).exec();
 };
 
-module.exports = { upsertGameHistory, getAllGameHistories, getGameHistoryById };
+module.exports = { upsertGameHistory, getAllGameHistories, getGameHistoryById, updateGameHistoryJSON };
