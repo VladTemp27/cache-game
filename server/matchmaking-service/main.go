@@ -139,6 +139,13 @@ func handleClient(client *Client, manager *ClientManager) {
 		case "queue":
 			log.Printf("Client %s is queuing", client.id)
 			// Add client to queue
+            // Add user to queue via mongoexpress
+        case "cancel":
+            log.Printf("Client %s is cancelling", client.id)
+            // Remvoe client from queue
+        case "received":
+            log.Printf("Client %s received message", client.id)
+            // Remove the threads running ( workers for the object )
 		default:
 			log.Printf("Invalid message type")
 			client.conn.WriteMessage(websocket.TextMessage, []byte("Invalid message type"))
@@ -153,4 +160,9 @@ func handleClient(client *Client, manager *ClientManager) {
             break
         }
     }
+}
+
+func checkValidUser(jsonMessage *string, ) bool{
+    
+    return false
 }
