@@ -1,57 +1,41 @@
-require("dotenv").config();
 const mongoose = require("mongoose");
-const fs = require("fs");
-const path = require("path");
-const connectDB = require("../config/db"); 
-const {
-    upsertUser,
-    getAllUsers,
-} = require("../data-service/userService"); 
-const {
-    upsertLeaderboard,
-    getAllLeaderboardEntries,
-} = require("../data-service/leaderboardService"); 
-const {
-    upsertCard,
-    getAllCards,
-} = require("../data-service/cardsService");
+const User = require("../models/User");
+const Session = require("../models/Session");
+require("dotenv").config();
+const connectDB = require("../config/db");
 
-const syncDatabase = async () => {
-    await connectDB();
+const seedDatabase = async () => {
+    await connectDB(); // Ensure DB is connected
 
-    // Read seed files
-    const userSeedPath = path.join(__dirname, "../data/user.json");
-    const leaderboardSeedPath = path.join(__dirname, "../data/leaderboard.json");
-    const cardsSeedPath = path.join(__dirname, "../data/cards.json");
+    console.log("🔄 Seeding Database...");
 
-    const userSeedData = JSON.parse(fs.readFileSync(userSeedPath, "utf-8"));
-    const leaderboardSeedData = JSON.parse(fs.readFileSync(leaderboardSeedPath, "utf-8"));
-    const cardsSeedData = JSON.parse(fs.readFileSync(cardsSeedPath, "utf-8"));
+    // Clear existing data
+    await User.deleteMany({});
+    await Session.deleteMany({});
 
-    // Users Sync
-    console.log("\n Syncing Users...");
-    for (const userData of userSeedData) {
-        await upsertUser(userData);
-        console.log(`✅ Synced user: ${userData.username}`);
-    }
+    // Create test users
+    const users = await User.insertMany([
+        { username: "gibgib", password: "testpassword", total_score: 100 },
+        { username: "testuser2", password: "testpassword", total_score: 200 },
+        { username: "testuser3", password: "testpassword", total_score: 150 }
+    ]);
 
-    // Leaderboard Sync
-    console.log("\n Syncing Leaderboard...");
-    for (const leaderboardData of leaderboardSeedData) {
-        await upsertLeaderboard(leaderboardData);
-        console.log(`🏆 Synced leaderboard entry for user: ${leaderboardData.user_id}`);
-    }
+    console.log("✅ Users seeded:", users.length);
 
-    // Cards Sync
-    console.log("\n Syncing Cards...");
-    for (const cardData of cardsSeedData) {
-        await upsertCard(cardData);
-        console.log(`🃏 Synced card: ${cardData.card_name}`);
-    }
-
-    mongoose.connection.close();
-    console.log("✅ Database sync complete.");
+    return users;
 };
 
-// Run sync
-syncDatabase();
+// Run script if executed directly
+if (require.main === module) {
+    seedDatabase()
+        .then(() => {
+            console.log("✅ Database seeding complete.");
+            mongoose.connection.close();
+        })
+        .catch((err) => {
+            console.error("❌ Seeding failed:", err);
+            mongoose.connection.close();
+        });
+}
+
+module.exports = seedDatabase;
