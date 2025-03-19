@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,7 +20,14 @@ public class MatchmakingView extends Application {
                 return;
             }
             Scene scene = new Scene(root, 1650, 944);
-            primaryStage.setTitle("Please wait");
+            primaryStage.setTitle("Match making");
+
+            var imageStream = getClass().getResourceAsStream("/org/amalzen/app/images/game-logo-transparent.png");
+            if (imageStream != null) {
+                primaryStage.getIcons().add(new Image(imageStream));
+            } else {
+                System.out.println("Image resource not found!");
+            }
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);
             primaryStage.show();

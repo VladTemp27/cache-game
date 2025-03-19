@@ -3,6 +3,7 @@ package org.amalzen.app.game_instructions;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -12,7 +13,15 @@ public class GameInstructionsView extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameInstructionsView.class.getResource("/org/amalzen/app/view/game-instructions.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1650, 944);
-        stage.setTitle("Hello!");
+        stage.setTitle("Game Instructions");
+
+        var imageStream = getClass().getResourceAsStream("/org/amalzen/app/images/game-logo-transparent.png");
+        if (imageStream != null) {
+            stage.getIcons().add(new Image(imageStream));
+        } else {
+            System.out.println("Image resource not found!");
+        }
+
         stage.setScene(scene);
         stage.show();
     }
