@@ -24,9 +24,6 @@ public class MainmenuController {
     private AnchorPane mainMenuRootPane;
 
     @FXML
-    private Button exitModalTestButton;
-
-    @FXML
     private Button howToPlayButton;
 
     @FXML
@@ -81,7 +78,6 @@ public class MainmenuController {
 
     @FXML
     private void initialize() {
-        // This is only for the exit confirmation modal
-        exitModalTestButton.setOnAction(this::showExitModal);
+
     }
 }

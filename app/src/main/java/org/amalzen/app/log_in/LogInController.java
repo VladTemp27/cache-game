@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.amalzen.app.Main;
@@ -18,7 +19,7 @@ public class LogInController {
     @FXML
     private TextField usernameTextfield;
     @FXML
-    private TextField passwordTextfield;
+    private PasswordField passwordField;
 
 
     // TODO: Insert fxml file paths of corresponding views and authentication
@@ -26,7 +27,7 @@ public class LogInController {
         loginButton.setOnMouseClicked(event -> {
             System.out.println("Login button clicked.");
             String username = usernameTextfield.getText();
-            String password = passwordTextfield.getText();
+            String password = passwordField.getText();
 
             if (authenticateUser(username, password)) {
                 Main.ChangeScene(ResourcePath.MAIN_MENU.getPath()); // Navigate to main menu

@@ -1,56 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane prefHeight="944.0" prefWidth="1650.0" styleClass="blur-background" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.modals.VictoryModalController">
-   <children>
-      <ImageView fitHeight="932.0" fitWidth="987.0" layoutX="319.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/status-paper.png" />
-         </image>
-      </ImageView>
-      <Button fx:id="playAgainButton" layoutX="826.0" layoutY="601.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="255.0" style="-fx-background-color: transparent;">
-         <graphic>
-            <ImageView fitHeight="124.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/victory-playagain.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Button fx:id="backButton" layoutX="651.0" layoutY="585.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
-         <graphic>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/back-button.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Label fx:id="victoryLabel" layoutX="638.0" layoutY="296.0" text="VICTORY!" textFill="#024d16" underline="true">
-         <font>
-            <Font name="Gloock Regular" size="80.0" />
-         </font>
-      </Label>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="578.0" layoutY="408.0" text="From the Undercity to the top—">
-         <font>
-            <Font name="Glory Regular" size="40.0" />
-         </font>
-      </Label>
-      <Label fx:id="subTitleLabel1" alignment="CENTER" contentDisplay="CENTER" layoutX="676.0" layoutY="450.0" text="you reign supreme!">
-         <font>
-            <Font name="Glory Regular" size="40.0" />
-         </font>
-      </Label>
-      <Label fx:id="subTitleLabel2" layoutX="884.0" layoutY="638.0" text="play again" textFill="#024d16">
-         <font>
-            <Font name="Gloock Regular" size="40.0" />
-         </font>
-      </Label>
-   </children>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="944.0" prefWidth="1650.0" styleClass="blur-background"
+            stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21.0.7-ea"
+            fx:controller="org.amalzen.app.modals.VictoryModalController">
+    <children>
+        <ImageView fitHeight="932.0" fitWidth="987.0" layoutX="319.0" layoutY="-2.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@../images/status-paper.png"/>
+            </image>
+        </ImageView>
+        <Button fx:id="playAgainButton" layoutX="826.0" layoutY="601.0" mnemonicParsing="false" prefHeight="80.0"
+                prefWidth="255.0" style="-fx-background-color: transparent;">
+            <graphic>
+                <ImageView fitHeight="124.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/victory-playagain.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="backButton" layoutX="651.0" layoutY="585.0" mnemonicParsing="false"
+                style="-fx-background-color: transparent;">
+            <graphic>
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/back-button.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Label fx:id="victoryLabel" layoutX="638.0" layoutY="296.0" text="VICTORY!" textFill="#024d16" underline="true">
+            <font>
+                <Font name="Gloock Regular" size="80.0"/>
+            </font>
+        </Label>
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="578.0" layoutY="408.0"
+               text="From the Undercity to the top—">
+            <font>
+                <Font name="Glory Regular" size="40.0"/>
+            </font>
+        </Label>
+        <Label fx:id="subTitleLabel1" alignment="CENTER" contentDisplay="CENTER" layoutX="676.0" layoutY="450.0"
+               text="you reign supreme!">
+            <font>
+                <Font name="Glory Regular" size="40.0"/>
+            </font>
+        </Label>
+        <Label fx:id="subTitleLabel2" layoutX="884.0" layoutY="638.0" text="play again" textFill="#024d16">
+            <font>
+                <Font name="Gloock Regular" size="40.0"/>
+            </font>
+        </Label>
+    </children>
 </AnchorPane>

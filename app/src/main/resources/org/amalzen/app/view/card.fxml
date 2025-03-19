@@ -4,8 +4,8 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
-<Button fx:id="cardButton" mnemonicParsing="false" style="-fx-background-color: transparent;"
-        xmlns="http://javafx.com/javafx/21.0.7-ea" xmlns:fx="http://javafx.com/fxml/1"
+<Button xmlns:fx="http://javafx.com/fxml/1" fx:id="cardButton" mnemonicParsing="false"
+        style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21.0.7-ea"
         fx:controller="org.amalzen.app.components.CardComponent">
     <graphic>
         <StackPane fx:id="cardStackPane">

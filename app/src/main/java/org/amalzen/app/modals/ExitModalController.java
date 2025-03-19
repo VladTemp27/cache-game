@@ -3,6 +3,8 @@ package org.amalzen.app.modals;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
+import org.amalzen.app.Main;
+import org.amalzen.app.ResourcePath;
 
 public class ExitModalController {
 
@@ -21,7 +23,8 @@ public class ExitModalController {
         });
 
         confirmExitButton.setOnAction(event -> {
-            // exit game
+            System.out.println("logging out");
+            Main.ChangeScene(ResourcePath.LOGIN.getPath());
         });
     }
 
