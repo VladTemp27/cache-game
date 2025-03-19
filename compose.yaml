@@ -11,6 +11,7 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - CHOKIDAR_USEPOLLING=true
+      - MONGO_URI=mongodb://root:example@mongo:27017/cache_game?authSource=admin
     networks:
       - internal
 
