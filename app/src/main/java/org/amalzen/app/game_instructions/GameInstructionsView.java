@@ -11,7 +11,7 @@ public class GameInstructionsView extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameInstructionsView.class.getResource("/org/amalzen/app/view/game_instructions.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 500);
+        Scene scene = new Scene(fxmlLoader.load(), 1650, 944);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

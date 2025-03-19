@@ -7,5 +7,5 @@
 }
 
 .game-instructions-background {
-    -fx-background-image: url("../images/game_instructions_background.png");
+    -fx-background-image: url("../images/game_guide.png");
 }
