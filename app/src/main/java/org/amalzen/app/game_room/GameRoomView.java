@@ -11,7 +11,7 @@ public class GameRoomView extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameRoomView.class.getResource("/org/amalzen/app/view/game-room.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1100, 500);
+        Scene scene = new Scene(fxmlLoader.load(), 1650, 944);
         stage.setTitle("Game Room");
         stage.setScene(scene);
         stage.show();

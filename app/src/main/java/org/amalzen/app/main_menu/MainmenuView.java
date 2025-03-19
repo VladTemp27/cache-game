@@ -1,4 +1,4 @@
-package org.amalzen.app;
+package org.amalzen.app.main_menu;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,14 +7,15 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class MainmenuView extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("view/mainmenu-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1366, 768);
-        stage.setTitle("Hello!");
+        FXMLLoader fxmlLoader = new FXMLLoader(MainmenuView.class.getResource("/org/amalzen/app/view/mainmenu-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1650, 944);
+        stage.setTitle("Main Menu");
         stage.setScene(scene);
         stage.show();
+        stage.setResizable(false);
     }
 
     public static void main(String[] args) {
