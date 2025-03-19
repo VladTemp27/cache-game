@@ -23,7 +23,6 @@ public class ExitModalController {
         });
 
         confirmExitButton.setOnAction(event -> {
-            System.out.println("logging out");
             Main.ChangeScene(ResourcePath.LOGIN.getPath());
         });
     }

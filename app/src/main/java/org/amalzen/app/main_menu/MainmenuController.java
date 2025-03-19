@@ -3,16 +3,12 @@ package org.amalzen.app.main_menu;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import org.amalzen.app.Main;
+import org.amalzen.app.ResourcePath;
 import org.amalzen.app.game_instructions.GameInstructionsController;
 
 import java.io.IOException;
@@ -35,21 +31,11 @@ public class MainmenuController {
     void showPage(ActionEvent event) {
         Button clickButton = (Button) event.getSource();
         String fxmlFile = null;
-        try {
-            if (clickButton == playButton) {
-                // Navigate to matchmaking view and start queue
-            } else if (clickButton == howToPlayButton) {
-                fxmlFile = "/org/amalzen/app/view/game-instructions.fxml";
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-                Parent gameRoot = loader.load();
-                gameInstructionsController = loader.getController();
-                Scene gameScene = new Scene(gameRoot);
-                primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                primaryStage.setScene(gameScene);
-                primaryStage.show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (clickButton == playButton) {
+            // Navigate to matchmaking view and start queue
+            Main.ChangeScene(ResourcePath.MATCHMAKING.getPath());
+        } else if (clickButton == howToPlayButton) {
+            Main.ChangeScene(ResourcePath.INSTRUCTION.getPath());
         }
     }
 

@@ -19,7 +19,7 @@ public class ClientTest {
 
         CountDownLatch exitLatch = new CountDownLatch(1);
 
-        try (GameRoomClient client = new GameRoomClient(gameId, playerId, serverUrl);
+        try (GameRoomModel client = new GameRoomModel(gameId, playerId, serverUrl);
              Scanner scanner = new Scanner(System.in)) {
 
             // Configure client callbacks

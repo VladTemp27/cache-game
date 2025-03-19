@@ -6,6 +6,7 @@ public enum ResourcePath {
     EXIT("view/exit-modal.fxml"),
     HISTORY("view/match-history.fxml"),
     INSTRUCTION("view/game-instructions.fxml"),
+    MATCHMAKING("view/matchmaking-view.fxml"),
     GAME_ROOM("view/game-room.fxml"),
     CARD("view/card.fxml");
 

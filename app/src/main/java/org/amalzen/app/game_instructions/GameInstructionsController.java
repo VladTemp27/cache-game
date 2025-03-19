@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.amalzen.app.Main;
+import org.amalzen.app.ResourcePath;
 
 import java.io.IOException;
 
@@ -16,16 +18,7 @@ public class GameInstructionsController {
 
     public void initialize() {
         backButton.setOnMouseClicked(event -> {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/mainmenu-view.fxml"));
-                Parent gameInstructionsRoot = loader.load();
-                Stage stage = (Stage) backButton.getScene().getWindow();
-                Scene scene = new Scene(gameInstructionsRoot);
-                stage.setScene(scene);
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());
         });
     }
 }

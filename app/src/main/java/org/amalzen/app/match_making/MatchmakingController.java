@@ -2,20 +2,16 @@ package org.amalzen.app.match_making;
 
 import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-import java.io.IOException;
+import org.amalzen.app.Main;
+import org.amalzen.app.ResourcePath;
 
 public class MatchmakingController {
 
     @FXML
     private Button cancelButton;
-
     @FXML
     private ImageView loadingBall;
 
@@ -33,17 +29,7 @@ public class MatchmakingController {
     }
 
     private void returnToMainMenu() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/mainmenu-view.fxml"));
-            Parent mainMenuRoot = loader.load();
-
-            Stage stage = (Stage) cancelButton.getScene().getWindow();
-            Scene scene = new Scene(mainMenuRoot);
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());
     }
+
 }

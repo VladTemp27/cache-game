@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GameRoomClient implements AutoCloseable {
-    private static final Logger LOGGER = Logger.getLogger(GameRoomClient.class.getName());
+public class GameRoomModel implements AutoCloseable {
+    private static final Logger LOGGER = Logger.getLogger(GameRoomModel.class.getName());
     private WebSocket webSocket;
     private final String serverUrl;
     private final String gameId;
@@ -32,11 +32,11 @@ public class GameRoomClient implements AutoCloseable {
     private long reconnectDelayMs = 2000;
     private int reconnectAttempts = 0;
 
-    public GameRoomClient(String gameId, int playerId) {
+    public GameRoomModel(String gameId, int playerId) {
         this(gameId, playerId, "ws://localhost:8080/ws");
     }
 
-    public GameRoomClient(String gameId, int playerId, String serverUrl) {
+    public GameRoomModel(String gameId, int playerId, String serverUrl) {
         this.gameId = gameId;
         this.playerId = playerId;
         this.serverUrl = serverUrl;
@@ -101,17 +101,17 @@ public class GameRoomClient implements AutoCloseable {
         }
     }
 
-    public GameRoomClient sendMatchSuccess() {
+    public GameRoomModel sendMatchSuccess() {
         sendAction("move", true);
         return this;
     }
 
-    public GameRoomClient sendMatchFailure() {
+    public GameRoomModel sendMatchFailure() {
         sendAction("move", false);
         return this;
     }
 
-    public GameRoomClient sendQuit() {
+    public GameRoomModel sendQuit() {
         sendAction("quit", false);
         return this;
     }
@@ -170,27 +170,27 @@ public class GameRoomClient implements AutoCloseable {
     }
 
     // Fluent API for callback setters
-    public GameRoomClient onGameStateUpdate(Consumer<JSONObject> handler) {
+    public GameRoomModel onGameStateUpdate(Consumer<JSONObject> handler) {
         this.onGameStateUpdate = handler;
         return this;
     }
 
-    public GameRoomClient onConnectionClosed(Runnable handler) {
+    public GameRoomModel onConnectionClosed(Runnable handler) {
         this.onConnectionClosed = handler;
         return this;
     }
 
-    public GameRoomClient onError(Consumer<Throwable> handler) {
+    public GameRoomModel onError(Consumer<Throwable> handler) {
         this.onError = handler;
         return this;
     }
 
-    public GameRoomClient onConnected(Runnable handler) {
+    public GameRoomModel onConnected(Runnable handler) {
         this.onConnected = handler;
         return this;
     }
 
-    public GameRoomClient withAutoReconnect(boolean autoReconnect, int maxAttempts, long delayMs) {
+    public GameRoomModel withAutoReconnect(boolean autoReconnect, int maxAttempts, long delayMs) {
         this.autoReconnect = autoReconnect;
         this.maxReconnectAttempts = maxAttempts;
         this.reconnectDelayMs = delayMs;

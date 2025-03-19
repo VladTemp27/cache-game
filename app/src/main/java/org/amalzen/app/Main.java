@@ -21,7 +21,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         Main.primaryStage = primaryStage;
 //        loadControllers().forEach(controller -> {});
-        ChangeScene(ResourcePath.LOGIN.getPath());
+        ChangeScene(ResourcePath.MAIN_MENU.getPath());
         primaryStage.setTitle("CACHE");
         primaryStage.setResizable(false);   
         primaryStage.show();
