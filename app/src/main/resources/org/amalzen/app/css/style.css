@@ -9,3 +9,7 @@
 .game-instructions-background {
     -fx-background-image: url("../images/game-guide.png");
 }
+
+.blur-background {
+    -fx-background-color: rgba(0, 0, 0, 0.65);
+}
