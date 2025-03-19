@@ -5,12 +5,7 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,9 +56,9 @@ public class GameRoomClient implements AutoCloseable {
         String url = serverUrl + "?gameID=" + gameId + "&player=" + playerId;
         CompletableFuture<Void> connectionFuture = new CompletableFuture<>();
 
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            CompletableFuture<WebSocket> ws = client.newWebSocketBuilder().buildAsync(URI.create(url), new WebSocketListener());
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            CompletableFuture<WebSocket> ws = client.newWebSocketBuilder()
+                    .buildAsync(URI.create(url), new WebSocketListener());
 
             ws.thenAccept(websocket -> {
                 webSocket = websocket;
@@ -95,7 +90,8 @@ public class GameRoomClient implements AutoCloseable {
 
         if (autoReconnect && reconnectAttempts < maxReconnectAttempts) {
             reconnectAttempts++;
-            LOGGER.log(Level.INFO, "Connection attempt failed. Scheduling reconnect {0}/{1} in {2}ms", new Object[]{reconnectAttempts, maxReconnectAttempts, reconnectDelayMs});
+            LOGGER.log(Level.INFO, "Connection attempt failed. Scheduling reconnect {0}/{1} in {2}ms",
+                    new Object[]{reconnectAttempts, maxReconnectAttempts, reconnectDelayMs});
 
             reconnectExecutor.schedule(() -> {
                 connect();
@@ -105,16 +101,19 @@ public class GameRoomClient implements AutoCloseable {
         }
     }
 
-    public void sendMatchSuccess() {
+    public GameRoomClient sendMatchSuccess() {
         sendAction("move", true);
+        return this;
     }
 
-    public void sendMatchFailure() {
+    public GameRoomClient sendMatchFailure() {
         sendAction("move", false);
+        return this;
     }
 
-    public void sendQuit() {
+    public GameRoomClient sendQuit() {
         sendAction("quit", false);
+        return this;
     }
 
     @Override
@@ -191,10 +190,11 @@ public class GameRoomClient implements AutoCloseable {
         return this;
     }
 
-    public void withAutoReconnect(boolean autoReconnect, int maxAttempts, long delayMs) {
+    public GameRoomClient withAutoReconnect(boolean autoReconnect, int maxAttempts, long delayMs) {
         this.autoReconnect = autoReconnect;
         this.maxReconnectAttempts = maxAttempts;
         this.reconnectDelayMs = delayMs;
+        return this;
     }
 
     public boolean isConnected() {
@@ -247,7 +247,8 @@ public class GameRoomClient implements AutoCloseable {
             // Attempt reconnection if needed
             if (autoReconnect && statusCode != WebSocket.NORMAL_CLOSURE && reconnectAttempts < maxReconnectAttempts) {
                 reconnectAttempts++;
-                LOGGER.log(Level.INFO, "Connection closed. Scheduling reconnect {0}/{1} in {2}ms", new Object[]{reconnectAttempts, maxReconnectAttempts, reconnectDelayMs});
+                LOGGER.log(Level.INFO, "Connection closed. Scheduling reconnect {0}/{1} in {2}ms",
+                        new Object[]{reconnectAttempts, maxReconnectAttempts, reconnectDelayMs});
 
                 reconnectExecutor.schedule(() -> {
                     connect();

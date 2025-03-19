@@ -13,6 +13,7 @@ public class GameRoomView extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameRoomView.class.getResource("/org/amalzen/app/view/game-room.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1650, 944);
+        stage.setResizable(false);
         stage.setTitle("Game Room");
 
         var imageStream = getClass().getResourceAsStream("/org/amalzen/app/images/game-logo-transparent.png");

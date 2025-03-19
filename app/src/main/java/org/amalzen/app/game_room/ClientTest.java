@@ -112,7 +112,7 @@ public class ClientTest {
                 sb.append("Error: ").append(gameState.optString("message", "Unknown error"));
             }
         } else {
-            sb.append(gameState.toString());
+            sb.append(gameState);
         }
 
         return sb.toString();

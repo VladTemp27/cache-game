@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.amalzen.app.components.CardComponent;
 
@@ -33,7 +34,9 @@ public class GameRoomController {
     @FXML
     private Button cancelButton;
     @FXML
-    private VBox cardsContainer;
+    private HBox HBox1;
+    @FXML
+    private HBox HBox2;
 
     private List<CardComponent> cardComponents = new ArrayList<>();
 
@@ -70,11 +73,9 @@ public class GameRoomController {
         // gameDefeat.setOnAction(this::showDefeatModal);
 
         try {
-            GridPane cardGrid = new GridPane();
-            cardGrid.setHgap(10);
-            cardGrid.setVgap(10);
-
             for (int row = 0; row < ROWS; row++) {
+                HBox currentHBox = (row == 0) ? HBox1 : HBox2;
+
                 for (int col = 0; col < COLUMNS; col++) {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/card.fxml"));
                     Node cardNode = loader.load();
@@ -84,15 +85,11 @@ public class GameRoomController {
                     cardComponent.setCardId(cardId);
                     cardComponents.add(cardComponent);
 
-                    cardGrid.add(cardNode, col, row);
+                    currentHBox.getChildren().add(cardNode);
 
                     // other logic to handle websocket communication will be added
                 }
             }
-
-            gameRoomPane.getChildren().add(cardGrid);
-            AnchorPane.setTopAnchor(cardGrid, 200.0);
-            AnchorPane.setLeftAnchor(cardGrid, 100.0);
 
         } catch (IOException e) {
             e.printStackTrace();
