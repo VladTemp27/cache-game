@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="944.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.log_in.LogInController">
+<AnchorPane prefHeight="944.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/21.0.7-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.log_in.LogInController">
     <children>
         <ImageView fitHeight="944.0" fitWidth="1919.0" pickOnBounds="true" preserveRatio="true">
             <image>
@@ -40,11 +40,13 @@
         <Button fx:id="loginButton" contentDisplay="CENTER" layoutX="1356.0" layoutY="823.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="210.0" style="-fx-background-color: transparent;" text="LOG-IN" textFill="WHITE">
             <font>
                 <Font name="Gloria Hallelujah" size="30.0" />
-            </font></Button>
-        <ImageView fitHeight="127.0" fitWidth="284.0" layoutX="1322.0" layoutY="821.0" pickOnBounds="true" preserveRatio="true" style="-fx-background: transparent;">
-            <image>
-                <Image url="@../images/login-button.png" />
-            </image>
-        </ImageView>
+            </font>
+         <graphic>
+              <ImageView fitHeight="127.0" fitWidth="284.0" pickOnBounds="true" preserveRatio="true" style="-fx-background: transparent;">
+                  <image>
+                      <Image url="@../images/login-button.png" />
+                  </image>
+              </ImageView>
+         </graphic></Button>
     </children>
 </AnchorPane>

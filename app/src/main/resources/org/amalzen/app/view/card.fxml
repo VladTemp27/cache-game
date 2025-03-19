@@ -4,20 +4,19 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
-
 <Button fx:id="cardButton" mnemonicParsing="false" style="-fx-background-color: transparent;"
         xmlns="http://javafx.com/javafx/21.0.7-ea" xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="org.amalzen.app.components.CardComponent">
     <graphic>
         <StackPane fx:id="cardStackPane">
             <children>
-                <ImageView fx:id="cardBack" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true"
+                <ImageView fx:id="cardBack" fitHeight="180.0" fitWidth="240.0" opacity="0" pickOnBounds="true"
                            preserveRatio="true">
                     <image>
                         <Image url="@../images/cardFront.png"/>
                     </image>
                 </ImageView>
-                <ImageView fx:id="cardFront" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true"
+                <ImageView fx:id="cardFront" fitHeight="180.0" fitWidth="240.0" pickOnBounds="true"
                            preserveRatio="true">
                     <image>
                         <Image url="@../images/card-easy.png"/>

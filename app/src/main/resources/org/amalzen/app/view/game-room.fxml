@@ -5,7 +5,8 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="gameRoomPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="944.0" prefWidth="1650.0" xmlns="http://javafx.com/javafx/21.0.7-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.game_room.GameRoomController">
@@ -25,29 +26,29 @@
                 <Image url="@../images/scoreboard.png" />
             </image>
         </ImageView>
-        <Label fx:id="roundNumber" layoutX="1469.0" layoutY="29.0" text="Round 1">
+        <Label fx:id="roundNumber" layoutX="1469.0" layoutY="29.0">
             <font>
                 <Font name="Girassol Regular" size="40.0" />
             </font>
         </Label>
-        <Label fx:id="timePerTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="810.0" layoutY="142.0" text="00:00" textFill="WHITE">
+        <Label fx:id="timePerTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="810.0" layoutY="142.0" textFill="WHITE">
             <font>
                 <Font name="Girassol Regular" size="30.0" />
             </font>
         </Label>
-        <Label fx:id="rivalScore" alignment="CENTER" contentDisplay="CENTER" layoutX="1016.0" layoutY="43.0" text="11" textFill="WHITE">
+        <Label fx:id="rivalScore" alignment="CENTER" contentDisplay="CENTER" layoutX="1016.0" layoutY="43.0" textFill="WHITE">
             <font>
                 <Font name="Girassol Regular" size="40.0" />
             </font>
         </Label>
-        <Label fx:id="homeScore" alignment="CENTER" contentDisplay="CENTER" layoutX="632.0" layoutY="42.0" text="11" textFill="WHITE">
+        <Label fx:id="homeScore" alignment="CENTER" contentDisplay="CENTER" layoutX="632.0" layoutY="42.0" textFill="WHITE">
             <font>
                 <Font name="Girassol Regular" size="40.0" />
             </font>
         </Label>
-        <Label layoutX="745.0" layoutY="50.0" text="HOME | RIVAL">
+        <Label layoutX="762.0" layoutY="53.0" text="HOME | RIVAL">
             <font>
-                <Font name="Girassol Regular" size="35.0" />
+                <Font name="Girassol Regular" size="30.0" />
             </font>
         </Label>
         <Button fx:id="cancelButton" mnemonicParsing="false" style="-fx-background-color: transparent;">
@@ -59,9 +60,12 @@
                 </ImageView>
             </graphic>
         </Button>
-
-        <!-- Cards will be added here dynamically by GameRoomController -->
-        <GridPane fx:id="cardGrid" hgap="10" layoutX="829.0" layoutY="821.0" prefHeight="51.0" prefWidth="53.0" vgap="10" />
+      <VBox layoutX="182.0" layoutY="246.0" prefHeight="650.0" prefWidth="1300.0">
+         <children>
+            <HBox fx:id="HBox1" prefHeight="325.0" prefWidth="1300.0" />
+            <HBox fx:id="HBox2" prefHeight="325.0" prefWidth="1300.0" />
+         </children>
+      </VBox>
 
     </children>
 </AnchorPane>
