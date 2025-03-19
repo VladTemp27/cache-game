@@ -1,27 +1,74 @@
 [
-    {
-        "_id": "67d93b0119078b4cf422381c",
-        "username": "test",
-        "password": "$2b$10$hashedpassword",
-        "token": "sample_token",
-        "total_score": 400,
-        "game_history": [
-            {
-                "gameroom_id": "111111",
-                "difficulty": "easy",
-                "player_1": "test",
-                "player_1_score": 400,
-                "player_2": "test2",
-                "player_2_score": 200
-            },
-            {
-                "gameroom_id": "222222",
-                "difficulty": "medium",
-                "player_1": "test",
-                "player_1_score": 250,
-                "player_2": "test3",
-                "player_2_score": 300
-            }
-        ]
-    }
+  {
+    "_id": "67db052dc7f4394cdce279ce",
+    "username": "testUser1",
+    "__v": 0,
+    "password": "testPassword1",
+    "token": "testToken1",
+    "total_score": 100
+  },
+  {
+    "_id": "67db052dc7f4394cdce279cf",
+    "username": "testUser2",
+    "__v": 0,
+    "password": "testPassword2",
+    "token": "testToken2",
+    "total_score": 200
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d0",
+    "username": "testUser3",
+    "__v": 0,
+    "password": "testPassword3",
+    "token": "testToken3",
+    "total_score": 300
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d1",
+    "username": "testUser4",
+    "__v": 0,
+    "password": "testPassword4",
+    "token": "testToken4",
+    "total_score": 400
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d2",
+    "username": "testUser5",
+    "__v": 0,
+    "password": "testPassword2",
+    "token": "testToken2",
+    "total_score": 200
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b84",
+    "username": "testUser6",
+    "__v": 0,
+    "password": "testPassword1",
+    "token": "testToken1",
+    "total_score": 100
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b85",
+    "username": "testUser7",
+    "__v": 0,
+    "password": "testPassword3",
+    "token": "testToken3",
+    "total_score": 300
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b86",
+    "username": "testUser8",
+    "__v": 0,
+    "password": "testPassword4",
+    "token": "testToken4",
+    "total_score": 400
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b87",
+    "username": "testUser9",
+    "__v": 0,
+    "password": "testPassword5",
+    "token": "testToken5",
+    "total_score": 500
+  }
 ]
