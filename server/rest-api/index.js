@@ -5,34 +5,33 @@ const cors = require("cors");
 const connectDB = require("./services/dal-service/config/db"); 
 const userRoutes = require("./services/dal-service/routes/userRoutes");
 const leaderboardRoutes = require("./services/dal-service/routes/leaderboardRoutes");
+const cardsRoutes = require("./services/dal-service/routes/cardsRoutes");
+const gameHistoryRoutes = require("./services/dal-service/routes/gameHistoryRoutes");
 const seedDatabase = require("./services/dal-service/scripts/seedDB");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 
-//Connect to MongoDB before starting the server
-connectDB()
-    .then(async () => {  //Make this async to await seeding
-        console.log("✅ MongoDB Connected");
+app.get("/health", (req, res) => {
+    res.send({ message: "Server is up and running" });
+});
 
-        //Seed the database
-        await seedDatabase();
-        console.log("Database Seeded Successfully");
+const startServer = async () => {
+    try {
+        
+    } catch (error) {
+        console.error("Error starting server", error);
+        process.exit(1);
+    }
 
-        const PORT = process.env.PORT || 8080;
-        app.get("/health", (req, res) => {
-            res.send({ message: "Server is up and running" });
-        });
+    const PORT = process.env.PORT || 8080;
 
-        app.use("/users", userRoutes);
-        app.use("/leaderboard", leaderboardRoutes);
+    app.use("/users",userRoutes);
+    app.use("/leaderboard",leaderboardRoutes);
 
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.error("❌ Failed to connect to MongoDB:", error);
-        process.exit(1);  // ✅ Prevent the server from starting if DB fails
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
     });
+};
+
+startServer();
