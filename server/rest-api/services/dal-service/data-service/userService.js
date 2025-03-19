@@ -10,6 +10,11 @@ const upsertUser = async (userData) => {
     );
 };
 
+// check for an existing user
+const verifyUser = async (username) => {
+    return await User.findOne({ username });
+};
+
 // ✅ Get all users
 const getAllUsers = async () => {
     return await User.find();
@@ -37,4 +42,4 @@ const deleteGameHistory = async (userId, gameroomId) => {
     );
 };
 
-module.exports = { upsertUser, getAllUsers, updateGameHistory, deleteGameHistory };
+module.exports = { upsertUser, verifyUser, getAllUsers, updateGameHistory, deleteGameHistory };
