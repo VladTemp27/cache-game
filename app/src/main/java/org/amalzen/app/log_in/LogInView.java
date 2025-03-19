@@ -20,7 +20,6 @@ public class LogInView extends Application {
                 return;
             }
             Scene scene = new Scene(root, 1650, 944);
-            primaryStage.getIcons().add(new Image(getClass().getResource("/org/amalzen/app/images/game-logo-transparent.png").toString()));
             primaryStage.setTitle("CACHE");
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);
