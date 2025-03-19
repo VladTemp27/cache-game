@@ -14,9 +14,6 @@ module org.amalzen.app {
     opens org.amalzen.app to javafx.fxml;
     exports org.amalzen.app;
 
-    opens org.amalzen.app.match_history to javafx.fxml;
-    exports org.amalzen.app.match_history to javafx.graphics, javafx.fxml;
-
     opens org.amalzen.app.game_room to javafx.fxml;
     exports org.amalzen.app.game_room to javafx.graphics, javafx.fxml;
 
@@ -32,12 +29,15 @@ module org.amalzen.app {
     opens org.amalzen.app.game_room to javafx.fxml;
     exports org.amalzen.app.game_room to javafx.graphics, javafx.fxml;
 
-    exports org.amalzen.app.log_in;
-    opens org.amalzen.app.log_in to javafx.fxml;
+    exports org.amalzen.app.log_in to javafx.graphics, javafx.fxml;
+    opens org.amalzen.app.log_in to javafx.graphics, javafx.fxml;
 
     opens org.amalzen.app.components to javafx.fxml;
     exports org.amalzen.app.components to javafx.graphics, javafx.fxml;
 
     opens org.amalzen.app.modals to javafx.fxml;
     exports org.amalzen.app.modals to javafx.graphics, javafx.fxml;
+
+    exports org.amalzen.app.match_making to javafx.fxml, javafx.graphics;
+    opens org.amalzen.app.match_making to javafx.fxml;
 }

@@ -1,4 +1,4 @@
-package org.amalzen.app.log_in;
+package org.amalzen.app.match_making;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -6,22 +6,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
 import java.io.IOException;
-import java.util.Objects;
 
-public class LogInView extends Application {
-
+public class MatchmakingView extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/login-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/matchmaking-view.fxml"));
             Parent root = loader.load();
             if (root == null) {
                 System.out.println("FXML file not loaded properly!");
                 return;
             }
             Scene scene = new Scene(root, 1650, 944);
-            primaryStage.setTitle("CACHE");
+            primaryStage.setTitle("Match making");
 
             var imageStream = getClass().getResourceAsStream("/org/amalzen/app/images/game-logo-transparent.png");
             if (imageStream != null) {
@@ -29,7 +28,6 @@ public class LogInView extends Application {
             } else {
                 System.out.println("Image resource not found!");
             }
-
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);
             primaryStage.show();
@@ -39,6 +37,6 @@ public class LogInView extends Application {
         }
     }
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 }
