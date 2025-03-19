@@ -8,68 +8,60 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="gameRoomPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="500.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21.0.7-ea"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.game_room.GameRoomController">
+<AnchorPane fx:id="gameRoomPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="944.0" prefWidth="1650.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.game_room.GameRoomController">
     <children>
-        <ImageView fitHeight="623.0" fitWidth="1268.0" layoutX="-4.0" layoutY="-61.0" pickOnBounds="true"
-                   preserveRatio="true">
+        <ImageView fitHeight="964.0" fitWidth="1701.0" layoutX="-24.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../images/game-room-bg.png"/>
+                <Image url="@../images/game-room-bg.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="67.0" fitWidth="138.0" layoutX="948.0" layoutY="12.0" pickOnBounds="true"
-                   preserveRatio="true">
+        <ImageView fitHeight="99.0" fitWidth="220.0" layoutX="1424.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../images/round-indicator.png"/>
+                <Image url="@../images/round-indicator.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="146.0" fitWidth="528.0" layoutX="286.0" layoutY="4.0" pickOnBounds="true"
-                   preserveRatio="true">
+        <ImageView fitHeight="258.0" fitWidth="848.0" layoutX="435.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../images/scoreboard.png"/>
+                <Image url="@../images/scoreboard.png" />
             </image>
         </ImageView>
-        <Label fx:id="roundNumber" layoutX="969.0" layoutY="16.0">
+        <Label fx:id="roundNumber" layoutX="1469.0" layoutY="29.0">
             <font>
-                <Font name="Girassol Regular" size="30.0"/>
+                <Font name="Girassol Regular" size="40.0" />
             </font>
         </Label>
-        <Label fx:id="timePerTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="518.0" layoutY="91.0"
-               textFill="WHITE">
+        <Label fx:id="timePerTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="810.0" layoutY="142.0" textFill="WHITE">
             <font>
-                <Font name="Girassol Regular" size="20.0"/>
+                <Font name="Girassol Regular" size="30.0" />
             </font>
         </Label>
-        <Label fx:id="rivalScore" alignment="CENTER" contentDisplay="CENTER" layoutX="645.0" layoutY="24.0"
-               textFill="WHITE">
+        <Label fx:id="rivalScore" alignment="CENTER" contentDisplay="CENTER" layoutX="1016.0" layoutY="43.0" textFill="WHITE">
             <font>
-                <Font name="Girassol Regular" size="30.0"/>
+                <Font name="Girassol Regular" size="40.0" />
             </font>
         </Label>
-        <Label fx:id="homeScore" alignment="CENTER" contentDisplay="CENTER" layoutX="405.0" layoutY="24.0"
-               textFill="WHITE">
+        <Label fx:id="homeScore" alignment="CENTER" contentDisplay="CENTER" layoutX="632.0" layoutY="42.0" textFill="WHITE">
             <font>
-                <Font name="Girassol Regular" size="30.0"/>
+                <Font name="Girassol Regular" size="40.0" />
             </font>
         </Label>
-        <Label layoutX="485.0" layoutY="35.0" text="HOME | RIVAL">
+        <Label layoutX="762.0" layoutY="53.0" text="HOME | RIVAL">
             <font>
-                <Font name="Girassol Regular" size="20.0"/>
+                <Font name="Girassol Regular" size="30.0" />
             </font>
         </Label>
         <Button fx:id="cancelButton" mnemonicParsing="false" style="-fx-background-color: transparent;">
             <graphic>
-                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="89.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../images/cancel-Button.png"/>
+                        <Image url="@../images/cancel-Button.png" />
                     </image>
                 </ImageView>
             </graphic>
         </Button>
 
         <!-- Cards will be added here dynamically by GameRoomController -->
-        <GridPane fx:id="cardGrid" hgap="10" vgap="10" layoutX="46.0" layoutY="144.0"/>
+        <GridPane fx:id="cardGrid" hgap="10" layoutX="100.0" layoutY="231.0" prefHeight="660.0" prefWidth="1450.0" vgap="10" />
 
     </children>
 </AnchorPane>
