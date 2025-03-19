@@ -5,331 +5,63 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="gameRoomPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21.0.7-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.game_room.GameRoomController">
-   <children>
-      <ImageView fitHeight="623.0" fitWidth="1268.0" layoutX="-4.0" layoutY="-61.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/game-room-bg.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="67.0" fitWidth="138.0" layoutX="948.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/round-indicator.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="146.0" fitWidth="528.0" layoutX="286.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/scoreboard.png" />
-         </image>
-      </ImageView>
-      <Label fx:id="roundNumber" layoutX="969.0" layoutY="16.0">
-         <font>
-            <Font name="Girassol Regular" size="30.0" />
-         </font>
-      </Label>
-      <Label fx:id="timePerTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="518.0" layoutY="91.0" textFill="WHITE">
-         <font>
-            <Font name="Girassol Regular" size="20.0" />
-         </font>
-      </Label>
-      <Label fx:id="rivalScore" alignment="CENTER" contentDisplay="CENTER" layoutX="645.0" layoutY="24.0" textFill="WHITE">
-         <font>
-            <Font name="Girassol Regular" size="30.0" />
-         </font>
-      </Label>
-      <Label fx:id="homeScore" alignment="CENTER" contentDisplay="CENTER" layoutX="405.0" layoutY="24.0" textFill="WHITE">
-         <font>
-            <Font name="Girassol Regular" size="30.0" />
-         </font>
-      </Label>
-      <Label layoutX="485.0" layoutY="35.0" text="HOME | RIVAL">
-         <font>
-            <Font name="Girassol Regular" size="20.0" />
-         </font></Label>
-      <Button fx:id="cancelButton" mnemonicParsing="false" style="-fx-background-color: transparent;">
-         <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/cancel-Button.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
-      <AnchorPane layoutX="46.0" layoutY="144.0" prefHeight="300.0" prefWidth="1100.0">
-         <children>
-            <VBox prefHeight="300.0" prefWidth="900.0">
-               <children>
-                  <HBox prefHeight="150.0" prefWidth="900.0">
-                     <children>
-                         <Button fx:id="cardEasyButton1" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card1">
-                                     <ImageView fx:id="cardBack1" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront1" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton2" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card2">
-                                     <ImageView fx:id="cardBack2" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront2" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton3" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card3">
-                                     <ImageView fx:id="cardBack3" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront3" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton4" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card4">
-                                     <ImageView fx:id="cardBack4" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront4" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton5" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card5">
-                                     <ImageView fx:id="cardBack5" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront5" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton6" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card6">
-                                     <ImageView fx:id="cardBack6" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront6" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton7" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card7">
-                                     <ImageView fx:id="cardBack7" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront7" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                         <Button fx:id="cardEasyButton8" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                             <graphic>
-                                 <StackPane fx:id="card8">
-                                     <ImageView fx:id="cardBack8" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/cardFront.png" />
-                                         </image>
-                                     </ImageView>
-                                     <ImageView fx:id="cardFront8" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                         <image>
-                                             <Image url="@../images/card-easy.png" />
-                                         </image>
-                                     </ImageView>
-                                 </StackPane>
-                             </graphic>
-                         </Button>
-                     </children>
-                  </HBox>
-                   <HBox prefHeight="150.0" prefWidth="900.0">
-                       <children>
-                           <Button fx:id="cardEasyButton9" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card9">
-                                       <ImageView fx:id="cardBack9" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront9" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton10" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card10">
-                                       <ImageView fx:id="cardBack10" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront10" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton11" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card11">
-                                       <ImageView fx:id="cardBack11" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront11" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton12" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card12">
-                                       <ImageView fx:id="cardBack12" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront12" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton13" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card13">
-                                       <ImageView fx:id="cardBack13" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront13" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton14" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card14">
-                                       <ImageView fx:id="cardBack14" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront14" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton15" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card15">
-                                       <ImageView fx:id="cardBack15" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront15" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                           <Button fx:id="cardEasyButton16" mnemonicParsing="false" onAction="#flipCard" style="-fx-background-color: transparent;">
-                               <graphic>
-                                   <StackPane fx:id="card16">
-                                       <ImageView fx:id="cardBack16" fitHeight="150.0" fitWidth="200.0" opacity="0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/cardFront.png" />
-                                           </image>
-                                       </ImageView>
-                                       <ImageView fx:id="cardFront16" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/card-easy.png" />
-                                           </image>
-                                       </ImageView>
-                                   </StackPane>
-                               </graphic>
-                           </Button>
-                       </children>
-                   </HBox>
-               </children>
-            </VBox>
-         </children>
-      </AnchorPane>
-   </children>
+<AnchorPane fx:id="gameRoomPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="944.0" prefWidth="1650.0" xmlns="http://javafx.com/javafx/21.0.7-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.game_room.GameRoomController">
+    <children>
+        <ImageView fitHeight="964.0" fitWidth="1701.0" layoutX="-24.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/game-room-bg.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="99.0" fitWidth="220.0" layoutX="1424.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/round-indicator.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="258.0" fitWidth="848.0" layoutX="435.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/scoreboard.png" />
+            </image>
+        </ImageView>
+        <Label fx:id="roundNumber" layoutX="1469.0" layoutY="29.0" text="Round 1">
+            <font>
+                <Font name="Girassol Regular" size="40.0" />
+            </font>
+        </Label>
+        <Label fx:id="timePerTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="810.0" layoutY="142.0" text="00:00" textFill="WHITE">
+            <font>
+                <Font name="Girassol Regular" size="30.0" />
+            </font>
+        </Label>
+        <Label fx:id="rivalScore" alignment="CENTER" contentDisplay="CENTER" layoutX="1016.0" layoutY="43.0" text="11" textFill="WHITE">
+            <font>
+                <Font name="Girassol Regular" size="40.0" />
+            </font>
+        </Label>
+        <Label fx:id="homeScore" alignment="CENTER" contentDisplay="CENTER" layoutX="632.0" layoutY="42.0" text="11" textFill="WHITE">
+            <font>
+                <Font name="Girassol Regular" size="40.0" />
+            </font>
+        </Label>
+        <Label layoutX="745.0" layoutY="50.0" text="HOME | RIVAL">
+            <font>
+                <Font name="Girassol Regular" size="35.0" />
+            </font>
+        </Label>
+        <Button fx:id="cancelButton" mnemonicParsing="false" style="-fx-background-color: transparent;">
+            <graphic>
+                <ImageView fitHeight="89.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/cancel-Button.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+
+        <!-- Cards will be added here dynamically by GameRoomController -->
+        <GridPane fx:id="cardGrid" hgap="10" layoutX="829.0" layoutY="821.0" prefHeight="51.0" prefWidth="53.0" vgap="10" />
+
+    </children>
 </AnchorPane>
