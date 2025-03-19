@@ -13,15 +13,16 @@ import (
 
 // This is a Game struct which represents a single game instance
 type Game struct {
-	Mutex      sync.Mutex
-	Players    []*websocket.Conn // tracks the players in a game
-	Scores     []int             // tracks the scores of both players
-	Turn       int
-	Timer      int    // tracks the time left in a game
-	Difficulty string // tracks the difficulty of a game
-	GameOver   bool   // tracks if a game is over
-	Active     bool   // tracks if a game is active
-	Round      int    // tracks the number of rounds in a game
+	Mutex       sync.Mutex
+	Players     []*websocket.Conn // tracks the players in a game
+	Scores      []int             // tracks the scores of both players
+	Turn        int
+	Timer       int    // tracks the time left in a game
+	Difficulty  string // tracks the difficulty of a game
+	GameOver    bool   // tracks if a game is over
+	Active      bool   // tracks if a game is active
+	Round       int    // tracks the number of rounds in a game
+	LoopRunning bool   // indicates if the game loop is running
 }
 
 // This section is for the global variables
@@ -42,6 +43,12 @@ func startGame(gameID string) {
 		fmt.Println("[ERROR] Game not found:", gameID)
 		return
 	}
+	if game.LoopRunning {
+		gamesMux.Unlock()
+		fmt.Println("[INFO] Game loop already running for:", gameID)
+		return
+	}
+	game.LoopRunning = true
 	gamesMux.Unlock()
 
 	rand.Seed(time.Now().UnixNano())
@@ -80,6 +87,7 @@ func startGame(gameID string) {
 		// This section means the game is over
 		game.Mutex.Lock()
 		game.GameOver = true
+		game.LoopRunning = false
 		game.broadcastState()
 		game.Mutex.Unlock()
 
