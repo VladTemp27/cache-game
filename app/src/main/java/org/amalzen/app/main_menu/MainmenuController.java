@@ -28,7 +28,7 @@ public class MainmenuController {
     // TODO: Insert fxml file paths of corresponding views
     public void initialize() {
 //        userButton.setOnMouseClicked(event -> navigateToView(""));
-        howToPlayButton.setOnMouseClicked(event -> navigateToView("/org/amalzen/app/view/game_instructions.fxml"));
+        howToPlayButton.setOnMouseClicked(event -> navigateToView("/org/amalzen/app/view/game-instructions.fxml"));
         playButton.setOnMouseClicked(event -> navigateToView(""));
 //        gameHistoryButton.setOnMouseClicked(event -> navigateToView(""));
 //        leaderboardsButton.setOnMouseClicked(event -> navigateToView(""));

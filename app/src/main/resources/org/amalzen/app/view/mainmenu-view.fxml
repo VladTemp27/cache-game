@@ -9,17 +9,17 @@
    <children>
       <ImageView fitHeight="500.0" fitWidth="694.0" layoutX="241.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true" rotate="0.8" AnchorPane.leftAnchor="464.0" AnchorPane.topAnchor="-14.0">
          <image>
-            <Image url="@../images/game_logo_transparent.png" />
+            <Image url="@../images/game-logo-transparent.png" />
          </image>
       </ImageView>
       <ImageView fx:id="howToPlayButton" fitHeight="80.0" fitWidth="80.0" layoutX="114.0" layoutY="231.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="23.0">
          <image>
-            <Image url="@../images/how_to_play_icon.png" />
+            <Image url="@../images/how-to-play-icon.png" />
          </image>
       </ImageView>
       <ImageView fx:id="playButton" fitHeight="200.0" fitWidth="300.0" layoutX="598.0" layoutY="542.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="664.0" AnchorPane.topAnchor="542.0">
          <image>
-            <Image url="@../images/play_button.png" />
+            <Image url="@../images/play-button.png" />
          </image>
       </ImageView>
    </children>
