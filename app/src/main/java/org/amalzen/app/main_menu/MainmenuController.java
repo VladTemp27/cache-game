@@ -1,48 +1,87 @@
 package org.amalzen.app.main_menu;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import org.amalzen.app.game_instructions.GameInstructionsController;
 
 import java.io.IOException;
 
 public class MainmenuController {
+    public static GameInstructionsController gameInstructionsController;
 
     @FXML
-    private ImageView gameHistoryButton;
+    private AnchorPane mainMenuRootPane;
 
     @FXML
-    private ImageView howToPlayButton;
+    private Button exitModalTestButton;
 
     @FXML
-    private ImageView leaderboardsButton;
+    private Button howToPlayButton;
 
     @FXML
-    private ImageView playButton;
+    private Button playButton;
+
+    public static Stage primaryStage;
 
     @FXML
-    private ImageView userButton;
-
-    // TODO: Insert fxml file paths of corresponding views
-    public void initialize() {
-//        userButton.setOnMouseClicked(event -> navigateToView(""));
-        howToPlayButton.setOnMouseClicked(event -> navigateToView("/org/amalzen/app/view/game_instructions.fxml"));
-        playButton.setOnMouseClicked(event -> navigateToView(""));
-//        gameHistoryButton.setOnMouseClicked(event -> navigateToView(""));
-//        leaderboardsButton.setOnMouseClicked(event -> navigateToView(""));
-    }
-
-    private void navigateToView(String file) {
+    void showPage(ActionEvent event) {
+        Button clickButton = (Button) event.getSource();
+        String fxmlFile = null;
         try {
-            Stage stage = (Stage) playButton.getScene().getWindow();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(file));
-            Scene scene = new Scene(fxmlLoader.load());
-            stage.setScene(scene);
+            if (clickButton == playButton) {
+                // Navigate to matchmaking view and start queue
+            } else if (clickButton == howToPlayButton) {
+                fxmlFile = "/org/amalzen/app/view/game-instructions.fxml";
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+                Parent gameRoot = loader.load();
+                gameInstructionsController = loader.getController();
+                Scene gameScene = new Scene(gameRoot);
+                primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                primaryStage.setScene(gameScene);
+                primaryStage.show();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // Showing the exit modal
+    @FXML
+    void showExitModal(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/exit-modal.fxml"));
+            Parent exitModalRoot = loader.load();
+
+            Stage modalStage = new Stage();
+            modalStage.initOwner(primaryStage);
+            modalStage.initModality(Modality.WINDOW_MODAL);
+            modalStage.initStyle(StageStyle.TRANSPARENT);
+
+            Scene modalScene = new Scene(exitModalRoot);
+            modalScene.setFill(Color.TRANSPARENT);
+
+            modalStage.setScene(modalScene);
+            modalStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @FXML
+    private void initialize() {
+        // This is only for the exit confirmation modal
+        exitModalTestButton.setOnAction(this::showExitModal);
+    }
 }
