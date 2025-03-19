@@ -13,7 +13,7 @@
             <Image url="@../images/game-logo-transparent.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="790.0" layoutY="686.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="768.0" AnchorPane.topAnchor="686.0">
+      <ImageView fitHeight="90.0" fitWidth="90.0" layoutX="1518.0" layoutY="99.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="23.0">
          <image>
             <Image url="@../images/how-to-play-icon.png" />
          </image>
@@ -23,9 +23,15 @@
             <Image url="@../images/play-button.png" />
          </image>
       </ImageView>
+      <ImageView fitHeight="200.0" fitWidth="282.0" layoutX="719.0" layoutY="639.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="667.0" AnchorPane.topAnchor="646.0">
+         <image>
+            <Image url="@../images/logout-button-image.png" />
+         </image>
+      </ImageView>
       <Button fx:id="playButton" layoutX="667.0" layoutY="546.0" mnemonicParsing="false" onAction="#showPage" prefHeight="67.0" prefWidth="282.0" style="-fx-background-color: transparent;" AnchorPane.leftAnchor="667.0" AnchorPane.topAnchor="546.0" />
-      <Button fx:id="howToPlayButton" layoutX="766.0" layoutY="685.0" mnemonicParsing="false" onAction="#showPage" prefHeight="81.0" prefWidth="82.0" style="-fx-background-color: transparent;" AnchorPane.leftAnchor="766.0" AnchorPane.topAnchor="685.0" />
+      <Button fx:id="howToPlayButton" layoutX="1508.0" layoutY="67.0" mnemonicParsing="false" onAction="#showPage" prefHeight="92.0" prefWidth="88.0" style="-fx-background-color: transparent;" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="23.0" />
       <Button fx:id="exitModalTestButton" layoutX="788.0" layoutY="460.0" mnemonicParsing="false" onAction="#showExitModal" text="Exit Modal Test" />
+      <Button fx:id="logoutButton" layoutX="668.0" layoutY="647.0" mnemonicParsing="false" onAction="#showLogoutModal" prefHeight="67.0" prefWidth="282.0" style="-fx-background-color: transparent;" />
    </children>
    <styleClass>
       <String fx:value="background-image" />
