@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const UserFormat = new mongoose.Schema({
+const CardFormat = new mongoose.Schema({
     pair_id: { type: Number, required: true },
-    pair: [{
-        name: String,
-        question: String
-    }]
+    pair: {
+        answer: { type: String, required: true },
+        question: { type: String, required: true }
+    }
 });
 
-module.exports = mongoose.model("User", UserFormat);
+module.exports = mongoose.models.Card || mongoose.model("Card", CardFormat);
