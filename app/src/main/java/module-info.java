@@ -10,6 +10,7 @@ module org.amalzen.app {
     requires java.net.http;
     requires org.json;
     requires java.logging;
+    requires java.dotenv;
 
     opens org.amalzen.app to javafx.fxml;
     exports org.amalzen.app;

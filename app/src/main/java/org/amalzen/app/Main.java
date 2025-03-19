@@ -1,41 +1,27 @@
 package org.amalzen.app;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-
-import org.amalzen.app.log_in.LogInController;
-import org.amalzen.app.main_menu.MainmenuController;
-import org.amalzen.app.game_instructions.GameInstructionsController;
-import org.amalzen.app.match_making.MatchmakingController;
-import org.amalzen.app.game_room.GameRoomController;
-
 public class Main extends Application {
+    @FXML
     public static Scene scene;
     public static FXMLLoader fxmlLoader;
     public static Stage primaryStage;
+
     @Override
     public void start(Stage primaryStage) {
         Main.primaryStage = primaryStage;
-//        loadControllers().forEach(controller -> {});
-        ChangeScene(ResourcePath.MAIN_MENU.getPath());
+        ChangeScene(ResourcePath.MAIN_MENU.getPath()); // TODO: Change back to login
         primaryStage.setTitle("CACHE");
-        primaryStage.setResizable(false);   
+        primaryStage.setResizable(false);
         primaryStage.show();
-    }
-
-    public ArrayList<Class<?>> loadControllers() {
-        ArrayList<Class<?>> controllers = new ArrayList<>();
-//        controllers.add(LogInController.class);
-        controllers.add(MainmenuController.class);
-        controllers.add(GameInstructionsController.class);
-        controllers.add(MatchmakingController.class);
-        controllers.add(GameRoomController.class);
-        System.out.println(("Controllers: " + controllers));
-        return controllers;
     }
 
     public static void ChangeScene(String path) {
@@ -48,7 +34,19 @@ public class Main extends Application {
         }
     }
 
+    public static void showModals(String path, AnchorPane rootPane) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource(path));
+            Parent exitModalRoot = loader.load();
+            rootPane.getChildren().add(exitModalRoot);
+        } catch (Exception e) {
+            System.err.println("Modal Error: " + e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
+        Dotenv dotenv = Dotenv.load();
+        System.out.println(dotenv.get("API_URL"));
         launch(args);
     }
 }

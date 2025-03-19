@@ -8,9 +8,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import org.amalzen.app.Main;
+import org.amalzen.app.ResourcePath;
 import org.amalzen.app.components.CardComponent;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.List;
 public class GameRoomController {
     private static final int ROWS = 2; // this can be changed if we opt to continue with different game difficulties
     private static final int COLUMNS = 8;
-
+    public List<CardComponent> cardComponents = new ArrayList<>();
     @FXML
     private AnchorPane gameRoomPane;
     @FXML
@@ -38,8 +38,6 @@ public class GameRoomController {
     @FXML
     private HBox HBox2;
 
-    private List<CardComponent> cardComponents = new ArrayList<>();
-
     @FXML
     void showVictoryModal(ActionEvent event) {
         try {
@@ -49,7 +47,7 @@ public class GameRoomController {
             // Add the modal to the gameRoomPane
             gameRoomPane.getChildren().add(victoryModalRoot);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e);
         }
     }
 
@@ -62,7 +60,7 @@ public class GameRoomController {
             // Add the modal to the gameRoomPane
             gameRoomPane.getChildren().add(defeatModalRoot);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e);
         }
     }
 
@@ -71,6 +69,9 @@ public class GameRoomController {
         // TODO: This code will be used for MainController
         // gameVictory.setOnAction(this::showVictoryModal);
         // gameDefeat.setOnAction(this::showDefeatModal);
+        cancelButton.setOnMouseClicked(event -> {
+            Main.showModals(ResourcePath.EXIT_MODAL.getPath(), gameRoomPane);
+        });
 
         try {
             for (int row = 0; row < ROWS; row++) {
@@ -92,7 +93,7 @@ public class GameRoomController {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e);
         }
     }
 }

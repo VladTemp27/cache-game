@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.String?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainMenuRootPane" prefHeight="944.0" prefWidth="1650.0"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" prefHeight="944.0" prefWidth="1650.0"
             stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21"
             fx:controller="org.amalzen.app.main_menu.MainmenuController">
     <children>
@@ -38,7 +38,7 @@
         <Button fx:id="howToPlayButton" layoutX="1508.0" layoutY="67.0" mnemonicParsing="false" onAction="#showPage"
                 prefHeight="92.0" prefWidth="88.0" style="-fx-background-color: transparent;"
                 AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="23.0"/>
-        <Button fx:id="logoutButton" layoutX="668.0" layoutY="647.0" mnemonicParsing="false" onAction="#showLogoutModal"
+        <Button fx:id="logoutButton" layoutX="668.0" layoutY="647.0" mnemonicParsing="false" onAction="#showPage"
                 prefHeight="67.0" prefWidth="282.0" style="-fx-background-color: transparent;"/>
     </children>
     <styleClass>

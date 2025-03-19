@@ -23,7 +23,7 @@ public class ExitModalController {
         });
 
         confirmExitButton.setOnAction(event -> {
-            Main.ChangeScene(ResourcePath.LOGIN.getPath());
+            Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());
         });
     }
 
