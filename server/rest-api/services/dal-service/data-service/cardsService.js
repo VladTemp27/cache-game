@@ -1,6 +1,6 @@
-const Cards = require('../models/cardModel');
+const Cards = require('../models/Cards');
 
-const getCards = async (Cards) => {
+const getCards = async () => {
     return await Cards.find();
 }
 
@@ -13,4 +13,4 @@ const upsertCard = async (cardData) => {
     );
 };
 
-module.exports = { getCards };
+module.exports = { getCards, upsertCard };
