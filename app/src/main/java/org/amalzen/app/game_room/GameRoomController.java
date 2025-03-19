@@ -60,8 +60,8 @@ public class GameRoomController {
             }
 
             gameRoomPane.getChildren().add(cardGrid);
-            AnchorPane.setTopAnchor(cardGrid, 144.0);
-            AnchorPane.setLeftAnchor(cardGrid, 46.0);
+            AnchorPane.setTopAnchor(cardGrid, 200.0);
+            AnchorPane.setLeftAnchor(cardGrid, 100.0);
 
         } catch (IOException e) {
             e.printStackTrace();
