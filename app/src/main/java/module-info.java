@@ -7,6 +7,9 @@ module org.amalzen.app {
     requires com.dlsc.formsfx;
     requires net.synedra.validatorfx;
     requires eu.hansolo.tilesfx;
+    requires java.net.http;
+    requires org.json;
+    requires java.logging;
 
     opens org.amalzen.app to javafx.fxml;
     exports org.amalzen.app;
