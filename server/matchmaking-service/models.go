@@ -12,6 +12,6 @@ type QueuePlayer struct {
     Username string             `bson:"username" json:"username"`
     Token    string             `bson:"token" json:"token"`
     Score    int                `bson:"score" json:"score"`
-    Cluster  int                `bson:"cluster" json:"cluster"`
+    Cluster  string                `bson:"cluster" json:"cluster"`
     JoinedAt time.Time          `bson:"joinedAt,omitempty" json:"joinedAt,omitempty"`
 }
