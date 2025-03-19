@@ -21,7 +21,7 @@ public class ExitModalController {
         });
 
         confirmExitButton.setOnAction(event -> {
-            System.exit(0);
+            // exit game
         });
     }
 

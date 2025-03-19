@@ -59,20 +59,20 @@ public class MainmenuController {
     // Showing the exit modal
     @FXML
     void showExitModal(ActionEvent event) {
+        showMainMenuModals("/org/amalzen/app/view/exit-modal.fxml");
+    }
+
+    @FXML
+    void showLogoutModal(ActionEvent event) {
+        showMainMenuModals("/org/amalzen/app/view/logout-modal.fxml");
+    }
+
+    private void showMainMenuModals(String modalLocation) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/exit-modal.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(modalLocation));
             Parent exitModalRoot = loader.load();
 
-            Stage modalStage = new Stage();
-            modalStage.initOwner(primaryStage);
-            modalStage.initModality(Modality.WINDOW_MODAL);
-            modalStage.initStyle(StageStyle.TRANSPARENT);
-
-            Scene modalScene = new Scene(exitModalRoot);
-            modalScene.setFill(Color.TRANSPARENT);
-
-            modalStage.setScene(modalScene);
-            modalStage.show();
+            mainMenuRootPane.getChildren().add(exitModalRoot);
         } catch (IOException e) {
             e.printStackTrace();
         }
