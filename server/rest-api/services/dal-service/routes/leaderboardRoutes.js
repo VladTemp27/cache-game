@@ -1,35 +1,35 @@
 const express = require("express");
-const { 
-    addUserToLeaderboard, 
-    getLeaderboard, 
-    getLeaderboardEntry, 
-    updateLeaderboardEntry, 
-    removeUserFromLeaderboard 
+const {
+    upsertLeaderboard,
+    getAllLeaderboardEntries,
+    getLeaderboardEntry,
+    updateLeaderboardEntry,
+    removeUserFromLeaderboard
 } = require("../data-service/leaderboardService");
 
 const router = express.Router();
 
-// ✅ Add a user to the leaderboard
+//Add or update a user in the leaderboard
 router.post("/addUserLB", async (req, res) => {
     try {
-        const newEntry = await addUserToLeaderboard(req.body.user_id);
+        const newEntry = await upsertLeaderboard(req.body);
         res.status(201).json(newEntry);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// ✅ Get the full leaderboard
+//Get the full leaderboard
 router.get("/leaderboards", async (req, res) => {
     try {
-        const leaderboard = await getLeaderboard();
+        const leaderboard = await getAllLeaderboardEntries();
         res.json(leaderboard);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ✅ Get a specific leaderboard entry by ID
+//Get a specific leaderboard entry by ID
 router.get("/:id", async (req, res) => {
     try {
         const entry = await getLeaderboardEntry(req.params.id);
@@ -40,7 +40,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// ✅ Update a leaderboard entry
+//Update a leaderboard entry
 router.put("/:id", async (req, res) => {
     try {
         const updatedEntry = await updateLeaderboardEntry(req.params.id, req.body);
@@ -51,7 +51,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// ✅ Remove a user from the leaderboard
+//Remove a user from the leaderboard
 router.delete("/:id", async (req, res) => {
     try {
         const deletedEntry = await removeUserFromLeaderboard(req.params.id);
