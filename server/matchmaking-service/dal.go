@@ -7,14 +7,25 @@ import (
     "os"
     "time"
 
+	"github.com/joho/godotenv"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// init will run before any other function
+func init() {
+    // Load the .env file
+    err := godotenv.Load()
+    if err != nil {
+        log.Printf("Warning: Error loading .env file: %v\n", err)
+    }
+}
+
 // Fixed typo in environment variable name
 func connectToMongoDB() (*mongo.Client, error) {
     uri := os.Getenv("MONGO_URI")
+	fmt.Printf("Connecting to MongoDB at %s\n", uri)
     clientOptions := options.Client().ApplyURI(uri)
     client, err := mongo.Connect(context.Background(), clientOptions)
     if err != nil {
@@ -36,7 +47,7 @@ func AddPlayerToQueue(player *QueuePlayer) error {
     }
     defer client.Disconnect(context.Background())
 
-    collection := client.Database("matchmaking").Collection("queue")
+    collection := client.Database("cache_db").Collection("matchmaking")
     
     // Check if player with the same username already exists in the queue
     filter := bson.M{"username": player.Username}
