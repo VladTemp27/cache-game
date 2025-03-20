@@ -1,15 +1,17 @@
 module amalzen.org/cache_game/matchmake_service
 
-go 1.23.1
+go 1.23.0
+
+toolchain go1.23.1
 
 require (
 	github.com/gorilla/websocket v1.5.3
+	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver v1.17.3
 )
 
 require (
 	github.com/golang/snappy v1.0.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
