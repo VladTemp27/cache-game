@@ -3,7 +3,7 @@ require("dotenv").config();  // Load environment variables at the very top
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./services/dal-service/config/db");
-const authRoutes = require("./services/auth-service/auth")
+const { authRouter, authMiddleware } = require('./services/auth-service/auth');
 const userRoutes = require("./services/dal-service/routes/userRoutes");
 const cardsRoutes = require("./services/dal-service/routes/cardsRoutes");
 const gameHistoryRoutes = require("./services/dal-service/routes/gameHistoryRoutes");
@@ -26,7 +26,7 @@ const startServer = async () => {
 
     const PORT = process.env.PORT || 8080;
 
-    app.use("/auth", authRoutes);
+    app.use("/auth", authRouter);
     app.use("/users", userRoutes);
     app.use("/cards", cardsRoutes);
     app.use("/gameHistory", gameHistoryRoutes);
