@@ -16,8 +16,6 @@ const gameHistorySeedPath = path.join(__dirname, "../data/game_history.json");
 
 // Seed cards data
 const seedCards = async () => {
-  await connectDB();
-
   console.log("Seeding Cards Data...");
  
   let cardsSeedData;
@@ -111,10 +109,6 @@ const seedAll = async () => {
   await seedCards();
   await seedUsers();
   await seedGameHistory();
-
-  // Close connection after seeding
-  mongoose.connection.close();
-  console.log("MongoDB Connection Closed.");
 };
 
-seedAll();
+module.exports = seedAll;
