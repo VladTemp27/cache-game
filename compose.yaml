@@ -53,6 +53,22 @@ services:
     networks:
       - internal
 
+  matchmaking-service:
+    build:
+      context: ./server/matchmaking-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/matchmaking-service:/app
+    ports:
+      - "8085:8085"
+    environment:
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+      - CLUSTER=prod-cluster-1
+    depends_on:
+      - mongo
+    networks:
+      - internal
+
 networks:
   internal:
     driver: bridge
