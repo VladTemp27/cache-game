@@ -29,4 +29,4 @@ COPY --from=builder /app/mm-service .
 EXPOSE 8085
 
 # Command to run the application
-CMD ["bash","./mm-service"]
+CMD ["./mm-service"]
