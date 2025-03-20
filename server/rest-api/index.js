@@ -26,7 +26,7 @@ const startServer = async () => {
 
     const PORT = process.env.PORT || 8080;
 
-    ap.use("/auth", authRoutes);
+    app.use("/auth", authRoutes);
     app.use("/users", userRoutes);
     app.use("/cards", cardsRoutes);
     app.use("/gameHistory", gameHistoryRoutes);
