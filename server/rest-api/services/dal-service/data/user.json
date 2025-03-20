@@ -1,0 +1,74 @@
+[
+  {
+    "_id": "67db052dc7f4394cdce279ce",
+    "username": "testUser1",
+    "__v": 0,
+    "password": "testPassword1",
+    "token": "testToken1",
+    "total_score": 100
+  },
+  {
+    "_id": "67db052dc7f4394cdce279cf",
+    "username": "testUser2",
+    "__v": 0,
+    "password": "testPassword2",
+    "token": "testToken2",
+    "total_score": 200
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d0",
+    "username": "testUser3",
+    "__v": 0,
+    "password": "testPassword3",
+    "token": "testToken3",
+    "total_score": 300
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d1",
+    "username": "testUser4",
+    "__v": 0,
+    "password": "testPassword4",
+    "token": "testToken4",
+    "total_score": 400
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d2",
+    "username": "testUser5",
+    "__v": 0,
+    "password": "testPassword2",
+    "token": "testToken2",
+    "total_score": 200
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b84",
+    "username": "testUser6",
+    "__v": 0,
+    "password": "testPassword1",
+    "token": "testToken1",
+    "total_score": 100
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b85",
+    "username": "testUser7",
+    "__v": 0,
+    "password": "testPassword3",
+    "token": "testToken3",
+    "total_score": 300
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b86",
+    "username": "testUser8",
+    "__v": 0,
+    "password": "testPassword4",
+    "token": "testToken4",
+    "total_score": 400
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b87",
+    "username": "testUser9",
+    "__v": 0,
+    "password": "testPassword5",
+    "token": "testToken5",
+    "total_score": 500
+  }
+]
