@@ -57,8 +57,6 @@ services:
     build:
       context: ./server/matchmaking-service
       dockerfile: Dockerfile
-    volumes:
-      - ./server/matchmaking-service:/app
     ports:
       - "8085:8085"
     environment:
