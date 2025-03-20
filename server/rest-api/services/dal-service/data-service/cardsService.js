@@ -4,4 +4,4 @@ const getCards = async () => {
     return await Cards.find();
 }
 
-module.exports = { getCards, upsertCard };
+module.exports = { getCards };
