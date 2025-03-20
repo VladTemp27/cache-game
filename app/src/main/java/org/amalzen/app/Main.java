@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.amalzen.app.util.SessionStorage;
 
 public class Main extends Application {
     @FXML
@@ -17,7 +18,17 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Main.primaryStage = primaryStage;
-        ChangeScene(ResourcePath.MAIN_MENU.getPath()); // TODO: Change back to login
+
+        // Check if there's an existing session
+        String sessionId = SessionStorage.get("sessionId");
+        if (sessionId != null && !sessionId.isEmpty()) {
+            // User already logged in, go directly to main menu
+            ChangeScene(ResourcePath.MAIN_MENU.getPath());
+        } else {
+            // No existing session, go to login screen
+            ChangeScene(ResourcePath.LOGIN.getPath());
+        }
+
         primaryStage.setTitle("CACHE");
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -30,6 +41,7 @@ public class Main extends Application {
             primaryStage.setScene(scene);
         } catch (Exception e) {
             System.err.println("Scene Error: " + e.getMessage());
+//            e.printStackTrace();
         }
     }
 
