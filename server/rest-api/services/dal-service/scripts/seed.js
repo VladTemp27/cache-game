@@ -112,9 +112,9 @@ const seedAll = async () => {
   await seedUsers();
   await seedGameHistory();
 
-  // Close connection after seeding
-  mongoose.connection.close();
-  console.log("MongoDB Connection Closed.");
+  // // Close connection after seeding
+  // mongoose.connection.close();
+  // console.log("MongoDB Connection Closed.");
 };
 
 seedAll();
