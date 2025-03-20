@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const User = require("../models/User");
+const { verify } = require("crypto");
 
 const userSeedPath = path.join(__dirname, "../data/user.json");
 
@@ -26,4 +27,9 @@ const getAllUsers = async () => {
     return await User.find();
 };
 
-module.exports = { upsertUser, getAllUsers, updateUserJSON };
+// check for an existing user
+const verifyUser = async (username) => {
+    return await User.findOne({ username });
+};
+
+module.exports = { upsertUser, getAllUsers, verifyUser, updateUserJSON };

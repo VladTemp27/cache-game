@@ -1,5 +1,6 @@
 const express = require("express");
-const somethingDal = require("./services/something/seomthing"); //tbd after marven lodi
+const userService = require("../dal-service/data-service/userService")
+const sessionService = require("../dal-service/data-service/sessionService"); //crazy path by marven lodi
 const authRouter = express.Router();
 
 /**
@@ -20,16 +21,34 @@ authRouter.post("/login", async (req, res) => {
     if (!username || !password) return res.status(400).json({ error: "Username and password required" });
 
     try {
-        const isValid = await somethingDal.verifyUser(username, password);
-        if (!isValid) return res.status(401).json({ error: "Invalid credentials" });
+        const user = await userService.verifyUser(username);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
-        const sessionId = await dal.createSession(username);
+        if (user.password !== password) {
+            return res.status(401).json({ error: "Invalid credentials" });
+        }
+
+        // Pass user._id instead of username to sessionService.createSession
+        const sessionId = await sessionService.createSession(user._id);
 
         res.json({ sessionId });
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
+});
+
+//Testing middleware
+authRouter.get("/protected", async (req, res) => {
+    const sessionId = req.headers["authorization"];
+    if (!sessionId) return res.status(401).json({ error: "Unauthorized" });
+
+    const isValid = await sessionService.validateSession(sessionId);
+    if (!isValid) return res.status(401).json({ error: "Invalid session" });
+
+    res.json({ message: "You have access to this protected route!" });
 });
 
 /**
@@ -47,7 +66,7 @@ authRouter.post("/logout", async (req, res) => {
     if (!sessionId) return res.status(400).json({ error: "Session ID required" });
 
     try {
-        await somethingDal.deleteSession(sessionId);
+        await sessionService.deleteSession(sessionId);
         res.json({ message: "Logged out" });
     } catch (error) {
         console.error("Error:", error);
@@ -74,4 +93,4 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-module.exports = authRouter;
+module.exports = { authRouter, authMiddleware };
