@@ -17,21 +17,22 @@ app.get("/health", (req, res) => {
 
 const startServer = async () => {
     try {
+        await connectDB();
+        await seedDatabase();
         
+        const PORT = process.env.PORT || 8080;
+
+        app.use("/users", userRoutes);
+        app.use("/cards", cardsRoutes);
+        app.use("/gameHistory", gameHistoryRoutes);
+
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
     } catch (error) {
         console.error("Error starting server", error);
         process.exit(1);
     }
-
-    const PORT = process.env.PORT || 8080;
-
-    app.use("/users",userRoutes);
-    app.use("/cards",cardsRoutes);
-    app.use("/gameHistory",gameHistoryRoutes);
-
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
 };
 
 startServer();
