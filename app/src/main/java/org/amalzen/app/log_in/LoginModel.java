@@ -1,6 +1,7 @@
 package org.amalzen.app.log_in;
 
 import org.json.JSONObject;
+import org.amalzen.app.APIs;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -9,7 +10,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 public class LoginModel {
-    private static final String AUTH_API_URL = "http://localhost:8080/auth/login";
+    private static final String AUTH_API_URL = APIs.AUTH_URL.getValue() + "/login";
     private static final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
@@ -33,7 +34,7 @@ public class LoginModel {
 
         // Check response status
         if (response.statusCode() ==
- 200) {
+                200) {
             JSONObject jsonResponse = new JSONObject(response.body());
             return jsonResponse.getString("sessionId");
         }

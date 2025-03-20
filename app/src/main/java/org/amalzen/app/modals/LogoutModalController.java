@@ -4,11 +4,23 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
+import org.amalzen.app.APIs;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
 import org.amalzen.app.util.SessionStorage;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 public class LogoutModalController {
+    private static final String AUTH_API_URL = APIs.AUTH_URL.getValue() + "/logout";
+    private static final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
 
     @FXML
     private Button cancelLogoutButton;
@@ -20,13 +32,33 @@ public class LogoutModalController {
     private AnchorPane rootLogoutModalPane;
 
     private static void handle(ActionEvent event) {
-        SessionStorage.remove("sessionId");
-        Main.ChangeScene(ResourcePath.LOGIN.getPath());
+        try {
+            String sessionId = SessionStorage.get("sessionId");
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(AUTH_API_URL))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", sessionId)
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request,
+                    HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                SessionStorage.remove("sessionId");
+                SessionStorage.remove("username");
+                Main.ChangeScene(ResourcePath.LOGIN.getPath());
+            } else {
+                System.err.println("Logout failed: " + response.body());
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Logout failed: " + e.getMessage());
+        }
     }
 
     public void initialize() {
         cancelLogoutButton.setOnAction(event -> rootLogoutModalPane.setVisible(false));
-
         confirmLogoutButton.setOnAction(LogoutModalController::handle);
     }
 }
