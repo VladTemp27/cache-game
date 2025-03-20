@@ -1,16 +1,7 @@
 const Cards = require('../models/Cards');
 
-const getCards = async (Cards) => {
+const getCards = async () => {
     return await Cards.find();
 }
-
-const upsertCard = async (cardData) => {
-    const { pair_id } = cardData;
-    return await Cards.findOneAndUpdate(
-        { pair_id },
-        cardData,
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-};
 
 module.exports = { getCards };

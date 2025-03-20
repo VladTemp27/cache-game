@@ -93,4 +93,4 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-module.exports = authRouter;
+module.exports = { authRouter, authMiddleware };

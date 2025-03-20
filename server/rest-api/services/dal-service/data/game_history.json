@@ -1,0 +1,55 @@
+[
+  {
+    "_id": "67daccd77e3780da4a7d548d",
+    "gameroom_id": "room123",
+    "player_1": "testUser",
+    "player_1_score": 250,
+    "player_2": "testOpponent",
+    "player_2_score": 200
+  },
+  {
+    "_id": "67dae44ac7f4394cdce279c2",
+    "gameroom_id": "room2",
+    "__v": 0,
+    "player_1": "testUser3",
+    "player_1_score": 300,
+    "player_2": "testUser4",
+    "player_2_score": 250
+  },
+  {
+    "_id": "67dae44ac7f4394cdce279c3",
+    "gameroom_id": "room3",
+    "__v": 0,
+    "player_1": "testUser5",
+    "player_1_score": 350,
+    "player_2": "testUser1",
+    "player_2_score": 300
+  },
+  {
+    "_id": "67dae44ac7f4394cdce279c4",
+    "gameroom_id": "room4",
+    "__v": 0,
+    "player_1": "testUser2",
+    "player_1_score": 400,
+    "player_2": "testUser3",
+    "player_2_score": 350
+  },
+  {
+    "_id": "67dae44ac7f4394cdce279c5",
+    "gameroom_id": "room5",
+    "__v": 0,
+    "player_1": "testUser4",
+    "player_1_score": 450,
+    "player_2": "testUser5",
+    "player_2_score": 400
+  },
+  {
+    "_id": "67dae44ac7f4394cdce279c1",
+    "gameroom_id": "room1",
+    "__v": 0,
+    "player_1": "testUser1",
+    "player_1_score": 250,
+    "player_2": "testUser2",
+    "player_2_score": 200
+  }
+]

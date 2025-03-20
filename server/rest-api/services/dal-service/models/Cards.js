@@ -1,11 +1,12 @@
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-// const UserFormat = new mongoose.Schema({
-//     pair_id: { type: Number, required: true },
-//     pair: [{
-//         name: String,
-//         question: String
-//     }]
-// });
+const cardSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  pair_id: { type: Number, required: true },
+  pair: {
+    answer: { type: String, required: true },
+    question: { type: String, required: true }
+  }
+});
 
-// module.exports = mongoose.model("User", UserFormat);
+module.exports = mongoose.model("Card", cardSchema);
