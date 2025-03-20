@@ -94,7 +94,7 @@ func main() {
 
     // HTTP endpoint for info
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Matchmaking service - Connect via WebSocket at /ws")
+        fmt.Fprintf(w, "Matchmaking service - Connect via WebSocket at /mm")
     })
     
     // Add status endpoint
@@ -107,7 +107,7 @@ func main() {
         })
     })
     // WebSocket endpoint
-    http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+    http.HandleFunc("/mm", func(w http.ResponseWriter, r *http.Request) {
         // Upgrade HTTP connection to WebSocket
         conn, err := upgrader.Upgrade(w, r, nil)
         if err != nil {
