@@ -5,3 +5,4 @@ const getCards = async () => {
 }
 
 module.exports = { getCards};
+

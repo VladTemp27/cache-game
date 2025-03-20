@@ -26,12 +26,12 @@ public class LogInController {
             if (authenticateUser(username, password)) {
                 Main.ChangeScene(ResourcePath.MAIN_MENU.getPath()); // Navigate to main menu
             } else {
-                System.out.println("Invalid credentials.");
+                System.out.println("Invalid credentials."); // TODO: Replace with GUI error message
             }
         });
     }
 
-    // TODO: Replace with actual authenticator made by Mr. Rabang
+    // TODO: Replace with API Request
     private boolean authenticateUser(String username, String password) {
         return "admin".equals(username) && "password".equals(password);
     }

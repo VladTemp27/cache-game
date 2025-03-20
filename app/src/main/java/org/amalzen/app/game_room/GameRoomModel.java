@@ -101,19 +101,16 @@ public class GameRoomModel implements AutoCloseable {
         }
     }
 
-    public GameRoomModel sendMatchSuccess() {
+    public void sendMatchSuccess() {
         sendAction("move", true);
-        return this;
     }
 
-    public GameRoomModel sendMatchFailure() {
+    public void sendMatchFailure() {
         sendAction("move", false);
-        return this;
     }
 
-    public GameRoomModel sendQuit() {
+    public void sendQuit() {
         sendAction("quit", false);
-        return this;
     }
 
     @Override
@@ -190,11 +187,10 @@ public class GameRoomModel implements AutoCloseable {
         return this;
     }
 
-    public GameRoomModel withAutoReconnect(boolean autoReconnect, int maxAttempts, long delayMs) {
+    public void withAutoReconnect(boolean autoReconnect, int maxAttempts, long delayMs) {
         this.autoReconnect = autoReconnect;
         this.maxReconnectAttempts = maxAttempts;
         this.reconnectDelayMs = delayMs;
-        return this;
     }
 
     public boolean isConnected() {
