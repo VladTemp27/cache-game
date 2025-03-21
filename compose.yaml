@@ -68,6 +68,17 @@ services:
     networks:
       - internal
 
+  game-service:
+    build:
+      context: ./server/game-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo
+    networks:
+      - internal
+
 networks:
   internal:
     driver: bridge
