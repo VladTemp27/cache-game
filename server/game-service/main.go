@@ -309,6 +309,14 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gameID := r.URL.Query().Get("gameID")
+	player := r.URL.Query().Get("player")
+	username := r.URL.Query().Get("username")
+
+	if gameID == "" || player == "" || username == "" {
+		fmt.Println("[ERROR] Missing gameID, player, or username parameter")
+		conn.Close()
+		return
+	}
 
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -343,7 +351,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	}
 
 	game.Players[playerIdx] = conn
-	fmt.Printf("[CONNECTED] Player %d joined Game ID: %s\n", playerIdx, gameID)
+	fmt.Printf("[CONNECTED] Player %d (%s) joined Game ID: %s\n", playerIdx, username, gameID)
 
 	// This is responsible in starting a game when both players are connected
 	if game.Players[0] != nil && game.Players[1] != nil {
@@ -364,7 +372,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-					fmt.Printf("[DISCONNECTED] Player %d lost connection | Game ID: %s\n", playerIdx, gameID)
+					fmt.Printf("[DISCONNECTED] Player %d (%s) lost connection | Game ID: %s\n", playerIdx, username, gameID)
 					game.Players[playerIdx] = nil
 					conn.Close()
 					game.Mutex.Unlock()
@@ -382,7 +390,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 		for {
 			_, message, err := conn.ReadMessage()
 			if err != nil {
-				fmt.Printf("[DISCONNECTED] Player %d closed connection | Game ID: %s\n", playerIdx, gameID)
+				fmt.Printf("[DISCONNECTED] Player %d (%s) closed connection | Game ID: %s\n", playerIdx, username, gameID)
 				game.Mutex.Lock()
 				game.Players[playerIdx] = nil
 				game.Mutex.Unlock()
