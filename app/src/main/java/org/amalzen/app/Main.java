@@ -56,6 +56,18 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        // Process command-line arguments
+        for (String arg : args) {
+            if (arg.startsWith("--username=")) {
+                String username = arg.substring("--username=".length());
+                SessionStorage.set("username", username);
+                // Generate a dummy session ID based on username
+                String sessionId = username.hashCode() + "-" + System.currentTimeMillis();
+                SessionStorage.set("sessionId", sessionId);
+                System.out.println("Logged in as: " + username);
+            }
+        }
+
         launch(args);
     }
 }

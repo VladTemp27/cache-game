@@ -23,6 +23,18 @@ public class ExitModalController {
         });
 
         confirmExitButton.setOnAction(event -> {
+            // Find the parent controller (MatchmakingController) to cancel matchmaking
+            AnchorPane parentPane = (AnchorPane) rootExitModalPane.getParent();
+            if (parentPane != null) {
+                // Get the controller from the scene
+                Object controller = parentPane.getProperties().get("controller");
+                if (controller instanceof org.amalzen.app.match_making.MatchmakingController) {
+                    // Call cleanup to properly close WebSocket connections
+                    ((org.amalzen.app.match_making.MatchmakingController) controller).cleanup();
+                }
+            }
+
+            // Then change scene to main menu
             Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());
         });
     }
