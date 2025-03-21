@@ -122,8 +122,9 @@ public class MatchmakingController {
     }
 
     private void returnToMainMenu() {
-        cancelMatchmaking();
+        rootPane.getProperties().put("controller", this);
         Main.showModals(ResourcePath.EXIT_MODAL.getPath(), rootPane);
+
     }
 
     public void cleanup() {
