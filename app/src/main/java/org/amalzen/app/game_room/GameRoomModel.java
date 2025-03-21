@@ -16,6 +16,7 @@ public class GameRoomModel implements AutoCloseable {
     private final String serverUrl;
     private final String gameId;
     private final int playerId;
+    private final String username;  // Added username field
     private volatile boolean connected = false;
     private final ExecutorService callbackExecutor;
     private final ScheduledExecutorService reconnectExecutor;
@@ -32,13 +33,14 @@ public class GameRoomModel implements AutoCloseable {
     private long reconnectDelayMs = 2000;
     private int reconnectAttempts = 0;
 
-    public GameRoomModel(String gameId, int playerId) {
-        this(gameId, playerId, "ws://localhost:8080/ws");
+    public GameRoomModel(String gameId, int playerId, String username) {
+        this(gameId, playerId, username, "ws://localhost:8082/ws");  // Updated default port to 8082
     }
 
-    public GameRoomModel(String gameId, int playerId, String serverUrl) {
+    public GameRoomModel(String gameId, int playerId, String username, String serverUrl) {
         this.gameId = gameId;
         this.playerId = playerId;
+        this.username = username;  // Initialize username
         this.serverUrl = serverUrl;
         this.callbackExecutor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "GameRoomClient-Callback");
@@ -53,10 +55,12 @@ public class GameRoomModel implements AutoCloseable {
     }
 
     public CompletableFuture<Void> connect() {
-        String url = serverUrl + "?gameID=" + gameId + "&player=" + playerId;
+        // Updated URL to include username parameter
+        String url = serverUrl + "?gameID=" + gameId + "&player=" + playerId + "&username=" + encodeURIComponent(username);
         CompletableFuture<Void> connectionFuture = new CompletableFuture<>();
 
-        try (HttpClient client = HttpClient.newHttpClient()) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
             CompletableFuture<WebSocket> ws = client.newWebSocketBuilder()
                     .buildAsync(URI.create(url), new WebSocketListener());
 
@@ -79,6 +83,21 @@ public class GameRoomModel implements AutoCloseable {
         }
 
         return connectionFuture;
+    }
+
+    // Helper method to URL encode parameters (similar to JavaScript's encodeURIComponent)
+    private String encodeURIComponent(String s) {
+        try {
+            return java.net.URLEncoder.encode(s, "UTF-8")
+                    .replaceAll("\\+", "%20")
+                    .replaceAll("\\%21", "!")
+                    .replaceAll("\\%27", "'")
+                    .replaceAll("\\%28", "(")
+                    .replaceAll("\\%29", ")")
+                    .replaceAll("\\%7E", "~");
+        } catch (java.io.UnsupportedEncodingException e) {
+            return s;
+        }
     }
 
     private void handleConnectionFailure(Throwable e, CompletableFuture<Void> connectionFuture) {
