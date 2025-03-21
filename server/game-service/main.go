@@ -71,7 +71,7 @@ var (
 
 // This function fetches random 8 IDs from the JSON file and store them randomly in indexes 0-15
 func fetchAndStoreQuestions(game *Game) error {
-	cards, err := readCardsFromFile("../cards.json")
+	cards, err := readCardsFromFile("./cards.json")
 	if err != nil {
 		return err
 	}
