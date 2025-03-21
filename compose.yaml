@@ -5,13 +5,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    volumes:
-      - ./server/rest-api:/app
-      - node_modules:/app/node_modules
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - CHOKIDAR_USEPOLLING=true
       - MONGO_URI=mongodb://root:example@mongo:27017/cache_game?authSource=admin
+      - PORT=8080
     networks:
       - internal
 
