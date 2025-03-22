@@ -200,17 +200,21 @@ func startGame(gameID string) {
 
 // This section broadcasts the game state to both players
 func (g *Game) broadcastState() {
+    fmt.Println("CREATING JSON PACKET/PACKAGE")
 	state := map[string]interface{}{
 		"scores":   g.Scores,
 		"turn":     g.Turn,
 		"timer":    g.Timer,
 		"gameOver": g.GameOver,
 		"round":    g.Round,
+		"cards":    g.Cards, // Send full card data (questions & answers)
+		"pairIDs":  g.PairIDs, // (Optional) Send pairings for debugging
 	}
 
 	message, _ := json.Marshal(state)
 	for i, player := range g.Players {
 		if player != nil {
+		    fmt.Println("SENDING MESSAGE")
 			err := player.WriteMessage(websocket.TextMessage, message)
 			if err != nil {
 				fmt.Printf("[ERROR] Failed to send state to Player %d | Error: %v\n", i, err)
