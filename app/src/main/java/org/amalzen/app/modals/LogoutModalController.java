@@ -7,7 +7,6 @@ import javafx.scene.layout.AnchorPane;
 import org.amalzen.app.APIs;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
-import org.amalzen.app.util.SessionStorage;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,7 +32,7 @@ public class LogoutModalController {
 
     private static void handle(ActionEvent event) {
         try {
-            String sessionId = SessionStorage.get("sessionId");
+            String sessionId = Main.sessionId;
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(AUTH_API_URL))
@@ -46,11 +45,14 @@ public class LogoutModalController {
                     HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                SessionStorage.remove("sessionId");
-                SessionStorage.remove("username");
+                Main.sessionId = null;
+                Main.username = null;
                 Main.ChangeScene(ResourcePath.LOGIN.getPath());
             } else {
                 System.err.println("Logout failed: " + response.body());
+                // Force Logout due to session storage
+                Main.ChangeScene(ResourcePath.LOGIN.getPath());
+
             }
         } catch (IOException | InterruptedException e) {
             System.err.println("Logout failed: " + e.getMessage());

@@ -1,7 +1,7 @@
 package org.amalzen.app.match_making;
 
 import org.amalzen.app.APIs;
-import org.amalzen.app.util.SessionStorage;
+import org.amalzen.app.Main;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 public class MatchMakingModel implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(MatchMakingModel.class.getName());
     private static final String SERVER_URL = APIs.MM_URL.getValue();
-    private static final String username = SessionStorage.get("username");
-    private static final String token = SessionStorage.get("sessionId");
+    private static final String username = Main.username;
+    private static final String token = Main.sessionId;
 
     // WebSocket and connection state
     private WebSocket webSocket;
@@ -39,6 +39,8 @@ public class MatchMakingModel implements AutoCloseable {
     private int maxReconnectAttempts = 5;
     private long reconnectDelayMs = 2000;
     private int reconnectAttempts = 0;
+
+    private volatile boolean shuttingDown = false;
 
     // Player data
     private int playerScore = 300; // Default player score
@@ -215,9 +217,18 @@ public class MatchMakingModel implements AutoCloseable {
 
     @Override
     public void close() {
-        disconnect();
+        shuttingDown = true;
+        CompletableFuture<Void> disconnectFuture = disconnect();
+
+        try {
+            disconnectFuture.get(3, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error waiting for WebSocket to disconnect", e);
+        }
+
         callbackExecutor.shutdown();
         reconnectExecutor.shutdown();
+
         try {
             if (!callbackExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
                 callbackExecutor.shutdownNow();
@@ -229,6 +240,7 @@ public class MatchMakingModel implements AutoCloseable {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.WARNING, "Interrupted while waiting for executor shutdown", e);
         }
+
     }
 
     // Fluent API for callback setters
@@ -266,7 +278,17 @@ public class MatchMakingModel implements AutoCloseable {
     }
 
     private void runCallback(Runnable callback) {
-        callbackExecutor.execute(callback);
+        // Skip if shutting down or already shutdown to prevent RejectedExecutionException
+        if (shuttingDown || callbackExecutor.isShutdown()) {
+            LOGGER.fine("Skipping callback execution during shutdown");
+            return;
+        }
+
+        try {
+            callbackExecutor.execute(callback);
+        } catch (RejectedExecutionException e) {
+            LOGGER.log(Level.WARNING, "Callback rejected (executor likely shutdown)", e);
+        }
     }
 
     // WebSocket listener implementation
@@ -279,7 +301,7 @@ public class MatchMakingModel implements AutoCloseable {
 
             if (last) {
                 final String completeMessage = messageBuilder.toString();
-                messageBuilder.setLength(0);  // Clear the buffer
+                messageBuilder.setLength(0);
 
                 runCallback(() -> {
                     try {

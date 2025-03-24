@@ -7,7 +7,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
-import org.amalzen.app.util.SessionStorage;
 
 public class LogInController {
 
@@ -30,8 +29,8 @@ public class LogInController {
                 String sessionId = loginModel.authenticate(username, password);
                 if (sessionId != null) {
                     // Store session data
-                    SessionStorage.set("sessionId", sessionId);
-                    SessionStorage.set("username", username);
+                    Main.sessionId = sessionId;
+                    Main.username = username;
 
                     // Navigate to main menu
                     Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());

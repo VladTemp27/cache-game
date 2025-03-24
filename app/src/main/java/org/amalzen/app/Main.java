@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.amalzen.app.util.SessionStorage;
 
 public class Main extends Application {
     @FXML
@@ -15,19 +14,19 @@ public class Main extends Application {
     public static FXMLLoader fxmlLoader;
     public static Stage primaryStage;
 
+    // fields for user
+    public  static String username ;
+    public static String sessionId;
+
+    // fields for game room
+    public static String roomId;
+    public static String opponent;
+
+
     @Override
     public void start(Stage primaryStage) {
         Main.primaryStage = primaryStage;
-
-        // Check if there's an existing session
-        String sessionId = SessionStorage.get("sessionId");
-        if (sessionId != null && !sessionId.isEmpty()) {
-            // User already logged in, go directly to main menu
-            ChangeScene(ResourcePath.MAIN_MENU.getPath());
-        } else {
-            // No existing session, go to login screen
-            ChangeScene(ResourcePath.LOGIN.getPath());
-        }
+        ChangeScene(ResourcePath.LOGIN.getPath());
 
         primaryStage.setTitle("CACHE");
         primaryStage.setResizable(false);
@@ -41,7 +40,6 @@ public class Main extends Application {
             primaryStage.setScene(scene);
         } catch (Exception e) {
             System.err.println("Scene Error: " + e.getMessage());
-//            e.printStackTrace();
         }
     }
 
@@ -56,18 +54,6 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        // Process command-line arguments
-        for (String arg : args) {
-            if (arg.startsWith("--username=")) {
-                String username = arg.substring("--username=".length());
-                SessionStorage.set("username", username);
-                // Generate a dummy session ID based on username
-                String sessionId = username.hashCode() + "-" + System.currentTimeMillis();
-                SessionStorage.set("sessionId", sessionId);
-                System.out.println("Logged in as: " + username);
-            }
-        }
-
         launch(args);
     }
 }

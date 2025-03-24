@@ -10,9 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
-import org.amalzen.app.util.SessionStorage;
 
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,15 +65,11 @@ public class MatchmakingController {
                     matchFound = true;
                     LOGGER.log(Level.INFO, "Matchmaking queue has been entered: " + matchData);
 
-                    // Save match information to session for GameRoom
                     String roomId = matchData.getString("roomId");
                     String opponent = matchData.getString("opponent");
 
-
-                    // THIS WILL BE USED IN THE GAME ROOM
-                    SessionStorage.set("roomId", roomId);
-                    SessionStorage.set("opponent", opponent);
-
+                    Main.roomId = roomId;
+                    Main.opponent = opponent;
                     LOGGER.info("Match found! Room ID: " + roomId + ", Opponent: " + opponent);
 
                     // Clean up BEFORE changing scene
@@ -107,12 +101,6 @@ public class MatchmakingController {
         });
     }
 
-    private void cancelMatchmaking() {
-        if (matchmakingModel != null && matchmakingModel.isConnected()) {
-            matchmakingModel.cancelQueue();
-            matchmakingModel.disconnect();
-        }
-    }
 
     private void startImageSpin() {
         RotateTransition rotate = new RotateTransition(Duration.seconds(10), loadingBall);
@@ -124,15 +112,13 @@ public class MatchmakingController {
     private void returnToMainMenu() {
         rootPane.getProperties().put("controller", this);
         Main.showModals(ResourcePath.EXIT_MODAL.getPath(), rootPane);
-
     }
 
     public void cleanup() {
         LOGGER.info("Performing matchmaking controller cleanup");
-        if (matchmakingModel != null) {
+        if (matchmakingModel != null && matchmakingModel.isConnected()) {
             try {
-                // Wait briefly for clean disconnection
-                matchmakingModel.disconnect().get(500, TimeUnit.MILLISECONDS);
+                matchmakingModel.disconnect();
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error during WebSocket disconnect", e);
             }
