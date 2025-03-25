@@ -2,6 +2,7 @@ package org.amalzen.app.match_making;
 
 import org.amalzen.app.APIs;
 import org.amalzen.app.Main;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -303,47 +304,7 @@ public class MatchMakingModel implements AutoCloseable {
                 final String completeMessage = messageBuilder.toString();
                 messageBuilder.setLength(0);
 
-                //This needs to be decomposed
-                //TODO: Decompose this method
-                runCallback(() -> {
-                    try {
-                        JSONObject jsonMessage = new JSONObject(completeMessage);
-                        String type = jsonMessage.getString("type");
-                        LOGGER.info("Received message: " + jsonMessage.toString());
-
-                        switch (type) {
-                            case "welcome":
-                                LOGGER.info("Connected to server: " + jsonMessage.optString("message"));
-                                if (onConnected != null) {
-                                    onConnected.run();
-                                }
-                                break;
-                            case "queue_success":
-                                if (onQueueSuccess != null) {
-                                    onQueueSuccess.run();
-                                }
-                                break;
-                            case "match_found":
-                                if (onMatchFound != null) {
-                                    onMatchFound.accept(jsonMessage);
-                                }
-                                break;
-                            case "connection_closing":
-                                LOGGER.info("Server is closing connection: " + jsonMessage.optString("message"));
-                                break;
-                            case "error":
-                                if (onError != null) {
-                                    onError.accept(new RuntimeException(jsonMessage.optString("message", "Unknown error")));
-                                }
-                                break;
-                        }
-                    } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Error processing message", e);
-                        if (onError != null) {
-                            onError.accept(e);
-                        }
-                    }
-                });
+                runCallback(() -> {processServerResponse(completeMessage);});
 
                 webSocket.request(1);
             }
@@ -390,6 +351,47 @@ public class MatchMakingModel implements AutoCloseable {
                 }
             });
             WebSocket.Listener.super.onError(webSocket, error);
+        }
+    }
+
+    public void processServerResponse(String jsonResponse) {
+        JSONObject response;
+        try {
+            response = new JSONObject(jsonResponse);
+            LOGGER.info("Received message: " + response.toString());
+        } catch(JSONException jsonException){
+            LOGGER.warning("Error parsing JSON: " + jsonException.getMessage());
+            return;
+        }
+
+        LOGGER.info("PARSING RESPONSE");
+        switch (response.getString("type")){
+            case "welcome":
+                LOGGER.info("Connected to server: " + response.optString("message"));
+                if (onConnected != null) {
+                    onConnected.run();
+                }
+                break;
+            case "queue_success":
+                if (onQueueSuccess != null) {
+                    onQueueSuccess.run();
+                }
+                break;
+            case "match_found":
+                if (onMatchFound != null) {
+                    onMatchFound.accept(response);
+                }
+                break;
+            case "connection_closing":
+                LOGGER.info("Server is closing connection: " + response.optString("message"));
+                break;
+            case "error":
+                if (onError != null) {
+                    onError.accept(new RuntimeException(response.optString("message", "Unknown error")));
+                }
+                break;
+            default:
+                LOGGER.warning("Unknown message type: " + response.getString("type"));
         }
     }
 }
