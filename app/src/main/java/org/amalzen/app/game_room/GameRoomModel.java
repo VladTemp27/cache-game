@@ -221,6 +221,7 @@ public class GameRoomModel implements AutoCloseable {
     }
 
     // WebSocket listener implementation
+    // TODO: This should be an interface
     private class WebSocketListener implements WebSocket.Listener {
         private final StringBuilder messageBuilder = new StringBuilder();
 
