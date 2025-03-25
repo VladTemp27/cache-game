@@ -41,6 +41,7 @@ public class MatchmakingController {
         });
 
         cancelButton.setOnMouseClicked(event -> {
+            matchmakingModel.cancelQueue();
             returnToMainMenu();
         });
     }
@@ -49,6 +50,7 @@ public class MatchmakingController {
         matchmakingModel = new MatchMakingModel();
 
         // Default score or difficulty chosen by player
+        // TODO: This must be taken from the player's metadata not statically set
         int playerScore = 300;
         matchmakingModel.setPlayerScore(playerScore);
 

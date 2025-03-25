@@ -88,7 +88,7 @@ func RemovePlayerFromQueue(username string, token string) error {
     }
     defer client.Disconnect(context.Background())
 
-    collection := client.Database("matchmaking").Collection("queue")
+    collection := client.Database("cache_db").Collection("matchmaking")
     
     // Remove player with matching username and token
     filter := bson.M{"username": username, "token": token}

@@ -303,6 +303,8 @@ public class MatchMakingModel implements AutoCloseable {
                 final String completeMessage = messageBuilder.toString();
                 messageBuilder.setLength(0);
 
+                //This needs to be decomposed
+                //TODO: Decompose this method
                 runCallback(() -> {
                     try {
                         JSONObject jsonMessage = new JSONObject(completeMessage);
