@@ -41,6 +41,7 @@ public class MatchmakingController {
         });
 
         cancelButton.setOnMouseClicked(event -> {
+            matchmakingModel.cancelQueue();
             returnToMainMenu();
         });
     }
