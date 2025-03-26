@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// This Card struct represents a card with a question and answer pair
+// Card struct represents a card with a question and answer pair
 type Card struct {
 	PairID int `json:"pair_id"`
 	Pair   struct {
@@ -22,7 +22,37 @@ type Card struct {
 	} `json:"pair"`
 }
 
-// This function read cards from the JSON file
+// Game struct represents a single game instance
+type Game struct {
+	Mutex         sync.Mutex
+	Players       []*websocket.Conn // tracks the players in a game
+	Usernames     [2]string         // tracks the usernames of both players
+	Scores        []int             // tracks the scores of both players
+	CurrentPlayer int               // indicates the current player's turn
+	Timer         int               // tracks the time left in a game
+	GameOver      bool              // tracks if a game is over
+	Active        bool              // tracks if a game is active
+	Round         int               // tracks the number of rounds in a game
+	LoopRunning   bool              // indicates if the game loop is running
+	Cards         [16]string        // stores the questions and answers
+	PairIDs       [16]int           // stores the pair IDs for matching
+	FlippedCard   int               // stores the index of the first flipped card
+	Paired        [16]bool          // tracks which cards have been paired
+	GameStatus    string            // tracks the status of the game
+	WhoseTurn     string            // indicates whose turn it is
+	Winner        int               // indicates the winner of the game
+}
+
+// Global variables
+var (
+	games    = make(map[string]*Game) // store active games
+	gamesMux sync.Mutex
+	upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true },
+	}
+)
+
+// Function to read cards from the JSON file
 func readCardsFromFile(filename string) ([]Card, error) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -43,44 +73,18 @@ func readCardsFromFile(filename string) ([]Card, error) {
 	return cards, nil
 }
 
-// This is a Game struct which represents a single game instance
-type Game struct {
-	Mutex       sync.Mutex
-	Players     []*websocket.Conn // tracks the players in a game
-	Scores      []int             // tracks the scores of both players
-	Turn        int
-	Timer       int        // tracks the time left in a game
-	Difficulty  string     // tracks the difficulty of a game
-	GameOver    bool       // tracks if a game is over
-	Active      bool       // tracks if a game is active
-	Round       int        // tracks the number of rounds in a game
-	LoopRunning bool       // indicates if the game loop is running
-	Cards       [16]string // stores the questions and answers
-	PairIDs     [16]int    // stores the pair IDs for matching
-	FlippedCard int        // stores the index of the first flipped card
-}
-
-// This section is for the global variables
-var (
-	games    = make(map[string]*Game) // store active games
-	gamesMux sync.Mutex
-	upgrader = websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool { return true },
-	}
-)
-
-// This function fetches random 8 IDs from the JSON file and store them randomly in indexes 0-15
+// Function to fetch random 8 IDs from the JSON file and store them randomly in indexes 0-15
 func fetchAndStoreQuestions(game *Game) error {
 	cards, err := readCardsFromFile("./cards.json")
 	if err != nil {
 		return err
 	}
 
-	// This shuffles and select 8 random cards
+	// Shuffle and select 8 random cards
 	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 	selectedCards := cards[:8]
 
-	// This shuffles and store questions and answers in indexes 0-15
+	// Shuffle and store questions and answers in indexes 0-15
 	indices := rand.Perm(16)
 	for i, card := range selectedCards {
 		question := card.Pair.Question
@@ -100,6 +104,7 @@ func fetchAndStoreQuestions(game *Game) error {
 	return nil
 }
 
+// Function to start a game with the specified game ID
 func startGame(gameID string) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -114,6 +119,7 @@ func startGame(gameID string) {
 		return
 	}
 	game.LoopRunning = true
+	game.GameStatus = "match_start"
 	gamesMux.Unlock()
 
 	if err := fetchAndStoreQuestions(game); err != nil {
@@ -122,18 +128,17 @@ func startGame(gameID string) {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	game.Turn = rand.Intn(2) // this is for randomly selecting the starting player
-	game.Round = 1           // the round will start in 1
+	game.CurrentPlayer = rand.Intn(2) // randomly select the starting player
+	game.Round = 1                    // start at round 1
 
-	// This section is for the difficulty levels
-	durations := map[string]int{"easy": 180, "medium": 420, "hard": 600}
-	game.Timer = durations[game.Difficulty]
+	// Set the timer to 3 minutes
+	game.Timer = 180
 	game.Active = true
 
-	fmt.Printf("[GAME START] Game ID: %s | Difficulty: %s | Timer: %d seconds | Player %d starts (Round %d)\n",
-		gameID, game.Difficulty, game.Timer, game.Turn, game.Round)
+	fmt.Printf("[GAME START] Game ID: %s | Timer: %d seconds | Player %d starts (Round %d)\n",
+		gameID, game.Timer, game.CurrentPlayer, game.Round)
 
-	// This function is responsible for starting the game loop in a new goroutine
+	// Start the game loop in a new goroutine
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
@@ -148,20 +153,20 @@ func startGame(gameID string) {
 				return
 			}
 			game.Timer--
+			sendGameState(game, gameID) // Send game state to clients with no winner yet
 			fmt.Printf("[TIMER] Game ID: %s | Time Left: %d seconds | Round: %d | Scores: [%d, %d]\n",
 				gameID, game.Timer, game.Round, game.Scores[0], game.Scores[1])
-			game.broadcastState()
 			game.Mutex.Unlock()
 		}
 
-		// This section means the game is over
+		// Game is over
 		game.Mutex.Lock()
 		game.GameOver = true
 		game.LoopRunning = false
-		game.broadcastState()
+		game.GameStatus = "match_end"
 		game.Mutex.Unlock()
 
-		// This section determines the winner of the game, and tie if there are no winners
+		// Determine the winner
 		winner := -1
 		if game.Scores[0] > game.Scores[1] {
 			winner = 0
@@ -169,15 +174,17 @@ func startGame(gameID string) {
 			winner = 1
 		}
 
-		// This section broadcasts the game over message with the winner
+		// Broadcast the game over message
 		game.Mutex.Lock()
 		state := map[string]interface{}{
-			"scores":   game.Scores,
-			"turn":     game.Turn,
-			"timer":    game.Timer,
-			"gameOver": game.GameOver,
-			"round":    game.Round,
-			"winner":   winner,
+			"scores":    game.Scores,
+			"turn":      game.CurrentPlayer,
+			"timer":     game.Timer,
+			"gameOver":  game.GameOver,
+			"round":     game.Round,
+			"winner":    winner,
+			"status":    game.GameStatus,
+			"usernames": game.Usernames,
 		}
 		message, _ := json.Marshal(state)
 		for i, player := range game.Players {
@@ -191,39 +198,14 @@ func startGame(gameID string) {
 		game.Mutex.Unlock()
 
 		if winner != -1 {
-			fmt.Printf("[TIME UP] Game ID: %s | Game Over! Player %d wins with %d points\n", gameID, winner, game.Scores[winner])
+			fmt.Printf("[TIME UP] Game ID: %s | Game Over! %s wins with %d points\n", gameID, game.Usernames[winner], game.Scores[winner])
 		} else {
 			fmt.Printf("[TIME UP] Game ID: %s | Game Over! It's a tie with %d points each\n", gameID, game.Scores[0])
 		}
 	}()
 }
 
-// This section broadcasts the game state to both players
-func (g *Game) broadcastState() {
-    fmt.Println("CREATING JSON PACKET/PACKAGE")
-	state := map[string]interface{}{
-		"scores":   g.Scores,
-		"turn":     g.Turn,
-		"timer":    g.Timer,
-		"gameOver": g.GameOver,
-		"round":    g.Round,
-		"cards":    g.Cards, // Send full card data (questions & answers)
-		"pairIDs":  g.PairIDs, // (Optional) Send pairings for debugging
-	}
-
-	message, _ := json.Marshal(state)
-	for i, player := range g.Players {
-		if player != nil {
-		    fmt.Println("SENDING MESSAGE")
-			err := player.WriteMessage(websocket.TextMessage, message)
-			if err != nil {
-				fmt.Printf("[ERROR] Failed to send state to Player %d | Error: %v\n", i, err)
-			}
-		}
-	}
-}
-
-// This function is responsible for flipping a card and checking for a match
+// Function to handle flipping cards and check if they match
 func handleFlip(gameID string, playerIndex int, cardIndex int) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -241,8 +223,13 @@ func handleFlip(gameID string, playerIndex int, cardIndex int) {
 		return
 	}
 
-	if game.Turn != playerIndex {
+	if game.CurrentPlayer != playerIndex {
 		fmt.Printf("[WARNING] Player %d tried to flip out of turn in Game ID: %s\n", playerIndex, gameID)
+		return
+	}
+
+	if game.Paired[cardIndex] {
+		fmt.Printf("[INFO] Player %d tried to flip an already paired card at index %d | Game ID: %s\n", playerIndex, cardIndex, gameID)
 		return
 	}
 
@@ -250,24 +237,21 @@ func handleFlip(gameID string, playerIndex int, cardIndex int) {
 		game.FlippedCard = cardIndex
 		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
 	} else {
+		if game.FlippedCard == cardIndex {
+			fmt.Printf("[WARNING] Player %d tried to flip the same card at index %d twice | Game ID: %s\n", playerIndex, cardIndex, gameID)
+			return
+		}
 		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
 		if game.PairIDs[game.FlippedCard] == game.PairIDs[cardIndex] {
-			scoreIncrement := map[string]int{"easy": 10, "medium": 16, "hard": 22}[game.Difficulty]
-			game.Scores[playerIndex] += scoreIncrement
-			fmt.Printf("[MATCH] Player %d matched! +%d points | Game ID: %s | Round: %d\n", playerIndex, scoreIncrement, gameID, game.Round)
+			handleMatch(game, playerIndex, cardIndex)
 		} else {
-			game.Turn = 1 - playerIndex
-			game.Round++ // the game round increments when the turn is passed
-			fmt.Printf("[TURN SWITCH] Player %d failed to match | Game ID: %s | Round: %d | Turn goes to Player %d\n",
-				playerIndex, gameID, game.Round, game.Turn)
+			handleTurnSwitch(game, playerIndex)
 		}
 		game.FlippedCard = -1
 	}
-
-	game.broadcastState()
 }
 
-// This section handles a player's move
+// Function to handle a player's move
 func handleMove(gameID string, playerIndex int, matched bool) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -285,26 +269,37 @@ func handleMove(gameID string, playerIndex int, matched bool) {
 		return
 	}
 
-	if game.Turn != playerIndex {
+	if game.CurrentPlayer != playerIndex {
 		fmt.Printf("[WARNING] Player %d tried to move out of turn in Game ID: %s\n", playerIndex, gameID)
 		return
 	}
 
 	if matched {
-		scoreIncrement := map[string]int{"easy": 10, "medium": 16, "hard": 22}[game.Difficulty]
-		game.Scores[playerIndex] += scoreIncrement
-		fmt.Printf("[MATCH] Player %d matched! +%d points | Game ID: %s | Round: %d\n", playerIndex, scoreIncrement, gameID, game.Round)
+		handleMatch(game, playerIndex, -1)
 	} else {
-		game.Turn = 1 - playerIndex
-		game.Round++ // the game round increments when the turn is passed
-		fmt.Printf("[TURN SWITCH] Player %d failed to match | Game ID: %s | Round: %d | Turn goes to Player %d\n",
-			playerIndex, gameID, game.Round, game.Turn)
+		handleTurnSwitch(game, playerIndex)
 	}
-
-	game.broadcastState()
 }
 
-// This function handles new WebSocket connections
+// Function to handle a successful match
+func handleMatch(game *Game, playerIndex int, cardIndex int) {
+	game.Scores[playerIndex] += 10 // Fixed score increment
+	if cardIndex != -1 {
+		game.Paired[game.FlippedCard] = true
+		game.Paired[cardIndex] = true
+	}
+	fmt.Printf("[MATCH] Player %d matched! +10 points | Round: %d\n", playerIndex, game.Round)
+}
+
+// Function to handle turn switching
+func handleTurnSwitch(game *Game, playerIndex int) {
+	game.CurrentPlayer = 1 - playerIndex
+	game.Round++ // Increment the round when the turn is passed
+	fmt.Printf("[TURN SWITCH] Player %d failed to match | Round: %d | Turn goes to Player %d\n",
+		playerIndex, game.Round, game.CurrentPlayer)
+}
+
+// Function to handle new WebSocket connections
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -326,10 +321,10 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	game, exists := games[gameID]
 	if !exists {
 		games[gameID] = &Game{
-			Difficulty:  "easy",
 			Players:     make([]*websocket.Conn, 2),
 			Scores:      make([]int, 2),
 			FlippedCard: -1,
+			GameStatus:  "match_start",
 		}
 		game = games[gameID]
 		fmt.Printf("[NEW GAME] Created game %s\n", gameID)
@@ -339,7 +334,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	game.Mutex.Lock()
 	defer game.Mutex.Unlock()
 
-	// This section is responsible in finding the first available slot for a player
+	// Find the first available slot for a player
 	var playerIdx int = -1
 	for i := 0; i < 2; i++ {
 		if game.Players[i] == nil {
@@ -355,14 +350,16 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	}
 
 	game.Players[playerIdx] = conn
+	game.Usernames[playerIdx] = username
 	fmt.Printf("[CONNECTED] Player %d (%s) joined Game ID: %s\n", playerIdx, username, gameID)
 
-	// This is responsible in starting a game when both players are connected
+	// Start the game when both players are connected
 	if game.Players[0] != nil && game.Players[1] != nil {
+		game.GameStatus = "players_ready"
 		startGame(gameID)
 	}
 
-	// This keep-alive pings and disconnection detection prevents the websocket connection from closing
+	// Keep-alive pings and disconnection detection
 	go func() {
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
@@ -388,7 +385,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// This function listens for messages from client
+	// Listen for messages from client
 	go func() {
 		defer conn.Close()
 		for {
@@ -421,7 +418,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
-// This function handles player quitting
+// Function to handle player quitting
 func handleQuit(gameID string, playerIdx int) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -438,11 +435,16 @@ func handleQuit(gameID string, playerIdx int) {
 	}
 
 	game.GameOver = true
-	game.broadcastState()
-	fmt.Printf("[QUIT] Player %d quit | Player %d wins by default | Game ID: %s\n", playerIdx, 1-playerIdx, gameID)
+	game.GameStatus = "match_end"
+	winner := 1 - playerIdx
+	game.Winner = winner // Set the winner
+	fmt.Printf("[QUIT] Player %d quit | Player %d wins by default | Game ID: %s\n", playerIdx, winner, gameID)
+
+	// Send game state to remaining players
+	sendGameState(game, gameID)
 }
 
-// This function handles player disconnection
+// Function to handle player disconnection
 func handleDisconnection(gameID string, playerIdx int) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -466,14 +468,50 @@ func handleDisconnection(gameID string, playerIdx int) {
 		game.Mutex.Lock()
 		if game.Players[playerIdx] == nil {
 			game.GameOver = true
-			game.broadcastState()
-			fmt.Printf("[WIN] Player %d wins by default | Game ID: %s\n", 1-playerIdx, gameID)
+			game.GameStatus = "match_end"
+			winner := 1 - playerIdx
+			game.Winner = winner // Set the winner
+			fmt.Printf("[WIN] Player %d wins by default | Game ID: %s\n", winner, gameID)
+			// Send game state to remaining players
+			sendGameState(game, gameID)
 		}
 		game.Mutex.Unlock()
 	}()
 }
 
-// This function is responsible for starting the WebSocket server
+// Function to send the game state to all players
+func sendGameState(game *Game, gameID string) {
+	for i, player := range game.Players {
+		if player != nil {
+			game.WhoseTurn = "your turn"
+			if game.CurrentPlayer != i {
+				game.WhoseTurn = "opp turn"
+			}
+
+			gameState := map[string]interface{}{
+				"round":     game.Round,
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
+				"timer":     game.Timer,
+				"cards":     game.Cards,
+				"paired":    game.Paired,
+				"whoseTurn": game.WhoseTurn,
+				"status":    game.GameStatus,
+				"winner":    game.Winner,
+				"usernames": game.Usernames,
+				"scores":    game.Scores,
+			}
+
+			message, _ := json.Marshal(gameState)
+			err := player.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to send game state to Player %d | Error: %v\n", i, err)
+			}
+		}
+	}
+}
+
+// Function to start the WebSocket server
 func main() {
 	http.HandleFunc("/ws", handleConnection)
 	fmt.Println("Server started on :8082")
