@@ -4,24 +4,32 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
-<Button xmlns:fx="http://javafx.com/fxml/1" fx:id="cardButton" mnemonicParsing="false"
-        style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21.0.7-ea"
-        fx:controller="org.amalzen.app.components.CardComponent">
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Button fx:id="cardButton" mnemonicParsing="false" prefHeight="167.0" prefWidth="114.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.components.CardComponent">
     <graphic>
         <StackPane fx:id="cardStackPane">
             <children>
-                <ImageView fx:id="cardBack" fitHeight="180.0" fitWidth="240.0" opacity="0" pickOnBounds="true"
-                           preserveRatio="true">
-                    <image>
-                        <Image url="@../images/cardFront.png"/>
-                    </image>
-                </ImageView>
-                <ImageView fx:id="cardFront" fitHeight="180.0" fitWidth="240.0" pickOnBounds="true"
-                           preserveRatio="true">
-                    <image>
-                        <Image url="@../images/card-easy.png"/>
-                    </image>
-                </ImageView>
+            <StackPane fx:id="cardFaces" prefHeight="150.0" prefWidth="200.0">
+               <children>
+                      <ImageView fx:id="cardBack" fitHeight="180.0" fitWidth="240.0" pickOnBounds="true" preserveRatio="true">
+                          <image>
+                              <Image url="@../images/cardFront.png" />
+                          </image>
+                      </ImageView>
+                      <ImageView fx:id="cardFront" fitHeight="180.0" fitWidth="240.0" pickOnBounds="true" preserveRatio="true">
+                          <image>
+                              <Image url="@../images/card-easy.png" />
+                          </image>
+                      </ImageView>
+               </children>
+            </StackPane>
+            <Text fx:id="cardLabel" fill="WHITE" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Placeholder" wrappingWidth="77.634765625">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Text>
             </children>
         </StackPane>
     </graphic>
