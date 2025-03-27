@@ -10,7 +10,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.json.JSONObject;
 
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,39 +57,12 @@ public class MatchmakingController {
         matchmakingModel.setPlayerScore(playerScore);
 
         // Configure callbacks
-        matchmakingModel.onConnected(() -> {
-                    // Enter matchmaking queue with player's score
-                    matchmakingModel.enterQueue();
-                })
-                .onQueueSuccess(() -> {
-                    LOGGER.info("Successfully entered matchmaking queue");
-                })
-                .onMatchFound(matchData -> {
-                    if (matchFound) return; // Avoid handling multiple times
-                    matchFound = true;
-                    LOGGER.log(Level.INFO, "Matchmaking queue has been entered: " + matchData);
-
-                    String roomId = matchData.getString("roomId");
-                    String opponent = matchData.getString("opponent");
-
-                    Main.roomId = roomId;
-                    Main.opponent = opponent;
-                    LOGGER.info("Match found! Room ID: " + roomId + ", Opponent: " + opponent);
-
-                    // Clean up BEFORE changing scene
-                    cleanup();
-
-                    // Switch to game room on UI thread
-                    Platform.runLater(() -> {
-                        Main.ChangeScene(ResourcePath.GAME_ROOM.getPath());
-                    });
-                })
-                .onConnectionClosed(() -> {
-                    LOGGER.info("Connection to matchmaking service closed");
-                })
-                .onError(error -> {
-                    LOGGER.log(Level.WARNING, "Matchmaking error", error);
-                });
+        // Enter matchmaking queue with player's score
+        matchmakingModel.onConnected(handleOnConnected())
+                .onQueueSuccess(handleOnQueueSuccess())
+                .onMatchFound(handleOnMatchFound())
+                .onConnectionClosed(handleOnConnectionClosed())
+                .onError(handleOnError());
 
         // Connect to matchmaking service
         matchmakingModel.connect().exceptionally(ex -> {
@@ -127,5 +102,53 @@ public class MatchmakingController {
             matchmakingModel.close();
             matchmakingModel = null;
         }
+    }
+
+    public Runnable handleOnConnected(){
+        return () -> {
+            matchmakingModel.enterQueue();
+        };
+    }
+
+    public Runnable handleOnQueueSuccess(){
+        return () -> {
+            LOGGER.info("Successfully entered matchmaking queue");
+        };
+    }
+
+    public Consumer<JSONObject> handleOnMatchFound(){
+        return response -> {
+            if(matchFound) return;
+            matchFound = true;
+
+            LOGGER.log(Level.INFO, "Matchmaking queue has been entered: " + response);
+
+            String roomId = response.getString("roomId");
+            String opponent = response.getString("opponent");
+
+            Main.roomId = roomId;
+            Main.opponent = opponent;
+            LOGGER.info("Match found! Room ID: " + roomId + ", Opponent: " + opponent);
+
+            // Clean up BEFORE changing scene
+            cleanup();
+
+            // Switch to game room on UI thread
+            Platform.runLater(() -> {
+                Main.ChangeScene(ResourcePath.GAME_ROOM.getPath());
+            });
+        };
+    }
+
+    public Runnable handleOnConnectionClosed(){
+        return () -> {
+            LOGGER.info("Connection to matchmaking service closed");
+        };
+    }
+
+    public Consumer<Throwable> handleOnError(){
+        return error -> {
+            LOGGER.log(Level.WARNING, "Matchmaking error", error);
+        };
     }
 }
