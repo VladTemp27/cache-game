@@ -35,10 +35,6 @@ public class CardComponent {
     }
 
     public void flipCard() {
-        // prevents re-flipping of already flipped cards
-        if(isFlipped){
-            return;
-        }
         RotateTransition rotateOut = new RotateTransition(Duration.millis(300), cardFaces);
         rotateOut.setAxis(Rotate.Y_AXIS);
         rotateOut.setFromAngle(0);
