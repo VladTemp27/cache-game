@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameRoomController {
-    private static final int ROWS = 2; // this can be changed if we opt to continue with different game difficulties
+    private static final int ROWS = 2; // FIXME: This should be dynamic when game difficulty is implemented
     private static final int COLUMNS = 8;
     public List<CardComponent> cardComponents = new ArrayList<>();
     @FXML
@@ -78,7 +78,7 @@ public class GameRoomController {
                 HBox currentHBox = (row == 0) ? HBox1 : HBox2;
 
                 for (int col = 0; col < COLUMNS; col++) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/card.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(ResourcePath.CARD.getPath()));
                     Node cardNode = loader.load();
                     CardComponent cardComponent = loader.getController();
 

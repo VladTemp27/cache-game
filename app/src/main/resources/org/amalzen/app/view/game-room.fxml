@@ -65,10 +65,10 @@
                 </ImageView>
             </graphic>
         </Button>
-        <VBox layoutX="182.0" layoutY="246.0" prefHeight="650.0" prefWidth="1300.0">
+        <VBox layoutX="3.0" layoutY="204.0" prefHeight="727.0" prefWidth="1645.0">
             <children>
                 <HBox fx:id="HBox1" prefHeight="325.0" prefWidth="1300.0"/>
-                <HBox fx:id="HBox2" prefHeight="325.0" prefWidth="1300.0"/>
+                <HBox fx:id="HBox2" prefHeight="334.0" prefWidth="1357.0"/>
             </children>
         </VBox>
 
