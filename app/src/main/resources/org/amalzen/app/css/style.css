@@ -6,6 +6,17 @@
     -fx-background-image: url("../images/main-menu-background.png");
 }
 
+.leaderboard-background-new {
+    -fx-background-image: url("../images/leaderboards-background.png");
+}
+
+.leaderboard-component-background {
+    -fx-background-image: url("../images/leaderboard-component-background.png");
+    -fx-background-size: 1594px 124px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
 .game-instructions-background {
     -fx-background-image: url("../images/game-guide.png");
 }
