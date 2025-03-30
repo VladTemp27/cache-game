@@ -462,6 +462,11 @@ func handleFlip(gameID string, playerIndex int, cardIndex int) {
 		return
 	}
 
+	if cardIndex < 0 || cardIndex >= len(game.Cards) {
+		fmt.Printf("[WARNING] Player %d attempted to flip an invalid card index %d | Game ID: %s\n", playerIndex, cardIndex, gameID)
+		return
+	}
+
 	if game.CurrentPlayer != playerIndex {
 		fmt.Printf("[WARNING] Player %d tried to flip out of turn in Game ID: %s\n", playerIndex, gameID)
 		return
