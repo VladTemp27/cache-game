@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 import org.json.JSONObject;
 
 import java.util.function.Consumer;
@@ -47,7 +48,7 @@ public class MatchmakingController {
             returnToMainMenu();
         });
 
-        Main.playMusic(ResourcePath.IN_GAME_MUSIC.getPath());
+        AudioHandler.playMusic(ResourcePath.IN_GAME_MUSIC.getPath());
     }
 
     private void setupMatchmaking() {
