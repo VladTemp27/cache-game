@@ -17,6 +17,10 @@
     -fx-background-position: center;
 }
 
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
 .game-instructions-background {
     -fx-background-image: url("../images/game-guide.png");
 }
