@@ -46,6 +46,8 @@ public class MatchmakingController {
             matchmakingModel.cancelQueue();
             returnToMainMenu();
         });
+
+        Main.playMusic(ResourcePath.IN_GAME_MUSIC.getPath());
     }
 
     private void setupMatchmaking() {

@@ -14,7 +14,12 @@ public enum ResourcePath {
     EXIT_MODAL("view/exit-modal.fxml"),
     VICTORY_MODAL("view/victory-modal.fxml"),
     DEFEAT_MODAL("view/defeat-modal.fxml"),
-    LOGOUT_MODAL("view/logout-modal.fxml");
+    LOGOUT_MODAL("view/logout-modal.fxml"),
+
+    IN_GAME_MUSIC("audio/music/in-game-music.wav"),
+    MAIN_MENU_MUSIC("audio/music/main-menu-music.wav");
+
+
 
 
     private final String path;

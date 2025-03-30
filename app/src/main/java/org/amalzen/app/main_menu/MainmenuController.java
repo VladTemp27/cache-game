@@ -34,6 +34,6 @@ public class MainmenuController {
 
     @FXML
     private void initialize() {
-
+        Main.playMusic(ResourcePath.MAIN_MENU_MUSIC.getPath());
     }
 }
