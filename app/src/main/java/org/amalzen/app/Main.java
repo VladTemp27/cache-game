@@ -62,9 +62,20 @@ public class Main extends Application {
 
     public static void playMusic(String path) {
         try {
-            if (path != null && path.equals(currentMusic)) {
+            if (path == null) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                    mediaPlayer.dispose();
+                    mediaPlayer = null;
+                }
+                currentMusic = null;
                 return;
             }
+
+            if ((path != null && path.equals(currentMusic))) {
+                return;
+            }
+
             currentMusic = path;
 
             if (mediaPlayer != null) {
@@ -73,16 +84,14 @@ public class Main extends Application {
                 mediaPlayer = null;
             }
 
-            if (mediaPlayer == null) {
-                Media media = new Media(Main.class.getResource(path).toURI().toString());
-                mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setOnError(() -> {
-                    System.err.println("Error playing audio: " + mediaPlayer.getError().getMessage());
-                });
-                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                mediaPlayer.setVolume(0.1);
-                mediaPlayer.play();
-            }
+            Media media = new Media(Main.class.getResource(path).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnError(() -> {
+                System.err.println("Error playing audio: " + mediaPlayer.getError().getMessage());
+            });
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            mediaPlayer.setVolume(0.1);
+            mediaPlayer.play();
         } catch (Exception e) {
             System.err.println("Failed to play music: " + e.getMessage());
         }
