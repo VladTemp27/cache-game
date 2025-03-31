@@ -414,9 +414,10 @@ func handleMove(gameID string, playerIndex int, matched bool) {
 
 	if matched {
 		handleMatch(game, playerIndex, -1)
-	} else {
-		handleTurnSwitch(game, playerIndex)
+		return
 	}
+
+	handleTurnSwitch(game, playerIndex)
 }
 
 // Function to handle player quitting
@@ -480,19 +481,23 @@ func handleFlip(gameID string, playerIndex int, cardIndex int) {
 	if game.FlippedCard == -1 {
 		game.FlippedCard = cardIndex
 		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
-	} else {
-		if game.FlippedCard == cardIndex {
-			fmt.Printf("[WARNING] Player %d tried to flip the same card at index %d twice | Game ID: %s\n", playerIndex, cardIndex, gameID)
-			return
-		}
-		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
-		if game.PairIDs[game.FlippedCard] == game.PairIDs[cardIndex] {
-			handleMatch(game, playerIndex, cardIndex)
-		} else {
-			handleTurnSwitch(game, playerIndex)
-		}
-		game.FlippedCard = -1
+		return
 	}
+
+	if game.FlippedCard == cardIndex {
+		fmt.Printf("[WARNING] Player %d tried to flip the same card at index %d twice | Game ID: %s\n", playerIndex, cardIndex, gameID)
+		return
+	}
+
+	fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
+
+	if game.PairIDs[game.FlippedCard] == game.PairIDs[cardIndex] {
+		handleMatch(game, playerIndex, cardIndex)
+		return
+	}
+
+	handleTurnSwitch(game, playerIndex)
+	game.FlippedCard = -1
 }
 
 // Function to handle a successful match
