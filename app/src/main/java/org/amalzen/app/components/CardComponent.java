@@ -13,6 +13,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 
 public class CardComponent {
     @FXML
@@ -42,6 +44,7 @@ public class CardComponent {
         cardButton.setOnAction(event -> {
             flipCard();
             zoomToCenter();
+            AudioHandler.playSound(ResourcePath.FLIP_CARD_SOUND.getPath());
         });
     }
 
