@@ -28,3 +28,13 @@
 .blur-background {
     -fx-background-color: rgba(0, 0, 0, 0.65);
 }
+
+.white-text {
+    -fx-text-fill: white;
+}
+
+.password-field .text-field .text {
+    -fx-font-family: "Gloria Hallelujah";
+    -fx-font-size: 40px;
+    -fx-text-fill: white;
+}

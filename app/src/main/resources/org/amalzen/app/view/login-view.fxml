@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="944.0" prefWidth="1600.0"
-            xmlns="http://javafx.com/javafx/21.0.7-ea" fx:controller="org.amalzen.app.log_in.LogInController">
+            xmlns="http://javafx.com/javafx/21.0.7-ea" fx:controller="org.amalzen.app.log_in.LogInController" stylesheets="@../css/style.css">
     <children>
         <ImageView fitHeight="944.0" fitWidth="1919.0" pickOnBounds="true" preserveRatio="true">
             <image>
@@ -33,15 +33,15 @@
             </image>
         </ImageView>
         <TextField fx:id="usernameTextfield" layoutX="962.0" layoutY="558.0" prefHeight="125.0" prefWidth="615.0"
-                   promptText="Username" style="-fx-background-color: transparent;">
+                   promptText="Username" style="-fx-background-color: transparent;" styleClass="white-text">
             <font>
                 <Font name="Gloria Hallelujah" size="40.0"/>
             </font>
         </TextField>
         <PasswordField fx:id="passwordField" layoutX="965.0" layoutY="694.0" prefHeight="123.0" prefWidth="590.0"
-                       promptText="Password" style="-fx-background-color: transparent;">
+                       promptText="Password" style="-fx-background-color: transparent;" styleClass="password-field">
             <font>
-                <Font size="40.0"/>
+                <Font name="Gloria Hallelujah" size="40.0"/>
             </font>
         </PasswordField>
         <Button fx:id="loginButton" contentDisplay="CENTER" layoutX="1356.0" layoutY="823.0" mnemonicParsing="false"
