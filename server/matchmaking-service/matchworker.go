@@ -63,6 +63,13 @@ func (w *MatchWorker) Start() {
         return
     }
 
+    // Clear queue at start
+    if err := w.clearMatchmakingQueue(); err != nil{
+        log.Printf("Failed to clear matchmaking queue: %v", err)
+    }else{
+        fmt.Println("Matchmaking queue cleared")
+    }
+
     w.running = true
     w.stopChan = make(chan struct{})
     go w.run()
@@ -150,6 +157,10 @@ func (w *MatchWorker) findMatches() error {
             return fmt.Errorf("failed to reconnect to MongoDB: %v", err)
         }
         w.dbClient = client
+    }
+
+    if err := w.removeTimedOutPlayers(); err != nil {
+        fmt.Printf("failed to remove timed out players: %v", err)
     }
 
     // Get all players in the queue, sorted by join time (oldest first)
@@ -386,6 +397,197 @@ func (w *MatchWorker) notifyAndCloseConnection(client *Client, match Match, oppo
             w.manager.removeClient(clientID)
         }(client.id)
     }
+}
+
+func (w *MatchWorker) removeTimedOutPlayers() error{
+    // Calculate the cutoff time (30 seconds ago)
+    // Note since the tick rate is 5 seconds this will cut off on 35 seconds in actuality
+    timeoutCutoff := time.Now().Add(-30 * time.Second)
+        
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    collection := w.dbClient.Database("cache_db").Collection("matchmaking")
+
+    // Find players to timeout so we can notify them
+    filter := bson.M{"joinedAt": bson.M{"$lt": timeoutCutoff}}
+    cursor, err := collection.Find(ctx, filter)
+    if err != nil {
+        return fmt.Errorf("failed to query timed out players: %v", err)
+    }
+
+    var timedOutPlayers []QueuePlayer
+    if err = cursor.All(ctx, &timedOutPlayers); err != nil {
+        cursor.Close(ctx)
+        return fmt.Errorf("failed to decode timed out players: %v", err)
+    }
+    cursor.Close(ctx)
+
+    if len(timedOutPlayers) == 0 {
+        // No timed out players
+        return nil
+    }
+
+    // Delete timed out players from the queue
+    deleteResult, err := collection.DeleteMany(ctx, filter)
+    if err != nil {
+        return fmt.Errorf("failed to remove timed out players: %v", err)
+    }
+
+    // Notify timed out players
+    for _, player := range timedOutPlayers {
+        w.notifyPlayerTimeout(player.Username)
+    }
+
+    log.Printf("Removed %d players from queue due to timeout", deleteResult.DeletedCount)
+    return nil
+
+}
+
+func (w *MatchWorker) notifyPlayerTimeout(username string) {
+    client := w.getClientForUsername(username)
+    if client == nil {
+        return
+    }
+    
+    // Create timeout notification
+    timeoutNotification := map[string]interface{}{
+        "type":    "queue_timeout",
+        "message": "You have been removed from the queue after waiting for 30 seconds",
+    }
+    
+    // Send the notification
+    if err := client.conn.WriteJSON(timeoutNotification); err != nil {
+        log.Printf("Error notifying player about timeout: %v", err)
+    }
+    
+    // Give client a short time to process the message before closing
+    time.Sleep(500 * time.Millisecond)
+    
+    // Close the connection
+    err := client.conn.WriteMessage(
+        websocket.CloseMessage, 
+        websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Queue timeout"),
+    )
+    if err != nil {
+        log.Printf("Error sending close frame: %v", err)
+    }
+    
+    // Close the underlying connection
+    client.conn.Close()
+    
+    log.Printf("Notified player %s about queue timeout and closed connection", username)
+    
+    // Clean up client from manager (similar to match notification)
+    go func(clientID string) {
+        // Give some time for the WebSocket close to be processed
+        time.Sleep(1 * time.Second)
+        
+        // Clean up username mapping
+        usernameMapMutex.Lock()
+        for u, id := range usernameToClientID {
+            if id == clientID {
+                delete(usernameToClientID, u)
+                break
+            }
+        }
+        usernameMapMutex.Unlock()
+        
+        // Remove client from manager
+        w.manager.removeClient(clientID)
+    }(client.id)
+}
+
+// ClearMatchmakingQueue removes all players from the matchmaking queue
+func (w *MatchWorker) clearMatchmakingQueue() error {
+    // Create context with timeout
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+    
+    // Get the matchmaking collection
+    collection := w.dbClient.Database("cache_db").Collection("matchmaking")
+    
+    // Find all players first (to notify them)
+    cursor, err := collection.Find(ctx, bson.M{})
+    if err != nil {
+        return fmt.Errorf("failed to query queue players: %v", err)
+    }
+    
+    var queuedPlayers []QueuePlayer
+    if err = cursor.All(ctx, &queuedPlayers); err != nil {
+        cursor.Close(ctx)
+        return fmt.Errorf("failed to decode queued players: %v", err)
+    }
+    cursor.Close(ctx)
+    
+    // Delete all documents in the collection
+    result, err := collection.DeleteMany(ctx, bson.M{})
+    if err != nil {
+        return fmt.Errorf("failed to clear matchmaking queue: %v", err)
+    }
+    
+    log.Printf("Matchmaking queue cleared: %d players removed", result.DeletedCount)
+    
+    // Notify all players who were in the queue
+    for _, player := range queuedPlayers {
+        go w.notifyQueueCleared(player.Username)
+    }
+    
+    return nil
+}
+
+func (w *MatchWorker) notifyQueueCleared(username string) {
+    client := w.getClientForUsername(username)
+    if client == nil {
+        return
+    }
+    
+    // Create queue cleared notification
+    notification := map[string]interface{}{
+        "type":    "queue_cleared",
+        "message": "The matchmaking queue has been cleared by the system",
+    }
+    
+    // Send the notification
+    if err := client.conn.WriteJSON(notification); err != nil {
+        log.Printf("Error notifying player about queue clear: %v", err)
+    }
+    
+    // Give client a short time to process the message before closing
+    time.Sleep(500 * time.Millisecond)
+    
+    // Close the connection
+    err := client.conn.WriteMessage(
+        websocket.CloseMessage, 
+        websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Queue cleared"),
+    )
+    if err != nil {
+        log.Printf("Error sending close frame: %v", err)
+    }
+    
+    // Close the underlying connection
+    client.conn.Close()
+    
+    log.Printf("Notified player %s about queue clear and closed connection", username)
+    
+    // Clean up client from manager
+    go func(clientID string) {
+        // Give some time for the WebSocket close to be processed
+        time.Sleep(1 * time.Second)
+        
+        // Clean up username mapping
+        usernameMapMutex.Lock()
+        for u, id := range usernameToClientID {
+            if id == clientID {
+                delete(usernameToClientID, u)
+                break
+            }
+        }
+        usernameMapMutex.Unlock()
+        
+        // Remove client from manager
+        w.manager.removeClient(clientID)
+    }(client.id)
 }
 
 // Deprecated: use notifyPlayersAndCloseConnections instead
