@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 public class Main extends Application {
     @FXML
@@ -30,6 +31,9 @@ public class Main extends Application {
 
         primaryStage.setTitle("CACHE");
         primaryStage.setResizable(false);
+
+        // Set the application icon
+        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/org/amalzen/app/images/game-logo.png")));
         primaryStage.show();
     }
 
