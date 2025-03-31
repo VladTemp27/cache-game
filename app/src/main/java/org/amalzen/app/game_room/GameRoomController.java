@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 import org.amalzen.app.components.CardComponent;
 
 import java.io.IOException;
@@ -66,6 +67,7 @@ public class GameRoomController {
 
     @FXML
     public void initialize() {
+        AudioHandler.playSound(ResourcePath.GAME_ROOM_MUSIC.getPath());
         // TODO: This code will be used for MainController
         // gameVictory.setOnAction(this::showVictoryModal);
         // gameDefeat.setOnAction(this::showDefeatModal);

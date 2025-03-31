@@ -35,6 +35,6 @@ public class MainmenuController {
 
     @FXML
     private void initialize() {
-        AudioHandler.playMusic(ResourcePath.MAIN_MENU_MUSIC.getPath());
+        AudioHandler.playSound(ResourcePath.MAIN_MENU_MUSIC.getPath());
     }
 }

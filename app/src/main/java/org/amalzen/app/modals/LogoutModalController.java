@@ -49,11 +49,11 @@ public class LogoutModalController {
                 Main.sessionId = null;
                 Main.username = null;
                 Main.ChangeScene(ResourcePath.LOGIN.getPath());
-                AudioHandler.playMusic(null);
+                AudioHandler.stopMusic();
             } else {
                 System.err.println("Logout failed: " + response.body());
                 // Force Logout due to session storage
-                AudioHandler.playMusic(null);
+                AudioHandler.stopMusic();
                 Main.ChangeScene(ResourcePath.LOGIN.getPath());
 
             }

@@ -16,7 +16,10 @@ public enum ResourcePath {
     DEFEAT_MODAL("view/defeat-modal.fxml"),
     LOGOUT_MODAL("view/logout-modal.fxml"),
 
-    IN_GAME_MUSIC("audio/music/in-game-music.wav"),
+    FLIP_CARD_SOUND("audio/effects/flip-card-effect.mp3"),
+
+    MATCHMAKING_MUSIC("audio/music/matchmaking-music.wav"),
+    GAME_ROOM_MUSIC("audio/music/game-room-music.wav"),
     MAIN_MENU_MUSIC("audio/music/main-menu-music.wav");
 
 

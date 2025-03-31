@@ -48,7 +48,7 @@ public class MatchmakingController {
             returnToMainMenu();
         });
 
-        AudioHandler.playMusic(ResourcePath.IN_GAME_MUSIC.getPath());
+        AudioHandler.playSound(ResourcePath.MATCHMAKING_MUSIC.getPath());
     }
 
     private void setupMatchmaking() {
