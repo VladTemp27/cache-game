@@ -62,12 +62,19 @@ public class LeaderboardController {
     }
 
     private void applyRankStyle(AnchorPane component, int rank) {
-        String backgroundColor = switch (rank) {
+        String textColor = switch (rank) {
             case 1 -> "#725B9D";
             case 2 -> "#FF017B";
             case 3 -> "#2AAEE7";
             default -> "#5B3A29";
         };
-        component.setStyle("-fx-background-color: " + backgroundColor + ";");
+
+        Label rankLabel = (Label) component.lookup("#rank");
+        Label usernameLabel = (Label) component.lookup("#username");
+        Label scoreLabel = (Label) component.lookup("#score");
+
+        rankLabel.setStyle("-fx-text-fill: " + textColor + ";");
+        usernameLabel.setStyle("-fx-text-fill: " + textColor + ";");
+        scoreLabel.setStyle("-fx-text-fill: " + textColor + ";");
     }
 }

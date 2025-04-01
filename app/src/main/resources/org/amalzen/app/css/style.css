@@ -34,7 +34,11 @@
     src: url("../fonts/GloriaHallelujah-Regular.ttf");
 }
 
-.password-field, .white-text {
+.rank-text username-text, score-text {
+    -fx-font-family: "Gloria Hallelujah";
+    -fx-font-size: 50px;
+}
+.password-field, .username-field {
     -fx-font-family: "Gloria Hallelujah";
     -fx-font-size: 40px;
     -fx-text-fill: white;

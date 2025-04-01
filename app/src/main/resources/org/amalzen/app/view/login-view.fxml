@@ -33,7 +33,7 @@
             </image>
         </ImageView>
         <TextField fx:id="usernameTextfield" layoutX="962.0" layoutY="558.0" prefHeight="125.0" prefWidth="615.0"
-                   promptText="Username" style="-fx-background-color: transparent;" styleClass="white-text">
+                   promptText="Username" style="-fx-background-color: transparent;" styleClass="username-field">
             <font>
                 <Font name="Gloria Hallelujah" size="40.0"/>
             </font>
