@@ -33,6 +33,9 @@ public class CardComponent {
     private boolean isZoomed = false;
     private int cardId = 0;
 
+    private static int flippedCardCount = 0;
+    private static final int MAX_FLIPPED_CARDS = 2;
+
     // Store original position and scale for reset
     private double originalX = 0;
     private double originalY = 0;
@@ -41,8 +44,10 @@ public class CardComponent {
     @FXML
     private void initialize() {
         cardButton.setOnAction(event -> {
-            flipCard();
-            zoomToCenter();
+            if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
+                flipCard();
+                zoomToCenter();
+            }
         });
     }
 
@@ -64,6 +69,9 @@ public class CardComponent {
         rotateOut.setToAngle(90);
 
         rotateOut.setOnFinished(event -> {
+            cardFront.setOpacity(isFlipped ? 1 : 0);
+            cardBack.setOpacity(isFlipped ? 0 : 1);
+            cardLabel.setOpacity(isFlipped ? 0 : 1);
             // Toggle visibility at halfway point
             cardFront.setVisible(!isFlipped);
             cardBack.setVisible(isFlipped);
@@ -77,6 +85,12 @@ public class CardComponent {
             // Flag the card as flipped
             isFlipped = !isFlipped;
 
+            if (isFlipped) {
+                flippedCardCount++;
+            } else {
+                flippedCardCount--;
+            }
+
             // Rotate back to complete the flip
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
@@ -84,6 +98,12 @@ public class CardComponent {
             rotateIn.setToAngle(180);
             rotateIn.setOnFinished(e -> isFlipping = false);
             rotateIn.play();
+
+            RotateTransition rotateLabel = new RotateTransition(Duration.millis(300), cardLabel);
+            rotateLabel.setAxis(Rotate.Y_AXIS);
+            rotateLabel.setFromAngle(90);
+            rotateLabel.setToAngle(0);
+            rotateLabel.play();
         });
 
         rotateOut.play();
@@ -95,28 +115,21 @@ public class CardComponent {
 
         Scene scene = cardStackPane.getScene();
 
-        // Store parent node reference for proper Z-order handling
         if (!isZoomed) {
-            // Save original position
             originalX = cardStackPane.getTranslateX();
             originalY = cardStackPane.getTranslateY();
             originalScale = cardStackPane.getScaleX();
 
-            // Get scene dimensions and card position in scene coordinates
             double sceneWidth = scene.getWidth();
             double sceneHeight = scene.getHeight();
             Bounds cardBounds = cardStackPane.localToScene(cardStackPane.getBoundsInLocal());
 
-            // Calculate absolute position for center (instead of relative translation)
             double targetX = (sceneWidth - cardBounds.getWidth() * 2.0) / 2.0 - cardBounds.getMinX() + cardStackPane.getTranslateX();
             double targetY = (sceneHeight - cardBounds.getHeight() * 2.0) / 2.0 - cardBounds.getMinY() + cardStackPane.getTranslateY();
 
-            // Ensure the card will be on top of all other elements
             cardStackPane.toFront();
-            // Set higher Z-order explicitly for better stacking control
-            cardStackPane.setViewOrder(-1.0);  // Lower values appear in front
+            cardStackPane.setViewOrder(-1.0);
 
-            // Create zoom-in animation with absolute positioning
             TranslateTransition translate = new TranslateTransition(Duration.millis(300), cardStackPane);
             translate.setToX(targetX);
             translate.setToY(targetY);
@@ -130,10 +143,8 @@ public class CardComponent {
 
             isZoomed = true;
         } else {
-            // Reset view order when zooming out
             cardStackPane.setViewOrder(0.0);
 
-            // Create zoom-out animation
             TranslateTransition translate = new TranslateTransition(Duration.millis(300), cardStackPane);
             translate.setToX(originalX);
             translate.setToY(originalY);
