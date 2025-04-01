@@ -34,6 +34,9 @@ public class CardComponent {
     private boolean isZoomed = false;
     private int cardId = 0;
 
+    private static int flippedCardCount = 0;
+    private static final int MAX_FLIPPED_CARDS = 2;
+
     // Store original position and scale for reset
     private double originalX = 0;
     private double originalY = 0;
@@ -42,9 +45,11 @@ public class CardComponent {
     @FXML
     private void initialize() {
         cardButton.setOnAction(event -> {
-            flipCard();
-            zoomToCenter();
-            AudioHandler.playSound(ResourcePath.FLIP_CARD_SOUND.getPath());
+            if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
+                flipCard();
+                zoomToCenter();
+                AudioHandler.playSound(ResourcePath.FLIP_CARD_SOUND.getPath());
+            }
         });
     }
 
@@ -70,7 +75,12 @@ public class CardComponent {
             cardLabel.setOpacity(isFlipped ? 0 : 1);
             isFlipped = !isFlipped;
 
-            // Rotate back from 90° to 180° to complete the flip
+            if (isFlipped) {
+                flippedCardCount++;
+            } else {
+                flippedCardCount--;
+            }
+
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
             rotateIn.setFromAngle(90);
@@ -110,8 +120,7 @@ public class CardComponent {
 
             // Ensure the card will be on top of all other elements
             cardStackPane.toFront();
-            // Set higher Z-order explicitly for better stacking control
-            cardStackPane.setViewOrder(-1.0);  // Lower values appear in front
+            cardStackPane.setViewOrder(-1.0);
 
             // Create zoom-in animation with absolute positioning
             TranslateTransition translate = new TranslateTransition(Duration.millis(300), cardStackPane);

@@ -4,6 +4,7 @@ public enum ResourcePath {
     GAME_ICON("images/game-logo-transparent.png"),
     LOGIN("view/login-view.fxml"),
     MAIN_MENU("view/mainmenu-view.fxml"),
+    LEADERBOARD("view/leaderboard-view.fxml"),
     EXIT("view/exit-modal.fxml"),
     HISTORY("view/match-history.fxml"),
     INSTRUCTION("view/game-instructions.fxml"),

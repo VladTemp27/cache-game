@@ -19,6 +19,9 @@ public class MainmenuController {
     private Button logoutButton;
 
     @FXML
+    private Button leaderboardButton;
+
+    @FXML
     public AnchorPane rootPane;
 
     @FXML
@@ -26,6 +29,8 @@ public class MainmenuController {
         Button clickButton = (Button) event.getSource();
         if (clickButton == playButton) {
             Main.ChangeScene(ResourcePath.MATCHMAKING.getPath());
+        } else if (clickButton == leaderboardButton) {
+            Main.showModals(ResourcePath.LEADERBOARD.getPath(), rootPane);
         } else if (clickButton == logoutButton) {
             Main.showModals(ResourcePath.LOGOUT_MODAL.getPath(), rootPane);
         } else if (clickButton == howToPlayButton) {

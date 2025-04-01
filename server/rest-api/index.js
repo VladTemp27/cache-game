@@ -25,9 +25,9 @@ const startServer = async () => {
             const PORT = process.env.PORT || 8080;
 
             app.use("/auth", authRouter);
-            app.use("/users", userRoutes);
-            app.use("/cards", cardsRoutes);
-            app.use("/gameHistory", gameHistoryRoutes);
+            app.use("/users", authMiddleware,userRoutes);
+            app.use("/cards", authMiddleware, cardsRoutes);
+            app.use("/gameHistory", authMiddleware, gameHistoryRoutes);
 
             app.listen(PORT, () => {
                 console.log(`Server is running on port ${PORT}`);
