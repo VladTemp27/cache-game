@@ -13,29 +13,58 @@ ws.on('open', () => {
 });
 
 ws.on('message', (data) => {
-    const gameState = JSON.parse(data);
-    console.clear();
-  
-    console.log(`Game Status: ${gameState.status}`);
-  
-    if (gameState.status === 'match_end') {
+  const gameState = JSON.parse(data);
+  console.clear();
+
+  // Log the received payload for debugging
+  console.log('[DEBUG] Received payload:', gameState);
+
+  switch (gameState.event) {
+    case 'game_ready':
+      console.log('Game Ready:');
+      console.log(`Cards: ${JSON.stringify(gameState.cards)}`);
+      console.log(`Opponent's Name: ${gameState.opponentName}`);
+      console.log(`Time Duration: ${gameState.timeDuration} seconds`);
+      break;
+
+    case 'players_ready':
+      console.log('Players Ready:');
+      console.log(`Your Score: ${gameState.yourScore}`);
+      console.log(`Opponent's Score: ${gameState.oppScore}`);
+      console.log(`Game Status: ${gameState.gameStatus}`);
+      console.log(`Whose Turn: ${gameState.whoseTurn}`);
+      break;
+
+    case 'cards_matched':
+      console.log('Match Event:');
+      console.log(`Your Score: ${gameState.yourScore}`);
+      console.log(`Opponent's Score: ${gameState.oppScore}`);
+      console.log(`Paired Cards: ${JSON.stringify(gameState.paired)}`);
+      console.log(`Whose Turn: ${gameState.whoseTurn}`);
+      break;
+
+    case 'turn_switch':
+      console.log('Turn Switch Event:');
+      console.log(`Round: ${gameState.round}`);
+      console.log(`Whose Turn: ${gameState.whoseTurn}`);
+      break;
+
+    case 'game_end':
+      console.log('Game End:');
+      console.log(`Game Status: ${gameState.gameStatus}`);
       if (gameState.winner === -1) {
         console.log('Game is Tied');
       } else {
         console.log(`Winner: ${gameState.usernames[gameState.winner]}`);
       }
-      console.log(`Score: ${gameState.scores[0]} - ${gameState.scores[1]}`);
-    } else {
-      console.log('Game Details:');
-      console.log(`Cards: ${JSON.stringify(gameState.cards)}`);
-      console.log(`Paired: ${JSON.stringify(gameState.paired)}`);
-      console.log(`Your Score: ${gameState.yourScore}`);
-      console.log(`Opponent's Score: ${gameState.oppScore}`);
-      console.log(`Round: ${gameState.round}`);
-      console.log(`Whose Turn: ${gameState.whoseTurn}`);
-      console.log(`Timer: ${gameState.timer}`);
-    }
-  });
+      console.log(`Final Score: ${gameState.scores[0]} - ${gameState.scores[1]}`);
+      break;
+
+    default:
+      console.log('Unknown event received:', gameState.event);
+      break;
+  }
+});
 
 ws.on('close', () => {
   console.log('Disconnected from the server');
