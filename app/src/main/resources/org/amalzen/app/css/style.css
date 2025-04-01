@@ -34,7 +34,7 @@
     src: url("../fonts/GloriaHallelujah-Regular.ttf");
 }
 
-.rank-text username-text, score-text {
+.rank-text .username-text, .score-text {
     -fx-font-family: "Gloria Hallelujah";
     -fx-font-size: 50px;
 }
