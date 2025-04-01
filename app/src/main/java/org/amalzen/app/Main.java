@@ -5,9 +5,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.scene.image.Image;
+
+import java.util.Objects;
 
 public class Main extends Application {
     @FXML
@@ -15,6 +17,7 @@ public class Main extends Application {
     public static FXMLLoader fxmlLoader;
     public static Stage primaryStage;
 
+    // NOTE THESE WILL BE CHANGED TO A HASHMAP
     // fields for user
     public static String username;
     public static String sessionId;
@@ -33,7 +36,7 @@ public class Main extends Application {
         primaryStage.setResizable(false);
 
         // Set the application icon
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/org/amalzen/app/images/game-logo.png")));
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ResourcePath.GAME_ICON.getPath()))));
         primaryStage.show();
     }
 
