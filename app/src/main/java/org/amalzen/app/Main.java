@@ -15,6 +15,7 @@ public class Main extends Application {
     public static FXMLLoader fxmlLoader;
     public static Stage primaryStage;
 
+    // NOTE THESE WILL BE CHANGED TO A HASHMAP
     // fields for user
     public static String username;
     public static String sessionId;
@@ -33,7 +34,7 @@ public class Main extends Application {
         primaryStage.setResizable(false);
 
         // Set the application icon
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/org/amalzen/app/images/game-logo.png")));
+        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream(ResourcePath.GAME_ICON.getPath())));
         primaryStage.show();
     }
 
