@@ -527,7 +527,6 @@ func sendGameReadyEvent(game *Game, gameID string) {
 				"opponentName": opponentName,
 				"yourName":     yourName,
 				"timeDuration": game.Timer,
-				"gameStatus":   game.GameStatus,
 			}
 
 			message, err := json.Marshal(event)
@@ -548,7 +547,6 @@ func sendPlayersReadyEvent(game *Game, gameID string) {
 				"event":      "players_ready",
 				"yourScore":  game.Scores[i],
 				"oppScore":   game.Scores[1-i],
-				"gameStatus": game.GameStatus,
 				"whoseTurn":  game.Usernames[game.CurrentPlayer],
 			}
 
@@ -571,7 +569,6 @@ func sendMatchEvent(game *Game, gameID string, playerIndex int) {
 				"yourScore":  game.Scores[i],
 				"oppScore":   game.Scores[1-i],
 				"paired":     game.Paired,
-				"gameStatus": game.GameStatus,
 				"whoseTurn":  game.Usernames[game.CurrentPlayer],
 			}
 
@@ -595,7 +592,6 @@ func sendTurnSwitchEvent(game *Game, gameID string) {
 				"event":      "turn_switch",
 				"round":      game.Round,
 				"whoseTurn":  whoseTurn,
-				"gameStatus": game.GameStatus,
 			}
 
 			message, err := json.Marshal(event)
@@ -617,7 +613,6 @@ func sendGameEndEvent(game *Game, gameID string) {
 				"winner":     game.Winner,
 				"scores":     game.Scores,
 				"usernames":  game.Usernames,
-				"gameStatus": game.GameStatus,
 			}
 
 			message, err := json.Marshal(event)
