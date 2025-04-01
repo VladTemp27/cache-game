@@ -83,7 +83,7 @@ const authMiddleware = async (req, res, next) => {
     if (!sessionId) return res.status(401).json({ error: "Unauthorized" });
 
     try {
-        const isValid = await dal.validateSession(sessionId);
+        const isValid = await sessionService.validateSession(sessionId);
         if (!isValid) return res.status(401).json({ error: "Unauthorized" });
 
         next();
