@@ -9,17 +9,17 @@
    <children>
       <HBox prefHeight="124.0" prefWidth="1559.0">
          <children>
-            <Label fx:id="rank" alignment="CENTER" contentDisplay="CENTER" prefHeight="124.0" prefWidth="519.0" text="Label" textFill="#5b3a29">
+            <Label fx:id="rank" alignment="CENTER" contentDisplay="CENTER" prefHeight="124.0" prefWidth="519.0" text="Label" textFill="#5b3a29" styleClass="rank-text">
                <font>
                   <Font name="Gloria Hallelujah" size="50.0" />
                </font>
             </Label>
-            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" prefHeight="124.0" prefWidth="519.0" text="Label" textFill="#5b3a29">
+            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" prefHeight="124.0" prefWidth="519.0" text="Label" textFill="#5b3a29" styleClass="username-text">
                <font>
                   <Font name="Gloria Hallelujah" size="50.0" />
                </font>
             </Label>
-            <Label fx:id="score" alignment="CENTER" contentDisplay="CENTER" prefHeight="124.0" prefWidth="519.0" text="Label" textFill="#5b3a29">
+            <Label fx:id="score" alignment="CENTER" contentDisplay="CENTER" prefHeight="124.0" prefWidth="519.0" text="Label" textFill="#5b3a29" styleClass="score-text">
                <font>
                   <Font name="Gloria Hallelujah" size="50.0" />
                </font>

@@ -14,6 +14,48 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+  * A WebSocket client that manages communication with the memory card game server.
+  * <p>
+  * This model provides bidirectional communication with the server for the memory card
+  * matching game, handling all network operations and event notifications to the UI layer.
+  * <p>
+  * The model listens for and processes these events from the server:
+  * <ul>
+  *   <li><b>Game State Updates:</b> Card states, turn information, scores, round numbers, timer</li>
+  *   <li><b>Match Control Events:</b> Match end notifications, winner declarations</li>
+  *   <li><b>Connection Events:</b> Connection establishment, closure, and errors</li>
+  *   <li><b>Server Responses:</b> Responses to flip actions and match reports</li>
+  * </ul>
+  * <p>
+  * Example usage:
+  * <pre>
+  * GameRoomModel gameRoom = new GameRoomModel("game-123", 0, "username")
+  *     .onConnected(() -> System.out.println("Connected to game server"))
+  *     .onGameStateUpdate(gameState -> updateUI(gameState))
+  *     .onConnectionClosed(() -> showConnectionLostMessage())
+  *     .onError(error -> logError(error));
+  *
+  * gameRoom.connect();
+  *
+  * // During gameplay:
+  * gameRoom.sendFlip(cardIndex);    // When player flips a card
+  * gameRoom.sendMatchSuccess();     // When player gets a match
+  * gameRoom.sendMatchFailure();     // When player fails to match
+  * gameRoom.sendQuit();             // When player quits
+  *
+  * // When done:
+  * gameRoom.close();
+  * </pre>
+  * <p>
+  * Communication with the UI is handled through callbacks registered using the fluent API
+  * (onGameStateUpdate, onConnected, etc.). All callbacks are executed on a separate thread
+  * to avoid blocking the WebSocket listener thread.
+  * <p>
+  * This class implements {@link AutoCloseable} and properly manages resources including
+  * WebSocket connections and executor services. Always call {@link #close()} when done
+  * to release resources.
+  */
 public class GameRoomModel implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(GameRoomModel.class.getName());
     private final String SERVER_URL = APIs.GR_URL.getValue();
@@ -131,6 +173,7 @@ public class GameRoomModel implements AutoCloseable {
     public void sendQuit() {
         sendAction("quit", false);
     }
+
     public void sendFlip(int cardIndex) {
         JSONObject message = new JSONObject();
         message.put("action", "flip");
@@ -282,7 +325,17 @@ public class GameRoomModel implements AutoCloseable {
         JSONObject response;
         try {
             response = new JSONObject(jsonResponse);
-//            LOGGER.info("Received message: " + response.toString());
+            // Only log detailed message in verbose mode
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Received message: " + response.toString(2));
+            } else {
+                // Log a brief message summary for regular level
+                if (response.has("type")) {
+                    LOGGER.info("Received message type: " + response.getString("type"));
+                } else if (response.has("status")) {
+                    LOGGER.info("Received status update: " + response.getString("status"));
+                }
+            }
         } catch (JSONException jsonException) {
             LOGGER.warning("Error parsing JSON: " + jsonException.getMessage());
             return;
