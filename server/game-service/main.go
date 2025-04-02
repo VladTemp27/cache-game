@@ -684,7 +684,7 @@ func (game *Game) saveGameToDB(gameID string) error{
 	  }
 	  
 	  // Create a new HTTP request
-	  req, err := http.NewRequest("POST", "http://localhost:3000/api/gamehistory/upsertGameHistory", bytes.NewBuffer(jsonData))
+	  req, err := http.NewRequest("POST", "http://localhost/api/gamehistory/upsertGameHistory", bytes.NewBuffer(jsonData))
 	  if err != nil {
 		  return fmt.Errorf("failed to create HTTP request: %v", err)
 	  }
