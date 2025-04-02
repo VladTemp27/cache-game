@@ -11,6 +11,7 @@ module org.amalzen.app {
     requires org.json;
     requires java.logging;
     requires javafx.media;
+    requires java.desktop;
 
     opens org.amalzen.app to javafx.fxml;
     exports org.amalzen.app;
