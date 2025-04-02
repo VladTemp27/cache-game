@@ -344,6 +344,11 @@ func handlePlayerTimeout(game *Game, playerIdx int, gameID string) {
 
 		// Send game end event
 		sendGameEndEvent(game, gameID)
+
+		err := game.saveGameToDB(gameID)
+		if err != nil {
+			fmt.Println("[ERROR] Failed to save game data to the database:", err)
+		}
 	}
 }
 
@@ -433,6 +438,11 @@ func handleQuit(gameID string, playerIdx int) {
 
 	// Send game end event
 	sendGameEndEvent(game, gameID)
+
+	err := game.saveGameToDB(gameID)
+	if err != nil {
+		fmt.Println("[ERROR] Failed to save game data to the database:", err)
+	}
 }
 
 // Function to handle flipping cards, check if they match, and notify both players of the cards being flipped
