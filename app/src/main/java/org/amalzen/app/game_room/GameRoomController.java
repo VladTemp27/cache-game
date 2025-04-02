@@ -1,5 +1,7 @@
 package org.amalzen.app.game_room;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
 import org.amalzen.app.components.CardComponent;
@@ -17,6 +20,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +46,7 @@ public class GameRoomController {
     private String username;
     private int playerId;
 
+    private Timeline timer;
     private boolean isMyTurn = false;
     private boolean[] pairedCards = new boolean[ROWS * COLUMNS];
     private String[] cardTexts = new String[ROWS * COLUMNS];
@@ -169,8 +174,8 @@ public class GameRoomController {
     }
 
     private void handleGameStateUpdate(JSONObject gameState) {
+        // Log the complete game state JSON object for debugging
         LOGGER.fine("Game state update: " + gameState.toString());
-
         Platform.runLater(() -> {
             try {
                 String eventType = gameState.optString("event", "unknown");
@@ -190,10 +195,25 @@ public class GameRoomController {
                         handleTurnSwitchEvent(gameState);
                         break;
                     case "timer_update":
-                        if (gameState.has("timer")) {
-                            timePerTurn.setText(gameState.getInt("timer") + "s");
-                        }
-                        break;
+                            if (gameState.has("timer")) {
+                                AtomicInteger time = new AtomicInteger(gameState.getInt("timer"));
+                                timePerTurn.setText(time + "s");
+
+                                if (timer != null) {
+                                    timer.stop();
+                                }
+
+                                timer = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                                    time.getAndDecrement();
+                                    timePerTurn.setText(time + "s");
+                                    if (time.get() <= 0) {
+                                        timer.stop();
+                                    }
+                                }));
+                                timer.setCycleCount(time.get());
+                                timer.play();
+                            }
+                            break;
                     case "game_end":
                         handleGameEndEvent(gameState);
                         break;
