@@ -31,8 +31,14 @@ ws.on('message', (data) => {
       console.log('Players Ready:');
       console.log(`Your Score: ${gameState.yourScore}`);
       console.log(`Opponent's Score: ${gameState.oppScore}`);
-      console.log(`Game Status: ${gameState.gameStatus}`);
       console.log(`Whose Turn: ${gameState.whoseTurn}`);
+      break;
+
+    case 'card_flip':
+      console.log('Card Flip Event:');
+      console.log(`Flipped By: ${gameState.flippedBy}`);
+      console.log(`Card Index: ${gameState.cardIndex}`);
+      //console.log(`Card Value: ${gameState.cardValue}`);
       break;
 
     case 'cards_matched':
@@ -51,7 +57,6 @@ ws.on('message', (data) => {
 
     case 'game_end':
       console.log('Game End:');
-      console.log(`Game Status: ${gameState.gameStatus}`);
       if (gameState.winner === -1) {
         console.log('Game is Tied');
       } else {

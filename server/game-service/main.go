@@ -430,7 +430,7 @@ func handleQuit(gameID string, playerIdx int) {
 	sendGameEndEvent(game, gameID)
 }
 
-// Function to handle flipping cards and check if they match
+// Function to handle flipping cards, check if they match, and notify both players of the cards being flipped
 func handleFlip(gameID string, playerIndex int, cardIndex int) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -462,6 +462,8 @@ func handleFlip(gameID string, playerIndex int, cardIndex int) {
 		fmt.Printf("[INFO] %s tried to flip an already paired card at index %d | Game ID: %s\n", game.Usernames[playerIndex], cardIndex, gameID)
 		return
 	}
+
+	sendCardFlipEvent(game, gameID, playerIndex, cardIndex)
 
 	if game.FlippedCard == -1 {
 		game.FlippedCard = cardIndex
@@ -544,10 +546,10 @@ func sendPlayersReadyEvent(game *Game, gameID string) {
 	for i, player := range game.Players {
 		if player != nil {
 			event := map[string]interface{}{
-				"event":      "players_ready",
-				"yourScore":  game.Scores[i],
-				"oppScore":   game.Scores[1-i],
-				"whoseTurn":  game.Usernames[game.CurrentPlayer],
+				"event":     "players_ready",
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
+				"whoseTurn": game.Usernames[game.CurrentPlayer],
 			}
 
 			message, err := json.Marshal(event)
@@ -560,16 +562,37 @@ func sendPlayersReadyEvent(game *Game, gameID string) {
 	}
 }
 
+// Function to send card flip event to both players
+func sendCardFlipEvent(game *Game, gameID string, playerIndex int, cardIndex int) {
+	for i, player := range game.Players {
+		if player != nil {
+			event := map[string]interface{}{
+				"event":     "card_flip",
+				"flippedBy": game.Usernames[playerIndex],
+				"cardIndex": cardIndex,
+				//"cardValue": game.Cards[cardIndex],
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to serialize card flip event for Player %d | Error: %v\n", i, err)
+				continue
+			}
+			player.WriteMessage(websocket.TextMessage, message)
+		}
+	}
+}
+
 // Function to send game state for a matched cards event
 func sendMatchEvent(game *Game, gameID string, playerIndex int) {
 	for i, player := range game.Players {
 		if player != nil {
 			event := map[string]interface{}{
-				"event":      "cards_matched",
-				"yourScore":  game.Scores[i],
-				"oppScore":   game.Scores[1-i],
-				"paired":     game.Paired,
-				"whoseTurn":  game.Usernames[game.CurrentPlayer],
+				"event":     "cards_matched",
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
+				"paired":    game.Paired,
+				"whoseTurn": game.Usernames[game.CurrentPlayer],
 			}
 
 			message, err := json.Marshal(event)
@@ -589,9 +612,9 @@ func sendTurnSwitchEvent(game *Game, gameID string) {
 			whoseTurn := game.Usernames[game.CurrentPlayer]
 
 			event := map[string]interface{}{
-				"event":      "turn_switch",
-				"round":      game.Round,
-				"whoseTurn":  whoseTurn,
+				"event":     "turn_switch",
+				"round":     game.Round,
+				"whoseTurn": whoseTurn,
 			}
 
 			message, err := json.Marshal(event)
@@ -609,10 +632,10 @@ func sendGameEndEvent(game *Game, gameID string) {
 	for i, player := range game.Players {
 		if player != nil {
 			event := map[string]interface{}{
-				"event":      "game_end",
-				"winner":     game.Winner,
-				"scores":     game.Scores,
-				"usernames":  game.Usernames,
+				"event":     "game_end",
+				"winner":    game.Winner,
+				"scores":    game.Scores,
+				"usernames": game.Usernames,
 			}
 
 			message, err := json.Marshal(event)
