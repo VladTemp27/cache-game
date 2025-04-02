@@ -8,13 +8,13 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
-import org.amalzen.app.ResourcePath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class CardComponent {
     @FXML
     private ImageView cardFront;
     @FXML
-    private Text cardLabel;
+    private Label cardLabel;
     @FXML
     private StackPane cardFaces;
 
@@ -51,10 +51,11 @@ public class CardComponent {
 
     @FXML
     private void initialize() {
+        cardLabel.setVisible(false);
         cardStackPane.setOnMouseClicked(event -> {
             if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
                 flipCard();
-                zoomToCenter();
+//                zoomToCenter();
             }
         });
     }
@@ -68,6 +69,8 @@ public class CardComponent {
     }
 
     public void flipCard() {
+        cardLabel.setVisible(true);
+
         if (isFlipping) return;
         isFlipping = true;
         cardButton.setDisable(true); // Disable the button
@@ -186,6 +189,44 @@ public class CardComponent {
     public void setCardLabel(String value) {
         if (cardLabel != null) {
             cardLabel.setText(value);
+
+            // Define font size ranges
+            final double MAX_FONT_SIZE = 20.0;
+            final double MIN_FONT_SIZE = 15.0;
+
+            // Get text length
+            int length = value.length();
+            double fontSize;
+            double wrappingWidth;
+
+            // Calculate font size with smoother transitions
+            if (length <= 8) {
+                fontSize = MAX_FONT_SIZE;
+                wrappingWidth = 100.0;
+            } else if (length <= 15) {
+                fontSize = 18.0;
+                wrappingWidth = 100.0;
+            } else if (length <= 25) {
+                fontSize = 16.0;
+                wrappingWidth = 105.0;
+            } else if (length <= 40) {
+                fontSize = 15.0;
+                wrappingWidth = 110.0;
+            } else {
+                fontSize = MIN_FONT_SIZE;
+                wrappingWidth = 115.0;
+            }
+
+            // Enable text wrapping
+            cardLabel.setWrapText(true);
+            cardLabel.setMaxWidth(wrappingWidth);
+            cardLabel.setPrefWidth(wrappingWidth);
+            cardLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+            // Apply the new font size
+            Font currentFont = cardLabel.getFont();
+            Font newFont = Font.font(currentFont.getFamily(), fontSize);
+            cardLabel.setFont(newFont);
         }
     }
 
