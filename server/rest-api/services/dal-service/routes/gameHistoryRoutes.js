@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllGameHistories, getGameHistoryById, upsertGameHistory, updateGameHistoryJSON } = require('../data-service/gameHistoryService');
+const { upsertUser } = require('../data-service/userService');
 
 // Get all game histories
 router.get('/getAllGameHistories', async (req, res) => {
@@ -27,10 +28,27 @@ router.post('/upsertGameHistory', async (req, res) => {
         player_2: req.body.player_2,
         player_2_score: req.body.player_2_score
     };
-
+    
     try {
         const newGameHistory = await upsertGameHistory(gameHistoryData);
         await updateGameHistoryJSON();
+
+        if (gameHistoryData.player_1){            
+            const player_1 = {
+                username: gameHistoryData.player_1,
+                score: gameHistoryData.player_1_score
+            }
+            await upsertUser(player_1)
+        }
+
+        if (gameHistoryData.player_2){
+            const player_2 = {
+                username: gameHistoryData.player_2,
+                score: gameHistoryData.player_2_score
+            }
+            await upsertUser(player_2)
+        }
+
         res.status(201).json(newGameHistory);
     } catch (err) {
         res.status(400).json({ message: err.message });
