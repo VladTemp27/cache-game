@@ -72,46 +72,41 @@ public class CardComponent {
         rotateOut.setToAngle(90);
 
         rotateOut.setOnFinished(event -> {
-            cardFront.setOpacity(isFlipped ? 1 : 0);
-            cardBack.setOpacity(isFlipped ? 0 : 1);
-            cardLabel.setOpacity(isFlipped ? 0 : 1);
-            // Toggle visibility at halfway point
+            isFlipped = !isFlipped;
+
             cardFront.setVisible(!isFlipped);
             cardBack.setVisible(isFlipped);
             cardLabel.setVisible(isFlipped);
 
-            // Also set opacity for good measure
-            cardFront.setOpacity(isFlipped ? 0 : 1);
+            cardFront.setOpacity(!isFlipped ? 1 : 0);
             cardBack.setOpacity(isFlipped ? 1 : 0);
             cardLabel.setOpacity(isFlipped ? 1 : 0);
 
-            // Flag the card as flipped
-            isFlipped = !isFlipped;
-
             if (isFlipped) {
+                cardBack.toFront();
                 flippedCardCount++;
             } else {
+                cardFront.toFront();
                 flippedCardCount--;
             }
 
-            // Rotate back to complete the flip
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
             rotateIn.setFromAngle(90);
-            rotateIn.setToAngle(180);
+            rotateIn.setToAngle(0);
             rotateIn.setOnFinished(e -> isFlipping = false);
-            rotateIn.play();
 
             RotateTransition rotateLabel = new RotateTransition(Duration.millis(300), cardLabel);
             rotateLabel.setAxis(Rotate.Y_AXIS);
             rotateLabel.setFromAngle(90);
             rotateLabel.setToAngle(0);
-            rotateLabel.play();
+
+            ParallelTransition parallelTransition = new ParallelTransition(rotateIn, rotateLabel);
+            parallelTransition.play();
         });
 
         rotateOut.play();
     }
-
 
     private void zoomToCenter() {
         if (cardStackPane.getScene() == null) return;

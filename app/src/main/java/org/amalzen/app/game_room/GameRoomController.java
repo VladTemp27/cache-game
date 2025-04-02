@@ -108,7 +108,7 @@ public class GameRoomController {
 
                     // Set card click behavior
                     final int index = cardId;
-                    cardComponent.cardButton.setOnAction(event -> handleCardClick(index));
+                    cardComponent.cardButton.setOnMouseClicked(event -> handleCardClick(index));
 
                     cardComponents.add(cardComponent);
                     currentHBox.getChildren().add(cardNode);
