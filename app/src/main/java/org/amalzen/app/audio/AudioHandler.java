@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 public class AudioHandler {
     private static MediaPlayer musicPlayer, effectPlayer;
     private static String currentMusic, currentEffect;
+    private static boolean audioOutputAlerted = false;
 
     public static void playSound(String path) {
         try {
@@ -23,7 +24,10 @@ public class AudioHandler {
             }
 
             if (!isAudioOutputAvailable()) {
-                showAlert("No audio output detected. Sound will not play.");
+                if (!audioOutputAlerted) {
+                    showAlert("No audio output detected. Sound will not play.");
+                    audioOutputAlerted = true;
+                }
                 return;
             }
 

@@ -66,52 +66,57 @@ public class CardComponent {
         if (isFlipping) return;
         isFlipping = true;
 
+        // Rotate the cardFaces and label out (from 0 to 90 degrees)
         RotateTransition rotateOut = new RotateTransition(Duration.millis(300), cardFaces);
         rotateOut.setAxis(Rotate.Y_AXIS);
         rotateOut.setFromAngle(0);
         rotateOut.setToAngle(90);
 
-        rotateOut.setOnFinished(event -> {
-            cardFront.setOpacity(isFlipped ? 1 : 0);
-            cardBack.setOpacity(isFlipped ? 0 : 1);
-            cardLabel.setOpacity(isFlipped ? 0 : 1);
-            // Toggle visibility at halfway point
+        RotateTransition rotateLabelOut = new RotateTransition(Duration.millis(300), cardLabel);
+        rotateLabelOut.setAxis(Rotate.Y_AXIS);
+        rotateLabelOut.setFromAngle(0);
+        rotateLabelOut.setToAngle(90);
+
+        ParallelTransition parallelOut = new ParallelTransition(rotateOut, rotateLabelOut);
+        parallelOut.setOnFinished(event -> {
+            isFlipped = !isFlipped;
+
+            // Toggle visibility and opacity of cardFront and cardBack
             cardFront.setVisible(!isFlipped);
             cardBack.setVisible(isFlipped);
             cardLabel.setVisible(isFlipped);
 
-            // Also set opacity for good measure
-            cardFront.setOpacity(isFlipped ? 0 : 1);
+            cardFront.setOpacity(!isFlipped ? 1 : 0);
             cardBack.setOpacity(isFlipped ? 1 : 0);
             cardLabel.setOpacity(isFlipped ? 1 : 0);
 
-            // Flag the card as flipped
-            isFlipped = !isFlipped;
-
+            // Bring the appropriate card to the front
             if (isFlipped) {
+                cardBack.toFront();
                 flippedCardCount++;
             } else {
+                cardFront.toFront();
                 flippedCardCount--;
             }
 
-            // Rotate back to complete the flip
+            // Now rotate the card and label back (from 90 to 0 degrees)
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
             rotateIn.setFromAngle(90);
-            rotateIn.setToAngle(180);
-            rotateIn.setOnFinished(e -> isFlipping = false);
-            rotateIn.play();
+            rotateIn.setToAngle(0);
 
-            RotateTransition rotateLabel = new RotateTransition(Duration.millis(300), cardLabel);
-            rotateLabel.setAxis(Rotate.Y_AXIS);
-            rotateLabel.setFromAngle(90);
-            rotateLabel.setToAngle(0);
-            rotateLabel.play();
+            RotateTransition rotateLabelIn = new RotateTransition(Duration.millis(300), cardLabel);
+            rotateLabelIn.setAxis(Rotate.Y_AXIS);
+            rotateLabelIn.setFromAngle(90);
+            rotateLabelIn.setToAngle(0);
+
+            ParallelTransition parallelIn = new ParallelTransition(rotateIn, rotateLabelIn);
+            parallelIn.setOnFinished(e -> isFlipping = false);
+            parallelIn.play();
         });
 
-        rotateOut.play();
+        parallelOut.play();
     }
-
 
     private void zoomToCenter() {
         if (cardStackPane.getScene() == null) return;
