@@ -119,7 +119,7 @@ func startGame(gameID string) {
 		return
 	}
 	game.LoopRunning = true
-	game.GameStatus = "match_start"
+	game.GameStatus = "players_ready"
 	gamesMux.Unlock()
 
 	if err := fetchAndStoreQuestions(game); err != nil {
@@ -135,38 +135,41 @@ func startGame(gameID string) {
 	game.Timer = 180
 	game.LoopRunning = true
 
-	fmt.Printf("[GAME START] Game ID: %s | Timer: %d seconds | Player %d starts (Round %d)\n",
-		gameID, game.Timer, game.CurrentPlayer, game.Round)
+	fmt.Printf("[GAME START] Game ID: %s | Timer: %d seconds | %s starts (Round %d)\n", gameID, game.Timer, game.Usernames[game.CurrentPlayer], game.Round)
+
+	// Send game ready information to players
+	sendGameReadyEvent(game, gameID)
 
 	go gameLoop(game, gameID)
 }
 
-// Function to start the game loop in a new goroutine
 func gameLoop(game *Game, gameID string) {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
+
+	// Notify players that the game is ready and both players are connected
+	sendPlayersReadyEvent(game, gameID)
 
 	for game.Timer > 0 {
 		<-ticker.C
 
 		game.Mutex.Lock()
-		if game.GameStatus == "match_end" {
+		if game.GameStatus == "game_end" {
 			game.Mutex.Unlock()
 			fmt.Printf("[GAME OVER] Game ID: %s\n", gameID)
 			return
 		}
-		if game.Timer > 0 { // ensure timer does not go below zero
+		if game.Timer > 0 {
 			game.Timer--
 		}
-		sendGameState(game, gameID) // send game state to clients with no winner yet
-		fmt.Printf("[TIMER] Game ID: %s | Time Left: %d seconds | Round: %d | Scores: [%d, %d]\n",
-			gameID, game.Timer, game.Round, game.Scores[0], game.Scores[1])
+		fmt.Printf("[TIMER] Game ID: %s | Time Left: %d seconds | Round: %d | Scores: [%d, %d]\n", gameID, game.Timer, game.Round, game.Scores[0], game.Scores[1])
+
 		game.Mutex.Unlock()
 	}
 
-	// Game is over
-	game.GameStatus = "match_end"
+	// Timer has run out
 	game.Mutex.Lock()
+	game.GameStatus = "game_end"
 	game.LoopRunning = false
 	game.Mutex.Unlock()
 
@@ -177,28 +180,10 @@ func gameLoop(game *Game, gameID string) {
 	} else if game.Scores[1] > game.Scores[0] {
 		winner = 1
 	}
+	game.Winner = winner
 
-	// Broadcast the game over message
-	game.Mutex.Lock()
-	state := map[string]interface{}{
-		"scores":    game.Scores,
-		"turn":      game.CurrentPlayer,
-		"timer":     game.Timer,
-		"round":     game.Round,
-		"winner":    winner,
-		"status":    game.GameStatus,
-		"usernames": game.Usernames,
-	}
-	message, _ := json.Marshal(state)
-	for i, player := range game.Players {
-		if player != nil {
-			err := player.WriteMessage(websocket.TextMessage, message)
-			if err != nil {
-				fmt.Printf("[ERROR] Failed to send state to Player %d | Error: %v\n", i, err)
-			}
-		}
-	}
-	game.Mutex.Unlock()
+	// Send game end event
+	sendGameEndEvent(game, gameID)
 
 	if winner != -1 {
 		fmt.Printf("[TIME UP] Game ID: %s | Game Over! %s wins with %d points\n", gameID, game.Usernames[winner], game.Scores[winner])
@@ -234,7 +219,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 			Usernames:   [2]string{"", ""},
 			Scores:      make([]int, 2),
 			FlippedCard: -1,
-			GameStatus:  "waiting_for_players",
+			GameStatus:  "game_ready",
 		}
 		game = games[gameID]
 		fmt.Printf("[NEW GAME] Created game %s\n", gameID)
@@ -273,17 +258,17 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the slot is already occupied
 	if game.Players[playerIdx] != nil {
-		fmt.Printf("[ERROR] Player %s is already connected in Game ID: %s\n", username, gameID)
+		fmt.Printf("[ERROR] %s is already connected in Game ID: %s\n", username, gameID)
 		conn.Close()
 		return
 	}
 
 	// Connect or reconnect the player
 	game.Players[playerIdx] = conn
-	fmt.Printf("[CONNECTED] Player %d (%s) joined Game ID: %s\n", playerIdx, username, gameID)
+	fmt.Printf("[CONNECTED] %s joined Game ID: %s\n", username, gameID)
 
 	// Start the game when both players are connected
-	if game.Players[0] != nil && game.Players[1] != nil && game.GameStatus == "waiting_for_players" {
+	if game.Players[0] != nil && game.Players[1] != nil && game.GameStatus == "game_ready" {
 		game.GameStatus = "players_ready"
 		startGame(gameID)
 	}
@@ -302,12 +287,12 @@ func monitorConnection(game *Game, conn *websocket.Conn, playerIdx int, username
 		select {
 		case <-pingTicker.C:
 			game.Mutex.Lock()
-			if game.GameStatus == "match_end" {
+			if game.GameStatus == "game_end" {
 				game.Mutex.Unlock()
 				return
 			}
 			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				fmt.Printf("[DISCONNECTED] Player %d (%s) lost connection | Game ID: %s\n", playerIdx, username, gameID)
+				fmt.Printf("[DISCONNECTED] %s lost connection | Game ID: %s\n", username, gameID)
 				game.Players[playerIdx] = nil
 				conn.Close()
 				game.Mutex.Unlock()
@@ -331,12 +316,11 @@ func handleDisconnection(gameID string, playerIdx int) {
 	game.Mutex.Lock()
 	defer game.Mutex.Unlock()
 
-	if game.GameStatus == "match_end" {
+	if game.GameStatus == "game_end" {
 		return
 	}
 
-	fmt.Printf("[WAITING] Player %d disconnected | Waiting 10s before declaring other player winner | Game ID: %s\n",
-		playerIdx, gameID)
+	fmt.Printf("[WAITING] %s disconnected | Waiting 10s before declaring other player winner | Game ID: %s\n", game.Usernames[playerIdx], gameID)
 
 	go handlePlayerTimeout(game, playerIdx, gameID)
 }
@@ -348,12 +332,13 @@ func handlePlayerTimeout(game *Game, playerIdx int, gameID string) {
 	defer game.Mutex.Unlock()
 
 	if game.Players[playerIdx] == nil {
-		game.GameStatus = "match_end"
+		game.GameStatus = "game_end"
 		winner := 1 - playerIdx
 		game.Winner = winner // Set the winner
-		fmt.Printf("[WIN] Player %d wins by default | Game ID: %s\n", winner, gameID)
-		// Send game state to remaining players
-		sendGameState(game, gameID)
+		fmt.Printf("[WIN] %s wins by default | Game ID: %s\n", game.Usernames[winner], gameID)
+
+		// Send game end event
+		sendGameEndEvent(game, gameID)
 	}
 }
 
@@ -363,7 +348,7 @@ func listenForMessages(conn *websocket.Conn, game *Game, playerIdx int, username
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Printf("[DISCONNECTED] Player %d (%s) closed connection | Game ID: %s\n", playerIdx, username, gameID)
+			fmt.Printf("[DISCONNECTED] %s closed connection | Game ID: %s\n", username, gameID)
 			game.Mutex.Lock()
 			game.Players[playerIdx] = nil
 			game.Mutex.Unlock()
@@ -402,21 +387,22 @@ func handleMove(gameID string, playerIndex int, matched bool) {
 	game.Mutex.Lock()
 	defer game.Mutex.Unlock()
 
-	if game.GameStatus == "match_end" {
+	if game.GameStatus == "game_end" {
 		fmt.Println("[INFO] Move ignored, game is over")
 		return
 	}
 
 	if game.CurrentPlayer != playerIndex {
-		fmt.Printf("[WARNING] Player %d tried to move out of turn in Game ID: %s\n", playerIndex, gameID)
+		fmt.Printf("[WARNING] %s tried to move out of turn in Game ID: %s\n", game.Usernames[playerIndex], gameID)
 		return
 	}
 
 	if matched {
 		handleMatch(game, playerIndex, -1)
-	} else {
-		handleTurnSwitch(game, playerIndex)
+		return
 	}
+
+	handleTurnSwitch(game, playerIndex)
 }
 
 // Function to handle player quitting
@@ -431,20 +417,20 @@ func handleQuit(gameID string, playerIdx int) {
 	game.Mutex.Lock()
 	defer game.Mutex.Unlock()
 
-	if game.GameStatus == "match_end" {
+	if game.GameStatus == "game_end" {
 		return
 	}
 
-	game.GameStatus = "match_end"
+	game.GameStatus = "game_end"
 	winner := 1 - playerIdx
 	game.Winner = winner // Set the winner
-	fmt.Printf("[QUIT] Player %d quit | Player %d wins by default | Game ID: %s\n", playerIdx, winner, gameID)
+	fmt.Printf("[QUIT] %s quits | %s wins by default | Game ID: %s\n", game.Usernames[playerIdx], game.Usernames[winner], gameID)
 
-	// Send game state to remaining players
-	sendGameState(game, gameID)
+	// Send game end event
+	sendGameEndEvent(game, gameID)
 }
 
-// Function to handle flipping cards and check if they match
+// Function to handle flipping cards, check if they match, and notify both players of the cards being flipped
 func handleFlip(gameID string, playerIndex int, cardIndex int) {
 	gamesMux.Lock()
 	game, exists := games[gameID]
@@ -457,88 +443,208 @@ func handleFlip(gameID string, playerIndex int, cardIndex int) {
 	game.Mutex.Lock()
 	defer game.Mutex.Unlock()
 
-	if game.GameStatus == "match_end" {
+	if game.GameStatus == "game_end" {
 		fmt.Println("[INFO] Flip ignored, game is over")
 		return
 	}
 
+	if cardIndex < 0 || cardIndex >= len(game.Cards) {
+		fmt.Printf("[WARNING] %s attempted to flip an invalid card index %d | Game ID: %s\n", game.Usernames[playerIndex], cardIndex, gameID)
+		return
+	}
+
 	if game.CurrentPlayer != playerIndex {
-		fmt.Printf("[WARNING] Player %d tried to flip out of turn in Game ID: %s\n", playerIndex, gameID)
+		fmt.Printf("[WARNING] %d tried to flip out of turn in Game ID: %s\n", playerIndex, gameID)
 		return
 	}
 
 	if game.Paired[cardIndex] {
-		fmt.Printf("[INFO] Player %d tried to flip an already paired card at index %d | Game ID: %s\n", playerIndex, cardIndex, gameID)
+		fmt.Printf("[INFO] %s tried to flip an already paired card at index %d | Game ID: %s\n", game.Usernames[playerIndex], cardIndex, gameID)
 		return
 	}
 
+	sendCardFlipEvent(game, gameID, playerIndex, cardIndex)
+
 	if game.FlippedCard == -1 {
 		game.FlippedCard = cardIndex
-		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
-	} else {
-		if game.FlippedCard == cardIndex {
-			fmt.Printf("[WARNING] Player %d tried to flip the same card at index %d twice | Game ID: %s\n", playerIndex, cardIndex, gameID)
-			return
-		}
-		fmt.Printf("[FLIP] Player %d flipped card at index %d | Pair ID: %d\n", playerIndex, cardIndex, game.PairIDs[cardIndex])
-		if game.PairIDs[game.FlippedCard] == game.PairIDs[cardIndex] {
-			handleMatch(game, playerIndex, cardIndex)
-		} else {
-			handleTurnSwitch(game, playerIndex)
-		}
-		game.FlippedCard = -1
+		fmt.Printf("[FLIP] %s flipped card at index %d | Pair ID: %d\n", game.Usernames[playerIndex], cardIndex, game.PairIDs[cardIndex])
+		return
 	}
+
+	if game.FlippedCard == cardIndex {
+		fmt.Printf("[WARNING] %s tried to flip the same card at index %d twice | Game ID: %s\n", game.Usernames[playerIndex], cardIndex, gameID)
+		return
+	}
+
+	fmt.Printf("[FLIP] %s flipped card at index %d | Pair ID: %d\n", game.Usernames[playerIndex], cardIndex, game.PairIDs[cardIndex])
+
+	// Check if the flipped cards match
+	if game.PairIDs[game.FlippedCard] == game.PairIDs[cardIndex] {
+		handleMatch(game, playerIndex, cardIndex)
+		game.FlippedCard = -1 // Reset flipped card after a successful match
+		return
+	}
+
+	// If no match, switch turn
+	handleTurnSwitch(game, playerIndex)
+	game.FlippedCard = -1 // Reset flipped card after a failed match
 }
 
 // Function to handle a successful match
 func handleMatch(game *Game, playerIndex int, cardIndex int) {
-	game.Scores[playerIndex] += 10 // Fixed score increment
+	game.Scores[playerIndex] += 10
 	if cardIndex != -1 {
 		game.Paired[game.FlippedCard] = true
 		game.Paired[cardIndex] = true
 	}
-	fmt.Printf("[MATCH] Player %d matched! +10 points | Round: %d\n", playerIndex, game.Round)
+	fmt.Printf("[MATCH] %s matches successfully! +10 points | Round: %d\n", game.Usernames[playerIndex], game.Round)
+
+	// Send match event
+	sendMatchEvent(game, "", playerIndex)
 }
 
 // Function to handle turn switching
 func handleTurnSwitch(game *Game, playerIndex int) {
-	if game.GameStatus != "match_end" { // ensure the game is active before incrementing the round
-		game.CurrentPlayer = 1 - playerIndex
-		game.Round++ // increment the round when the turn is passed
-		fmt.Printf("[TURN SWITCH] Player %d failed to match | Round: %d | Turn goes to Player %d\n",
-			playerIndex, game.Round, game.CurrentPlayer)
+	if game.GameStatus != "game_end" { // ensure the game is active before incrementing the round
+		game.CurrentPlayer = 1 - playerIndex // switch to the other player
+		game.Round++                         // increment the round when the turn is passed
+		game.FlippedCard = -1                // reset the flipped card for the next player
+
+		fmt.Printf("[TURN SWITCH] %s failed to match | Round: %d | Turn goes to %s\n", game.Usernames[playerIndex], game.Round, game.Usernames[game.CurrentPlayer])
+
+		// Send turn switch event details
+		sendTurnSwitchEvent(game, "")
 	}
 }
 
-// Function to send the game state to all players
-func sendGameState(game *Game, gameID string) {
+// Function to send game setup information
+func sendGameReadyEvent(game *Game, gameID string) {
 	for i, player := range game.Players {
 		if player != nil {
-			whoseTurn := "your turn"
-			if game.CurrentPlayer != i {
-				whoseTurn = "opp turn"
+			opponentName := game.Usernames[1-i]
+			yourName := game.Usernames[i]
+			event := map[string]interface{}{
+				"event":        "game_ready",
+				"cards":        game.Cards,
+				"opponentName": opponentName,
+				"yourName":     yourName,
+				"timeDuration": game.Timer,
 			}
 
-			gameState := map[string]interface{}{
-				"round":     game.Round,
-				"yourScore": game.Scores[i],
-				"oppScore":  game.Scores[1-i],
-				"timer":     game.Timer,
-				"cards":     game.Cards,
-				"paired":    game.Paired,
-				"whoseTurn": whoseTurn,
-				"status":    game.GameStatus,
-				"winner":    game.Winner,
-				"usernames": game.Usernames,
-				"scores":    game.Scores,
-			}
-
-			message, err := json.Marshal(gameState)
+			message, err := json.Marshal(event)
 			if err != nil {
-				fmt.Printf("[ERROR] Failed to serialize game state for Player %d | Error: %v\n", i, err)
+				fmt.Printf("[ERROR] Failed to serialize game setup event for Player %d | Error: %v\n", i, err)
 				continue
 			}
-			err = player.WriteMessage(websocket.TextMessage, message)
+			player.WriteMessage(websocket.TextMessage, message)
+		}
+	}
+}
+
+// Function to send game state when both players are ready
+func sendPlayersReadyEvent(game *Game, gameID string) {
+	for i, player := range game.Players {
+		if player != nil {
+			event := map[string]interface{}{
+				"event":     "players_ready",
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
+				"whoseTurn": game.Usernames[game.CurrentPlayer],
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to serialize players ready event for Player %d | Error: %v\n", i, err)
+				continue
+			}
+			player.WriteMessage(websocket.TextMessage, message)
+		}
+	}
+}
+
+// Function to send card flip event to both players
+func sendCardFlipEvent(game *Game, gameID string, playerIndex int, cardIndex int) {
+	for i, player := range game.Players {
+		if player != nil {
+			event := map[string]interface{}{
+				"event":     "card_flip",
+				"flippedBy": game.Usernames[playerIndex],
+				"cardIndex": cardIndex,
+				//"cardValue": game.Cards[cardIndex],
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to serialize card flip event for Player %d | Error: %v\n", i, err)
+				continue
+			}
+			player.WriteMessage(websocket.TextMessage, message)
+		}
+	}
+}
+
+// Function to send game state for a matched cards event
+func sendMatchEvent(game *Game, gameID string, playerIndex int) {
+	for i, player := range game.Players {
+		if player != nil {
+			event := map[string]interface{}{
+				"event":     "cards_matched",
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
+				"paired":    game.Paired,
+				"whoseTurn": game.Usernames[game.CurrentPlayer],
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to serialize match event for Player %d | Error: %v\n", i, err)
+				continue
+			}
+			player.WriteMessage(websocket.TextMessage, message)
+		}
+	}
+}
+
+// Function to send game state for a turn switch event
+func sendTurnSwitchEvent(game *Game, gameID string) {
+	for i, player := range game.Players {
+		if player != nil {
+			whoseTurn := game.Usernames[game.CurrentPlayer]
+
+			event := map[string]interface{}{
+				"event":     "turn_switch",
+				"round":     game.Round,
+				"whoseTurn": whoseTurn,
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to serialize turn switch event for %s | Error: %v\n", game.Usernames[i], err)
+				continue
+			}
+			player.WriteMessage(websocket.TextMessage, message)
+		}
+	}
+}
+
+// Function to send game state for game end event
+func sendGameEndEvent(game *Game, gameID string) {
+	for i, player := range game.Players {
+		if player != nil {
+			event := map[string]interface{}{
+				"event":     "game_end",
+				"winner":    game.Winner,
+				"scores":    game.Scores,
+				"usernames": game.Usernames,
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				fmt.Printf("[ERROR] Failed to serialize game end event for %s | Error: %v\n", game.Usernames[i], err)
+				continue
+			}
+
+			player.WriteMessage(websocket.TextMessage, message)
 		}
 	}
 }
