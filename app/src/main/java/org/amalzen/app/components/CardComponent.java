@@ -46,7 +46,7 @@ public class CardComponent {
         cardButton.setOnAction(event -> {
             if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
                 flipCard();
-                zoomToCenter();
+//                zoomToCenter();
             }
         });
     }
