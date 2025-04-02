@@ -9,6 +9,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -16,7 +17,11 @@ import javafx.util.Duration;
 import org.amalzen.app.ResourcePath;
 import org.amalzen.app.audio.AudioHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CardComponent {
+    private static List<CardComponent> flippedCards = new ArrayList<>();
     @FXML
     public Button cardButton;
     @FXML
@@ -43,9 +48,11 @@ public class CardComponent {
     private double originalY = 0;
     private double originalScale = 1.0;
 
+    private Pane overlay;
+
     @FXML
     private void initialize() {
-        cardButton.setOnAction(event -> {
+        cardStackPane.setOnMouseClicked(event -> {
             if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
                 flipCard();
                 zoomToCenter();
@@ -65,8 +72,8 @@ public class CardComponent {
     public void flipCard() {
         if (isFlipping) return;
         isFlipping = true;
+        cardButton.setDisable(true); // Disable the button
 
-        // Rotate the cardFaces and label out (from 0 to 90 degrees)
         RotateTransition rotateOut = new RotateTransition(Duration.millis(300), cardFaces);
         rotateOut.setAxis(Rotate.Y_AXIS);
         rotateOut.setFromAngle(0);
@@ -81,7 +88,6 @@ public class CardComponent {
         parallelOut.setOnFinished(event -> {
             isFlipped = !isFlipped;
 
-            // Toggle visibility and opacity of cardFront and cardBack
             cardFront.setVisible(!isFlipped);
             cardBack.setVisible(isFlipped);
             cardLabel.setVisible(isFlipped);
@@ -90,7 +96,6 @@ public class CardComponent {
             cardBack.setOpacity(isFlipped ? 1 : 0);
             cardLabel.setOpacity(isFlipped ? 1 : 0);
 
-            // Bring the appropriate card to the front
             if (isFlipped) {
                 cardBack.toFront();
                 flippedCardCount++;
@@ -99,7 +104,6 @@ public class CardComponent {
                 flippedCardCount--;
             }
 
-            // Now rotate the card and label back (from 90 to 0 degrees)
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
             rotateIn.setFromAngle(90);
@@ -111,7 +115,10 @@ public class CardComponent {
             rotateLabelIn.setToAngle(0);
 
             ParallelTransition parallelIn = new ParallelTransition(rotateIn, rotateLabelIn);
-            parallelIn.setOnFinished(e -> isFlipping = false);
+            parallelIn.setOnFinished(e -> {
+                isFlipping = false;
+                cardButton.setDisable(false); // Re-enable the button
+            });
             parallelIn.play();
         });
 
@@ -132,8 +139,16 @@ public class CardComponent {
             double sceneHeight = scene.getHeight();
             Bounds cardBounds = cardStackPane.localToScene(cardStackPane.getBoundsInLocal());
 
-            double targetX = (sceneWidth - cardBounds.getWidth() * 2.0) / 2.0 - cardBounds.getMinX() + cardStackPane.getTranslateX();
+            double targetX;
             double targetY = (sceneHeight - cardBounds.getHeight() * 2.0) / 2.0 - cardBounds.getMinY() + cardStackPane.getTranslateY();
+
+            if (flippedCards.isEmpty()) {
+                targetX = (sceneWidth / 4.0) - cardBounds.getMinX() + cardStackPane.getTranslateX();
+                flippedCards.add(this);
+            } else {
+                targetX = (3 * sceneWidth / 4.0) - cardBounds.getMinX() + cardStackPane.getTranslateX();
+                flippedCards.add(this);
+            }
 
             cardStackPane.toFront();
             cardStackPane.setViewOrder(-1.0);
@@ -150,6 +165,7 @@ public class CardComponent {
             zoomIn.play();
 
             isZoomed = true;
+
         } else {
             cardStackPane.setViewOrder(0.0);
 
@@ -165,8 +181,8 @@ public class CardComponent {
             zoomOut.play();
 
             isZoomed = false;
+            flippedCards.remove(this);
         }
-
     }
 
     public void setCardLabel(String value) {
