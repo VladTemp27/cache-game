@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 
 public class MainmenuController {
     @FXML
@@ -39,6 +40,6 @@ public class MainmenuController {
 
     @FXML
     private void initialize() {
-
+        AudioHandler.playSound(ResourcePath.MAIN_MENU_MUSIC.getPath());
     }
 }

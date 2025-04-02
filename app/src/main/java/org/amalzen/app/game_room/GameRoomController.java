@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 import org.amalzen.app.components.CardComponent;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,6 +48,7 @@ public class GameRoomController {
     private HBox HBox1;
     @FXML
     private HBox HBox2;
+
     @FXML
     private Label whoseTurn;
 
@@ -62,6 +64,7 @@ public class GameRoomController {
 
     @FXML
     public void initialize() {
+        AudioHandler.playSound(ResourcePath.GAME_ROOM_MUSIC.getPath());
         // Setup UI components
         cancelButton.setOnMouseClicked(event -> {
             if (gameRoom != null) {

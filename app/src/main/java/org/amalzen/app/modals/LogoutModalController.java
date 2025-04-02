@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import org.amalzen.app.APIs;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,9 +49,11 @@ public class LogoutModalController {
                 Main.sessionId = null;
                 Main.username = null;
                 Main.ChangeScene(ResourcePath.LOGIN.getPath());
+                AudioHandler.stopMusic();
             } else {
                 System.err.println("Logout failed: " + response.body());
                 // Force Logout due to session storage
+                AudioHandler.stopMusic();
                 Main.ChangeScene(ResourcePath.LOGIN.getPath());
 
             }
