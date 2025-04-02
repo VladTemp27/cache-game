@@ -10,6 +10,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"bytes"
 
 	"github.com/gorilla/websocket"
 )
@@ -184,6 +185,10 @@ func gameLoop(game *Game, gameID string) {
 
 	// Send game end event
 	sendGameEndEvent(game, gameID)
+	
+	if err := game.saveGameToDB(gameID); err != nil {
+		fmt.Println("[ERROR] Failed to save game data to the database:", err)
+	}
 
 	if winner != -1 {
 		fmt.Printf("[TIME UP] Game ID: %s | Game Over! %s wins with %d points\n", gameID, game.Usernames[winner], game.Scores[winner])
@@ -647,6 +652,52 @@ func sendGameEndEvent(game *Game, gameID string) {
 			player.WriteMessage(websocket.TextMessage, message)
 		}
 	}
+}
+
+// Function to save game data to the database
+func (game *Game) saveGameToDB(gameID string) error{
+	fmt.Println("[INFO] Saving game data to the database...")
+
+	gameHistoryData := map[string]interface{}{
+		"gameroom_id": gameID,
+		"difficulty": "normal",
+		"player_1": game.Usernames[0],
+        "player_1_score": game.Scores[0],
+        "player_2": game.Usernames[1],
+        "player_2_score": game.Scores[1],
+	}
+
+	  // Convert game data to JSON
+	  jsonData, err := json.Marshal(gameHistoryData)
+	  if err != nil {
+		  return fmt.Errorf("failed to marshal game data: %v", err)
+	  }
+	  
+	  // Create a new HTTP request
+	  req, err := http.NewRequest("POST", "http://localhost:3000/api/gamehistory/upsertGameHistory", bytes.NewBuffer(jsonData))
+	  if err != nil {
+		  return fmt.Errorf("failed to create HTTP request: %v", err)
+	  }
+	  
+	  // Set appropriate headers
+	  req.Header.Set("Content-Type", "application/json")
+	  
+	  // Create an HTTP client and send the request
+	  client := &http.Client{Timeout: 10 * time.Second}
+	  resp, err := client.Do(req)
+	  if err != nil {
+		  return fmt.Errorf("failed to send HTTP request: %v", err)
+	  }
+	  defer resp.Body.Close()
+	  
+	  // Check if the request was successful
+	  if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		  body, _ := io.ReadAll(resp.Body)
+		  return fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+	  }
+	  
+	  fmt.Println("[INFO] Game data successfully saved to database")
+	  return nil
 }
 
 // Function to start the WebSocket server
