@@ -414,6 +414,9 @@ public class GameRoomModel implements AutoCloseable {
                 case "players_ready":
                     handlePlayersReadyEvent(response);
                     break;
+                case "card_flip":
+                    handCardFlipEvent(response);
+                    break;
                 case "cards_matched":
                     handleCardsMatchedEvent(response);
                     break;
@@ -428,6 +431,16 @@ public class GameRoomModel implements AutoCloseable {
                     break;
             }
         }
+    }
+
+    private void handCardFlipEvent(JSONObject response) {
+        LOGGER.fine("Handling card flipped event: " + response.toString(2));
+        int flippedIndex = response.getInt("cardIndex");
+        runCallback(() -> {
+            if (onCardFlipped != null) {
+                onCardFlipped.accept(flippedIndex);
+            }
+        });
     }
 
     private void handleGameReadyEvent(JSONObject response) {
@@ -529,6 +542,12 @@ public class GameRoomModel implements AutoCloseable {
                     state.put("opponentName", opponentName);
                     state.put("yourName", username);
                     state.put("timeDuration", timeRemaining);
+                    handler.accept(state);
+                })
+                .onCardFlipped(cardIndex -> {
+                    JSONObject state = new JSONObject();
+                    state.put("event", "card_flip");
+                    state.put("flipped", cardIndex);
                     handler.accept(state);
                 })
                 .onCardsMatched(pairedCards -> {

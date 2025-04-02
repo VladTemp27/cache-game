@@ -188,6 +188,9 @@ public class GameRoomController {
                         whoseTurn.setText("Both players connected. Game starting!");
                         updateGameUI(gameState);
                         break;
+                    case "card_flip":
+                        handleCardFlipEvent(gameState);
+                        break;
                     case "cards_matched":
                         handleCardsMatchedEvent(gameState);
                         break;
@@ -195,25 +198,8 @@ public class GameRoomController {
                         handleTurnSwitchEvent(gameState);
                         break;
                     case "timer_update":
-                            if (gameState.has("timer")) {
-                                AtomicInteger time = new AtomicInteger(gameState.getInt("timer"));
-                                timePerTurn.setText(time + "s");
-
-                                if (timer != null) {
-                                    timer.stop();
-                                }
-
-                                timer = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-                                    time.getAndDecrement();
-                                    timePerTurn.setText(time + "s");
-                                    if (time.get() <= 0) {
-                                        timer.stop();
-                                    }
-                                }));
-                                timer.setCycleCount(time.get());
-                                timer.play();
-                            }
-                            break;
+                        runTimer(gameState);
+                        break;
                     case "game_end":
                         handleGameEndEvent(gameState);
                         break;
@@ -224,6 +210,38 @@ public class GameRoomController {
                 LOGGER.log(Level.SEVERE, "Error processing game state: " + gameState, e);
             }
         });
+    }
+
+    private void runTimer(JSONObject gameState) {
+        if (gameState.has("timer")) {
+            AtomicInteger time = new AtomicInteger(gameState.getInt("timer"));
+            timePerTurn.setText(time + "s");
+
+            if (timer != null) {
+                timer.stop();
+            }
+
+            timer = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                time.getAndDecrement();
+                timePerTurn.setText(time + "s");
+                if (time.get() <= 0) {
+                    timer.stop();
+                }
+            }));
+            timer.setCycleCount(time.get());
+            timer.play();
+        }
+    }
+
+    // This will flip the cards that the opponent has flipped
+    private void handleCardFlipEvent(JSONObject gameState) {
+        int cardIndex = gameState.getInt("flipped");
+
+        // Flip card and show content
+        CardComponent card = cardComponents.get(cardIndex);
+        if (!card.isFlipped()) {
+            card.flipCard();
+        }
     }
 
     private void handleGameReadyEvent(JSONObject gameState) {

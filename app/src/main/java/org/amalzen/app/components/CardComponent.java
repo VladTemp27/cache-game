@@ -199,7 +199,7 @@ public class CardComponent {
             double fontSize;
             double wrappingWidth;
 
-            // Calculate font size with smoother transitions
+            // Calculate font size with smoot   her transitions
             if (length <= 8) {
                 fontSize = MAX_FONT_SIZE;
                 wrappingWidth = 100.0;
