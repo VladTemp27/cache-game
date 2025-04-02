@@ -104,6 +104,7 @@ public class CardComponent {
                 flippedCardCount--;
             }
 
+            // Rotate back to complete the flip
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
             rotateIn.setFromAngle(90);
@@ -124,6 +125,7 @@ public class CardComponent {
 
         parallelOut.play();
     }
+
 
     private void zoomToCenter() {
         if (cardStackPane.getScene() == null) return;
@@ -183,6 +185,7 @@ public class CardComponent {
             isZoomed = false;
             flippedCards.remove(this);
         }
+
     }
 
     public void setCardLabel(String value) {
