@@ -1,7 +1,7 @@
 package org.amalzen.app;
 
 public enum ResourcePath {
-    GAME_ICON("images/game-logo-transparent.png"),
+    GAME_ICON("images/game-logo.png"),
     LOGIN("view/login-view.fxml"),
     MAIN_MENU("view/mainmenu-view.fxml"),
     LEADERBOARD("view/leaderboard-view.fxml"),
@@ -11,6 +11,7 @@ public enum ResourcePath {
     MATCHMAKING("view/matchmaking-view.fxml"),
     GAME_ROOM("view/game-room.fxml"),
     CARD("view/card.fxml"),
+    LEADERBOARD_COMPONENT("view/leaderboard-component.fxml"),
 
     EXIT_MODAL("view/exit-modal.fxml"),
     VICTORY_MODAL("view/victory-modal.fxml"),

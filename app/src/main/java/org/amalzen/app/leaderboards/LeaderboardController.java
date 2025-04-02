@@ -2,76 +2,79 @@ package org.amalzen.app.leaderboards;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+
 import java.io.IOException;
+import java.util.List;
 
 public class LeaderboardController {
+    private final LeaderboardModel leaderboardModel;
 
-    // Elements from leaderboard-view.fxml
     @FXML
     private Button backButton;
     @FXML
     private VBox leaderboardUserContainer;
 
-    // Elements from leaderboard-component.fxml
-    @FXML
-    private Label rank;
-    @FXML
-    private Label username;
-    @FXML
-    private Label score;
+    public LeaderboardController() {
+        this.leaderboardModel = new LeaderboardModel();
+    }
 
     public void initialize() {
         if (backButton != null) {
-            backButton.setOnMouseClicked(event -> {
-                Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());
-            });
+            backButton.setOnMouseClicked(event -> Main.ChangeScene(ResourcePath.MAIN_MENU.getPath()));
         }
 
         if (leaderboardUserContainer != null) {
-            // Load and add leaderboard components
-            addLeaderboardComponents();
-        }
-        colorPerRank();
-    }
-
-// TODO: Fetch the rank number from the server
-private void colorPerRank() {
-    for (Node node : leaderboardUserContainer.getChildren()) {
-        if (node instanceof AnchorPane) {
-            AnchorPane anchorPane = (AnchorPane) node;
-            Label rankLabel = (Label) anchorPane.lookup("#rank");
-            int rank = Integer.parseInt(rankLabel.getText());
-
-            if (rank == 1) {
-                anchorPane.setStyle("-fx-background-color: #725B9D;");
-            } else if (rank == 2) {
-                anchorPane.setStyle("-fx-background-color: #FF017B;");
-            } else if (rank == 3) {
-                anchorPane.setStyle("-fx-background-color: #2AAEE7;");
-            } else {
-                anchorPane.setStyle("-fx-background-color: #5B3A29;");
-            }
+            refreshLeaderboard();
         }
     }
-}
 
-    // TODO: Implement the logic to fetch leaderboard data from the server
-    private void addLeaderboardComponents() {
+    private void refreshLeaderboard() {
+        List<LeaderboardModel.LeaderboardEntry> entries = leaderboardModel.fetchLeaderboard();
+        leaderboardUserContainer.getChildren().clear();
+
         try {
-            for (int i = 0; i < 10; i++) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/amalzen/app/view/leaderboard-component.fxml"));
+            int rank = 1;
+            for (LeaderboardModel.LeaderboardEntry entry : entries) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(ResourcePath.LEADERBOARD_COMPONENT.getPath()));
                 AnchorPane component = loader.load();
+
+                Label rankLabel = (Label) component.lookup("#rank");
+                Label usernameLabel = (Label) component.lookup("#username");
+                Label scoreLabel = (Label) component.lookup("#score");
+
+                rankLabel.setText(String.valueOf(rank));
+                usernameLabel.setText(entry.username());
+                scoreLabel.setText(String.valueOf(entry.score()));
+
+                applyRankStyle(component, rank);
                 leaderboardUserContainer.getChildren().add(component);
+                rank++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void applyRankStyle(AnchorPane component, int rank) {
+        String textColor = switch (rank) {
+            case 1 -> "#725B9D";
+            case 2 -> "#FF017B";
+            case 3 -> "#2AAEE7";
+            default -> "#5B3A29";
+        };
+
+        Label rankLabel = (Label) component.lookup("#rank");
+        Label usernameLabel = (Label) component.lookup("#username");
+        Label scoreLabel = (Label) component.lookup("#score");
+
+        rankLabel.setStyle("-fx-text-fill: " + textColor + ";");
+        usernameLabel.setStyle("-fx-text-fill: " + textColor + ";");
+        scoreLabel.setStyle("-fx-text-fill: " + textColor + ";");
     }
 }

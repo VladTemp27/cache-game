@@ -28,10 +28,10 @@
                         </ImageView>
                     </children>
                 </StackPane>
-                <Text fx:id="cardLabel" fill="WHITE" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                <Text fx:id="cardLabel" fill="BLACK" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
                       text="Placeholder" wrappingWidth="77.634765625">
                     <font>
-                        <Font size="10.0"/>
+                        <Font size="14.0"/>
                     </font>
                 </Text>
             </children>

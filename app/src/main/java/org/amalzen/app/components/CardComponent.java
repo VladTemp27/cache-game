@@ -18,7 +18,7 @@ import org.amalzen.app.audio.AudioHandler;
 
 public class CardComponent {
     @FXML
-    private Button cardButton;
+    public Button cardButton;
     @FXML
     private StackPane cardStackPane;
     @FXML
@@ -31,6 +31,7 @@ public class CardComponent {
     private StackPane cardFaces;
 
     private boolean isFlipped = false;
+    private boolean isFlipping = false;
     private boolean isZoomed = false;
     private int cardId = 0;
 
@@ -62,17 +63,29 @@ public class CardComponent {
     }
 
     public void flipCard() {
-        // Existing flip card implementation...
+        if (isFlipping) return;
+        isFlipping = true;
+
         RotateTransition rotateOut = new RotateTransition(Duration.millis(300), cardFaces);
         rotateOut.setAxis(Rotate.Y_AXIS);
         rotateOut.setFromAngle(0);
         rotateOut.setToAngle(90);
 
         rotateOut.setOnFinished(event -> {
-            // Toggle image visibility at 90-degree mark
             cardFront.setOpacity(isFlipped ? 1 : 0);
             cardBack.setOpacity(isFlipped ? 0 : 1);
             cardLabel.setOpacity(isFlipped ? 0 : 1);
+            // Toggle visibility at halfway point
+            cardFront.setVisible(!isFlipped);
+            cardBack.setVisible(isFlipped);
+            cardLabel.setVisible(isFlipped);
+
+            // Also set opacity for good measure
+            cardFront.setOpacity(isFlipped ? 0 : 1);
+            cardBack.setOpacity(isFlipped ? 1 : 0);
+            cardLabel.setOpacity(isFlipped ? 1 : 0);
+
+            // Flag the card as flipped
             isFlipped = !isFlipped;
 
             if (isFlipped) {
@@ -81,48 +94,45 @@ public class CardComponent {
                 flippedCardCount--;
             }
 
+            // Rotate back to complete the flip
             RotateTransition rotateIn = new RotateTransition(Duration.millis(300), cardFaces);
             rotateIn.setAxis(Rotate.Y_AXIS);
             rotateIn.setFromAngle(90);
             rotateIn.setToAngle(180);
+            rotateIn.setOnFinished(e -> isFlipping = false);
             rotateIn.play();
 
-            //Hotfix for card label
             RotateTransition rotateLabel = new RotateTransition(Duration.millis(300), cardLabel);
             rotateLabel.setAxis(Rotate.Y_AXIS);
             rotateLabel.setFromAngle(90);
             rotateLabel.setToAngle(0);
             rotateLabel.play();
         });
+
         rotateOut.play();
     }
+
 
     private void zoomToCenter() {
         if (cardStackPane.getScene() == null) return;
 
         Scene scene = cardStackPane.getScene();
 
-        // Store parent node reference for proper Z-order handling
         if (!isZoomed) {
-            // Save original position
             originalX = cardStackPane.getTranslateX();
             originalY = cardStackPane.getTranslateY();
             originalScale = cardStackPane.getScaleX();
 
-            // Get scene dimensions and card position in scene coordinates
             double sceneWidth = scene.getWidth();
             double sceneHeight = scene.getHeight();
             Bounds cardBounds = cardStackPane.localToScene(cardStackPane.getBoundsInLocal());
 
-            // Calculate absolute position for center (instead of relative translation)
             double targetX = (sceneWidth - cardBounds.getWidth() * 2.0) / 2.0 - cardBounds.getMinX() + cardStackPane.getTranslateX();
             double targetY = (sceneHeight - cardBounds.getHeight() * 2.0) / 2.0 - cardBounds.getMinY() + cardStackPane.getTranslateY();
 
-            // Ensure the card will be on top of all other elements
             cardStackPane.toFront();
             cardStackPane.setViewOrder(-1.0);
 
-            // Create zoom-in animation with absolute positioning
             TranslateTransition translate = new TranslateTransition(Duration.millis(300), cardStackPane);
             translate.setToX(targetX);
             translate.setToY(targetY);
@@ -136,10 +146,8 @@ public class CardComponent {
 
             isZoomed = true;
         } else {
-            // Reset view order when zooming out
             cardStackPane.setViewOrder(0.0);
 
-            // Create zoom-out animation
             TranslateTransition translate = new TranslateTransition(Duration.millis(300), cardStackPane);
             translate.setToX(originalX);
             translate.setToY(originalY);
@@ -153,5 +161,16 @@ public class CardComponent {
 
             isZoomed = false;
         }
+
+    }
+
+    public void setCardLabel(String value) {
+        if (cardLabel != null) {
+            cardLabel.setText(value);
+        }
+    }
+
+    public boolean isFlipped() {
+        return isFlipped;
     }
 }

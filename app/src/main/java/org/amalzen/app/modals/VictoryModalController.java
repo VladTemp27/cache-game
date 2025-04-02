@@ -39,14 +39,36 @@ public class VictoryModalController {
 
     @FXML
     public void handleBack() {
-        // TODO: This code will be updated when MainController is ready
-        // Sample: MainController.changeScreen(UIPathResolver.main_menu_path);
+        // Find the parent GameRoomController to properly clean up resources
+        AnchorPane parentPane = (AnchorPane) rootVictoryModalPane.getParent();
+        if (parentPane != null) {
+            Object controller = parentPane.getProperties().get("controller");
+
+            if (controller instanceof org.amalzen.app.game_room.GameRoomController) {
+                // Call shutdown to properly close WebSocket connections
+                ((org.amalzen.app.game_room.GameRoomController) controller).shutdown();
+            }
+        }
+
+        // Return to main menu
+        org.amalzen.app.Main.ChangeScene(org.amalzen.app.ResourcePath.MAIN_MENU.getPath());
     }
 
     @FXML
     public void handlePlayAgain() {
-        // TODO: This code will be updated when MainController is ready
-        // Sample: MainController.changeScreen(UIPathResolver.main_menu_path);
+        // Find the parent GameRoomController to properly clean up resources
+        AnchorPane parentPane = (AnchorPane) rootVictoryModalPane.getParent();
+        if (parentPane != null) {
+            Object controller = parentPane.getProperties().get("controller");
+
+            if (controller instanceof org.amalzen.app.game_room.GameRoomController) {
+                // Call shutdown to properly close WebSocket connections
+                ((org.amalzen.app.game_room.GameRoomController) controller).shutdown();
+            }
+        }
+
+        // Go back to matchmaking screen
+        org.amalzen.app.Main.ChangeScene(org.amalzen.app.ResourcePath.MATCHMAKING.getPath());
     }
 
     @FXML
