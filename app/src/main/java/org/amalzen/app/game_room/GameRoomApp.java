@@ -39,7 +39,7 @@ public class GameRoomApp extends Application {
 
         // Initialize the controller with parameters
         GameRoomController controller = loader.getController();
-        controller.setGameParameters(gameId, playerId, username);
+        controller.setGameParameters(gameId, String.valueOf(playerId), username);
 
         // Create the scene
         Scene scene = new Scene(root);

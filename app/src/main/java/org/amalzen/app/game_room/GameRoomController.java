@@ -1,6 +1,7 @@
 package org.amalzen.app.game_room;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -51,9 +53,9 @@ public class GameRoomController {
     private Label whoseTurn;
 
     private GameRoomModel gameRoom;
-    private String gameId;
-    private String username;
-    private int playerId;
+    private String roomId = Main.roomId;
+    private String username = Main.username;
+    private String sessionId = Main.sessionId;
 
     private Timeline timer;
     private boolean isMyTurn = false;
@@ -65,17 +67,26 @@ public class GameRoomController {
 
     @FXML
     public void initialize() {
+        LOGGER.log(Level.INFO, "Initializing GameRoom");
         cancelButton.setOnMouseClicked(event -> {
             if (gameRoom != null) {
+                // TODO should show the exit modal
                 gameRoom.sendQuit();
             }
             Main.showModals(ResourcePath.EXIT_MODAL.getPath(), gameRoomPane);
         });
+
+        // Auto-initialize using parameters from Main if available
+        if (Main.roomId != null && Main.sessionId != null && Main.username != null) {
+            Platform.runLater(() -> {
+                setGameParameters(Main.roomId, Main.sessionId, Main.username);
+            });
+        }
     }
 
-    public void setGameParameters(String gameId, int playerId, String username) {
-        this.gameId = gameId;
-        this.playerId = playerId;
+    public void setGameParameters(String gameId, String playerId, String username) {
+        this.roomId = gameId;
+        this.sessionId = playerId;
         this.username = username;
 
         LOGGER.info("Game parameters set: gameId=" + gameId +
@@ -162,9 +173,9 @@ public class GameRoomController {
     }
 
     private void initializeGameRoom() {
-        LOGGER.info("Initializing game room: " + gameId + ", Player: " + playerId);
+        LOGGER.info("Initializing game room: " + roomId + ", Player: " + sessionId);
 
-        gameRoom = new GameRoomModel(gameId, playerId, username)
+        gameRoom = new GameRoomModel(roomId, sessionId, username)
                 .onGameStateUpdate(this::handleGameStateUpdate)
                 .onConnected(() -> {
                     LOGGER.info("Connected to game server");
@@ -362,7 +373,7 @@ public class GameRoomController {
                     }
                 }
 
-                LOGGER.info("Paired cards array updated: " + java.util.Arrays.toString(pairedCards));
+                LOGGER.info("Paired cards array updated: " + Arrays.toString(pairedCards));
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error processing paired cards", e);
             }
@@ -402,7 +413,7 @@ public class GameRoomController {
         }
 
         CardComponent card = cardComponents.get(cardIndex);
-        javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.millis(3000));
+        PauseTransition pause = new PauseTransition(Duration.millis(2000));
         pause.setOnFinished(event -> {
             // Only check if the card is paired - don't use isFlipped() for the condition
             if (!pairedCards[cardIndex]) {
@@ -420,16 +431,17 @@ public class GameRoomController {
     }
 
     private void handleGameEndEvent(JSONObject gameState) {
+        LOGGER.info("Game end event: " + gameState);
         int winner = gameState.optInt("winner", -1);
-        String message;
+        String message = "";
 
-        if (winner == playerId) {
-            message = "You won!";
-        } else if (winner != -1) {
-            message = "You lost!";
-        } else {
-            message = "It's a tie!";
-        }
+//        if (winner == sessionId) {
+//            message = "You won!";
+//        } else if (winner != -1) {
+//            message = "You lost!";
+//        } else {
+//            message = "It's a tie!";
+//        }
 
         whoseTurn.setText("Game Over - " + message);
 

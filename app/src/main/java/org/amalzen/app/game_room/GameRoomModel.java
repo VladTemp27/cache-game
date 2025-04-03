@@ -1,7 +1,6 @@
 package org.amalzen.app.game_room;
 
 import org.amalzen.app.APIs;
-import org.amalzen.app.Main;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,9 +18,8 @@ public class GameRoomModel implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(GameRoomModel.class.getName());
     private final String SERVER_URL = APIs.GR_URL.getValue();
     private final String gameId;
-    private final int playerId;
-    private String username = Main.username;
-    private final String token = Main.sessionId;
+    private final String sessionId;
+    private final String username;
 
     // WebSocket and connection state
     private WebSocket webSocket;
@@ -61,9 +59,9 @@ public class GameRoomModel implements AutoCloseable {
     private long reconnectDelayMs = 2000;
     private int reconnectAttempts = 0;
 
-    public GameRoomModel(String gameId, int playerId, String username) {
+    public GameRoomModel(String gameId, String sessionId, String username) {
         this.gameId = gameId;
-        this.playerId = playerId;
+        this.sessionId = sessionId;
         this.username = username;
         this.callbackExecutor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "GameRoomClient-Callback");
@@ -85,9 +83,9 @@ public class GameRoomModel implements AutoCloseable {
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
 
-            String url = SERVER_URL + "?gameID=" + gameId + "&player=" + playerId + "&username=" + username;
+            String url = SERVER_URL + "?gameID=" + gameId + "&player=" + sessionId + "&username=" + username;
             LOGGER.info("Attempting to connect to " + url);
-            LOGGER.info("Authentication: username=" + username + ", token present=" + (token != null));
+            LOGGER.info("Authentication: username=" + username + ", token present=" + (sessionId != null));
 
             CompletableFuture<WebSocket> ws = client.newWebSocketBuilder()
                     .header("User-Agent", "JavaFX-Client")
