@@ -668,11 +668,17 @@ func sendTurnSwitchEvent(game *Game, gameID string) {
 func sendGameEndEvent(game *Game, gameID string) {
 	for i, player := range game.Players {
 		if player != nil {
+			var winnerUsername string
+			if game.Winner != -1 {
+				winnerUsername = game.Usernames[game.Winner]
+			} else {
+				winnerUsername = "tie" // Indicate a tie if no winner
+			}
+
 			event := map[string]interface{}{
-				"event":     "game_end",
-				"winner":    game.Winner,
-				"scores":    game.Scores,
-				"usernames": game.Usernames,
+				"event":  "game_end",
+				"winner": winnerUsername,
+				"scores": game.Scores,
 			}
 
 			message, err := json.Marshal(event)
