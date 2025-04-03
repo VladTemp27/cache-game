@@ -31,15 +31,24 @@ public class GameRoomController {
 
     public List<CardComponent> cardComponents = new ArrayList<>();
 
-    @FXML private AnchorPane gameRoomPane;
-    @FXML private Label roundNumber;
-    @FXML private Label timePerTurn;
-    @FXML private Label rivalScore;
-    @FXML private Label homeScore;
-    @FXML private Button cancelButton;
-    @FXML private HBox HBox1;
-    @FXML private HBox HBox2;
-    @FXML private Label whoseTurn;
+    @FXML
+    private AnchorPane gameRoomPane;
+    @FXML
+    private Label roundNumber;
+    @FXML
+    private Label timePerTurn;
+    @FXML
+    private Label rivalScore;
+    @FXML
+    private Label homeScore;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private HBox HBox1;
+    @FXML
+    private HBox HBox2;
+    @FXML
+    private Label whoseTurn;
 
     private GameRoomModel gameRoom;
     private String gameId;
@@ -48,10 +57,12 @@ public class GameRoomController {
 
     private Timeline timer;
     private boolean isMyTurn = false;
-    private boolean[] pairedCards = new boolean[ROWS * COLUMNS];
+    private boolean[] pairedCards = new boolean[ROWS * COLUMNS];    // Track paired cards
     private String[] cardTexts = new String[ROWS * COLUMNS];
-    private Integer lastFlippedCardIndex = null;
     private boolean waitingForServerResponse = false;
+    private Integer lastFlippedCardIndex = null;
+    private Integer firstFlippedCardIndex = null;
+    private Integer secondFlippedCardIndex = null;
 
     @FXML
     public void initialize() {
@@ -114,7 +125,11 @@ public class GameRoomController {
     }
 
     private boolean canFlipCard(int cardIndex) {
+        // Do not allow flipping of cards that are already paired
         if (!isMyTurn || waitingForServerResponse || pairedCards[cardIndex]) {
+            LOGGER.fine("Cannot flip card " + cardIndex + ": myTurn=" + isMyTurn +
+                    ", waiting=" + waitingForServerResponse +
+                    ", paired=" + pairedCards[cardIndex]);
             return false;
         }
 
@@ -135,24 +150,12 @@ public class GameRoomController {
 
         if (lastFlippedCardIndex == null) {
             lastFlippedCardIndex = cardIndex;
+            firstFlippedCardIndex = cardIndex;
         } else {
-            // Second card flipped, check for a match
-            int firstIndex = lastFlippedCardIndex;
-            lastFlippedCardIndex = null; // Reset for next turn
-
-            if (!cardTexts[firstIndex].equals(cardTexts[cardIndex])) {
-                // Cards do not match, flip them back after a delay
-                waitingForServerResponse = true;
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-                    cardComponents.get(firstIndex).flipCard();
-                    cardComponents.get(cardIndex).flipCard();
-                    waitingForServerResponse = false;
-                }));
-                timeline.play();
-            }
+            secondFlippedCardIndex = cardIndex;
+            waitingForServerResponse = true;
         }
     }
-
 
     private void initializeGameRoom() {
         LOGGER.info("Initializing game room: " + gameId + ", Player: " + playerId);
@@ -193,6 +196,9 @@ public class GameRoomController {
         Platform.runLater(() -> {
             try {
                 String eventType = gameState.optString("event", "unknown");
+
+                LOGGER.info("Game state update:" + gameState.toString());
+                LOGGER.info("Event type: " + eventType);
 
                 switch (eventType) {
                     case "game_ready":
@@ -258,6 +264,7 @@ public class GameRoomController {
         }
     }
 
+    // This event provides the initial game state when the game is ready, such as the cards, opponentName, and time duration
     private void handleGameReadyEvent(JSONObject gameState) {
         // Process card data
         if (gameState.has("cards")) {
@@ -299,130 +306,105 @@ public class GameRoomController {
         LOGGER.info("Game ready with opponent: " + opponentName);
     }
 
+    // This event happens when you or an opponent match two cards
     private void handleCardsMatchedEvent(JSONObject gameState) {
-        // Update UI based on matched cards (scores, turn info)
-        updateGameUI(gameState);
+        LOGGER.info("Cards matched event received: " + gameState);
 
-        // Reset waiting state to allow player to flip more cards when it's their turn
-        waitingForServerResponse = false;
-        lastFlippedCardIndex = null;
-
-        // Process matched cards information
-        if (gameState.has("matchedPair")) {
-            JSONArray matchedPair = gameState.getJSONArray("matchedPair");
-            if (matchedPair.length() == 2) {
-                int card1 = matchedPair.getInt(0);
-                int card2 = matchedPair.getInt(1);
-
-                // Mark cards as paired and ensure they stay flipped
-                pairedCards[card1] = true;
-                pairedCards[card2] = true;
-
-                // Apply visual indication that cards are matched
-                Platform.runLater(() -> {
-                    if (card1 < cardComponents.size()) {
-                        cardComponents.get(card1).cardButton.getStyleClass().add("matched-card");
-                    }
-                    if (card2 < cardComponents.size()) {
-                        cardComponents.get(card2).cardButton.getStyleClass().add("matched-card");
-                    }
-                });
-            }
-        } else if (gameState.has("paired")) {
-            // Alternative format - handle boolean array of all paired cards
-            Object pairedObj = gameState.get("paired");
-
-            if (pairedObj instanceof JSONArray) {
-                JSONArray pairedArray = (JSONArray) pairedObj;
-                for (int i = 0; i < Math.min(pairedArray.length(), pairedCards.length); i++) {
-                    boolean newPaired = pairedArray.getBoolean(i);
-                    boolean wasPaired = pairedCards[i];
-
-                    // If card was newly paired in this move
-                    if (newPaired && !wasPaired) {
-                        final int index = i; // For lambda
-                        Platform.runLater(() -> {
-                            if (index < cardComponents.size()) {
-                                cardComponents.get(index).cardButton.getStyleClass().add("matched-card");
-                            }
-                        });
-                    }
-
-                    pairedCards[i] = newPaired;
-                }
-            } else if (pairedObj instanceof boolean[]) {
-                boolean[] pairedArr = (boolean[]) pairedObj;
-                for (int i = 0; i < Math.min(pairedArr.length, pairedCards.length); i++) {
-                    boolean newPaired = pairedArr[i];
-                    boolean wasPaired = pairedCards[i];
-
-                    // If card was newly paired in this move
-                    if (newPaired && !wasPaired) {
-                        final int index = i; // For lambda
-                        Platform.runLater(() -> {
-                            if (index < cardComponents.size()) {
-                                cardComponents.get(index).cardButton.getStyleClass().add("matched-card");
-                            }
-                        });
-                    }
-
-                    pairedCards[i] = pairedArr[i];
-                }
-            }
-        }
-
-        // Ensure all cards are in the correct visual state
-        updateCardVisualStates();
-    }
-
-    /**
-     * Ensures all cards show the correct visual state:
-     * - Matched cards stay face up
-     * - Non-matched cards are face down unless currently being viewed
-     */
-    private void updateCardVisualStates() {
-        Platform.runLater(() -> {
-            for (int i = 0; i < cardComponents.size(); i++) {
-                CardComponent card = cardComponents.get(i);
-
-                // If card is paired, ensure it's face up
-                if (i < pairedCards.length && pairedCards[i]) {
-                    if (!card.isFlipped()) {
-                        card.flipCard();
-                    }
-                }
-            }
-        });
-    }
-
-    private void handleTurnSwitchEvent(JSONObject gameState) {
-        // Update UI for turn switch
+        // Update UI based on game state
         updateGameUI(gameState);
 
         // Reset waiting state
         waitingForServerResponse = false;
         lastFlippedCardIndex = null;
 
-        // Flip back all non-matched cards that are currently flipped
-        for (int i = 0; i < cardComponents.size(); i++) {
-            if (!pairedCards[i] && cardComponents.get(i).isFlipped()) {
-                flipBackCardWithDelay(i);
+        // Process matched cards information
+        if (gameState.has("paired")) {
+            try {
+                Object pairedObj = gameState.get("paired");
+                LOGGER.info("Paired object type: " + pairedObj.getClass().getName());
+
+                // Handle both JSONArray and primitive boolean array
+                boolean[] pairedValues = (boolean[]) pairedObj;
+
+                for (int i = 0; i < Math.min(pairedValues.length, pairedCards.length); i++) {
+                    final int cardIndex = i;
+                    final boolean isPaired = pairedValues[i];
+
+                    // Update the paired status
+                    pairedCards[i] = isPaired;
+
+                    // Ensure paired cards stay flipped and disabled
+                    if (isPaired) {
+                        Platform.runLater(() -> {
+                            if (cardIndex < cardComponents.size()) {
+                                CardComponent card = cardComponents.get(cardIndex);
+
+                                // Make sure paired cards are flipped
+                                if (!card.isFlipped()) {
+                                    card.flipCard();
+                                }
+
+                                LOGGER.info("Card " + cardIndex + " is paired, flipped and disabled");
+                            }
+                        });
+                    }
+                }
+
+                LOGGER.info("Paired cards array updated: " + java.util.Arrays.toString(pairedCards));
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error processing paired cards", e);
             }
         }
     }
 
+    // This event happens when cards does not match and round turn is given to the opponent
+    private void handleTurnSwitchEvent(JSONObject gameState) {
+        LOGGER.info("Turn switch event: " + gameState);
+
+        // First update UI for turn switch
+        updateGameUI(gameState);
+
+        // Store card indices before resetting
+        final Integer firstCard = firstFlippedCardIndex;
+        final Integer secondCard = secondFlippedCardIndex;
+
+        // Reset state variables
+        waitingForServerResponse = false;
+        lastFlippedCardIndex = null;
+
+        // Flip back cards with delay if they aren't paired
+        if (firstCard != null && firstCard >= 0 && firstCard < pairedCards.length && !pairedCards[firstCard]) {
+            LOGGER.info("Scheduling flip back for first card: " + firstCard);
+            flipBackCardWithDelay(firstCard);
+        }
+
+        if (secondCard != null && secondCard >= 0 && secondCard < pairedCards.length && !pairedCards[secondCard]) {
+            LOGGER.info("Scheduling flip back for second card: " + secondCard);
+            flipBackCardWithDelay(secondCard);
+        }
+
+        // Only reset indices after scheduling the flips
+        firstFlippedCardIndex = null;
+        secondFlippedCardIndex = null;
+    }
+
     private void flipBackCardWithDelay(int cardIndex) {
+        if (cardIndex < 0 || cardIndex >= cardComponents.size()) {
+            LOGGER.warning("Invalid card index: " + cardIndex);
+            return;
+        }
+
         CardComponent card = cardComponents.get(cardIndex);
         if (card.isFlipped()) {
-            // Delay flip to let player see the card
-            new Thread(() -> {
-                try {
-                    Thread.sleep(800);
-                    Platform.runLater(card::flipCard);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            // Use JavaFX animation instead of Thread for UI operations
+            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.millis(1000));
+            pause.setOnFinished(event -> {
+                if (card.isFlipped() && !pairedCards[cardIndex]) {
+                    card.flipCard();
+                    LOGGER.info("Card " + cardIndex + " flipped back");
                 }
-            }).start();
+            });
+            pause.play();
         }
     }
 
@@ -452,7 +434,6 @@ public class GameRoomController {
 
         // Update round and timer
         if (gameState.has("round")) roundNumber.setText("Round " + gameState.getInt("round"));
-        if (gameState.has("timer")) timePerTurn.setText(gameState.getInt("timer") + "s");
 
         // Update turn information
         if (gameState.has("whoseTurn")) {

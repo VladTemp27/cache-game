@@ -54,9 +54,9 @@ public class GameRoomApp extends Application {
         Logger rootLogger = Logger.getLogger("");
         rootLogger.setLevel(verbose ? Level.FINE : Level.INFO);
 
-        // Suppress excessive websocket logging
+        // Set GameRoomModel to always show INFO logs at minimum
         Logger.getLogger("org.amalzen.app.game_room.GameRoomModel").setLevel(
-                verbose ? Level.FINE : Level.WARNING);
+                verbose ? Level.FINE : Level.INFO);
     }
 
     public static void main(String[] args) {

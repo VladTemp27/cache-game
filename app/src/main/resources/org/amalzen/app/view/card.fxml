@@ -6,28 +6,32 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
-
-<Button fx:id="cardButton" mnemonicParsing="false" prefHeight="180.0" prefWidth="240.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.components.CardComponent">
+<Button fx:id="cardButton" mnemonicParsing="false" prefHeight="180.0" prefWidth="240.0"
+        style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21.0.7-ea"
+        xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.amalzen.app.components.CardComponent">
     <graphic>
         <StackPane fx:id="cardStackPane">
             <children>
                 <StackPane fx:id="cardFaces" prefHeight="150.0" prefWidth="200.0">
                     <children>
-                        <ImageView fx:id="cardBack" fitHeight="240.0" fitWidth="240.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="cardBack" fitHeight="240.0" fitWidth="240.0" pickOnBounds="true"
+                                   preserveRatio="true">
                             <image>
-                                <Image url="@../images/cardFront.png" />
+                                <Image url="@../images/cardFront.png"/>
                             </image>
                         </ImageView>
-                        <ImageView fx:id="cardFront" fitHeight="240.0" fitWidth="240.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="cardFront" fitHeight="240.0" fitWidth="240.0" pickOnBounds="true"
+                                   preserveRatio="true">
                             <image>
-                                <Image url="@../images/card-easy.png" />
+                                <Image url="@../images/card-easy.png"/>
                             </image>
                         </ImageView>
                     </children>
                 </StackPane>
-                <Label fx:id="cardLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="214.0" prefWidth="119.0">
+                <Label fx:id="cardLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="214.0"
+                       prefWidth="119.0">
                     <font>
-                        <Font name="Gloria Hallelujah" size="14.0" />
+                        <Font name="Girassol Regular" size="14.0"/>
                     </font>
                 </Label>
             </children>

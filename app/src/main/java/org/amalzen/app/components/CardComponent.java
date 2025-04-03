@@ -47,17 +47,9 @@ public class CardComponent {
     private double originalY = 0;
     private double originalScale = 1.0;
 
-    private Pane overlay;
-
     @FXML
     private void initialize() {
         cardLabel.setVisible(false);
-        cardStackPane.setOnMouseClicked(event -> {
-            if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
-//                flipCard();
-//                zoomToCenter();
-            }
-        });
     }
 
     public void setCardId(int id) {
@@ -192,7 +184,7 @@ public class CardComponent {
 
             // Define font size ranges
             final double MAX_FONT_SIZE = 20.0;
-            final double MIN_FONT_SIZE = 15.0;
+            final double MIN_FONT_SIZE = 16.0;
 
             // Get text length
             int length = value.length();

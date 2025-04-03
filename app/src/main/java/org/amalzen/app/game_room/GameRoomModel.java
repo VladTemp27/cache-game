@@ -406,6 +406,7 @@ public class GameRoomModel implements AutoCloseable {
         // Handle events based on event type
         if (response.has("event")) {
             String eventType = response.getString("event");
+            LOGGER.info("Received event: " + eventType);
 
             switch (eventType) {
                 case "game_ready":
@@ -502,9 +503,6 @@ public class GameRoomModel implements AutoCloseable {
             if (onCardsMatched != null) {
                 onCardsMatched.accept(paired);
             }
-            if (onTurnSwitch != null) {
-                onTurnSwitch.accept(whoseTurn);
-            }
         });
     }
 
@@ -573,29 +571,6 @@ public class GameRoomModel implements AutoCloseable {
                     state.put("timer", time);
                     handler.accept(state);
                 });
-    }
-
-    public void startClientSideTimer() {
-        if (timeRemaining <= 0) return;
-
-        ScheduledExecutorService timerExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r, "GameRoomClient-Timer");
-            t.setDaemon(true);
-            return t;
-        });
-
-        timerExecutor.scheduleAtFixedRate(() -> {
-            if (connected && timeRemaining > 0) {
-                timeRemaining--;
-                runCallback(() -> {
-                    if (onTimerUpdate != null) {
-                        onTimerUpdate.accept(timeRemaining);
-                    }
-                });
-            } else {
-                timerExecutor.shutdown();
-            }
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     // WebSocket listener implementation
