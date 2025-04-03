@@ -123,22 +123,36 @@ public class GameRoomController {
     }
 
     private void handleCardFlip(int cardIndex) {
+        if (!canFlipCard(cardIndex)) {
+            return;
+        }
+
         // Send flip request to server
         gameRoom.sendFlip(cardIndex);
 
-        // Track card state locally
+        CardComponent card = cardComponents.get(cardIndex);
+        card.flipCard();
+
         if (lastFlippedCardIndex == null) {
             lastFlippedCardIndex = cardIndex;
         } else {
-            waitingForServerResponse = true;
-        }
+            // Second card flipped, check for a match
+            int firstIndex = lastFlippedCardIndex;
+            lastFlippedCardIndex = null; // Reset for next turn
 
-        // Flip card and show content
-        CardComponent card = cardComponents.get(cardIndex);
-        if (!card.isFlipped()) {
-            card.flipCard();
+            if (!cardTexts[firstIndex].equals(cardTexts[cardIndex])) {
+                // Cards do not match, flip them back after a delay
+                waitingForServerResponse = true;
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+                    cardComponents.get(firstIndex).flipCard();
+                    cardComponents.get(cardIndex).flipCard();
+                    waitingForServerResponse = false;
+                }));
+                timeline.play();
+            }
         }
     }
+
 
     private void initializeGameRoom() {
         LOGGER.info("Initializing game room: " + gameId + ", Player: " + playerId);
@@ -389,21 +403,10 @@ public class GameRoomController {
         waitingForServerResponse = false;
         lastFlippedCardIndex = null;
 
-        // Flip back non-matched cards
-        if (gameState.has("flippedCards")) {
-            JSONArray flippedCards = gameState.getJSONArray("flippedCards");
-            for (int i = 0; i < flippedCards.length(); i++) {
-                int cardIndex = flippedCards.getInt(i);
-                if (!pairedCards[cardIndex]) {
-                    flipBackCardWithDelay(cardIndex);
-                }
-            }
-        } else {
-            // If no specific flipped cards provided, check for any that need to be flipped back
-            for (int i = 0; i < cardComponents.size(); i++) {
-                if (!pairedCards[i] && cardComponents.get(i).isFlipped()) {
-                    flipBackCardWithDelay(i);
-                }
+        // Flip back all non-matched cards that are currently flipped
+        for (int i = 0; i < cardComponents.size(); i++) {
+            if (!pairedCards[i] && cardComponents.get(i).isFlipped()) {
+                flipBackCardWithDelay(i);
             }
         }
     }

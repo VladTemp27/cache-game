@@ -54,7 +54,7 @@ public class CardComponent {
         cardLabel.setVisible(false);
         cardStackPane.setOnMouseClicked(event -> {
             if (flippedCardCount < MAX_FLIPPED_CARDS || isFlipped) {
-                flipCard();
+//                flipCard();
 //                zoomToCenter();
             }
         });
