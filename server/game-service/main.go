@@ -678,7 +678,8 @@ func sendGameEndEvent(game *Game, gameID string) {
 			event := map[string]interface{}{
 				"event":  "game_end",
 				"winner": winnerUsername,
-				"scores": game.Scores,
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
 			}
 
 			message, err := json.Marshal(event)

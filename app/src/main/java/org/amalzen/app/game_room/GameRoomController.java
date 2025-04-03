@@ -15,6 +15,7 @@ import javafx.util.Duration;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
 import org.amalzen.app.components.CardComponent;
+import org.amalzen.app.modals.GameOverModalController;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -70,10 +71,10 @@ public class GameRoomController {
         LOGGER.log(Level.INFO, "Initializing GameRoom");
         cancelButton.setOnMouseClicked(event -> {
             if (gameRoom != null) {
-                // TODO should show the exit modal
-                gameRoom.sendQuit();
+                gameRoomPane.getProperties().put("controller", this);
+                Main.showModals(ResourcePath.EXIT_MODAL.getPath(), gameRoomPane);
+
             }
-            Main.showModals(ResourcePath.EXIT_MODAL.getPath(), gameRoomPane);
         });
 
         // Auto-initialize using parameters from Main if available
@@ -432,22 +433,47 @@ public class GameRoomController {
 
     private void handleGameEndEvent(JSONObject gameState) {
         LOGGER.info("Game end event: " + gameState);
-        int winner = gameState.optInt("winner", -1);
-        String message = "";
+        updateGameUI(gameState);
 
-//        if (winner == sessionId) {
-//            message = "You won!";
-//        } else if (winner != -1) {
-//            message = "You lost!";
-//        } else {
-//            message = "It's a tie!";
-//        }
+        String winnerUsername = gameState.optString("winner", "");
+        String message;
+
+        if (winnerUsername.equals("tie")) {
+            message = "It's a tie!";
+        } else if (winnerUsername.equals(username)) {
+            message = "You won!";
+        } else {
+            message = winnerUsername + " won!";
+        }
 
         whoseTurn.setText("Game Over - " + message);
+        showGameOverModal(winnerUsername);
+    }
 
-        // Display final scores
-        if (gameState.has("yourScore")) homeScore.setText(String.valueOf(gameState.getInt("yourScore")));
-        if (gameState.has("oppScore")) rivalScore.setText(String.valueOf(gameState.getInt("oppScore")));
+    private void showGameOverModal(String winner) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ResourcePath.GAME_OVER_MODAL.getPath()));
+            Parent gameOverModal = loader.load();
+            GameOverModalController controller = loader.getController();
+
+            // Set outcome based on winner
+            if (winner.equals("tie")) {
+                controller.setGameOutcome(GameOverModalController.GameOutcome.TIE);
+            } else if (winner.equals(username)) {
+                controller.setGameOutcome(GameOverModalController.GameOutcome.WIN);
+            } else {
+                controller.setGameOutcome(GameOverModalController.GameOutcome.LOSE);
+            }
+
+            // Store controller reference
+            gameRoomPane.getProperties().put("controller", this);
+
+            // Add modal to game room pane
+            gameRoomPane.getChildren().add(gameOverModal);
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Failed to load game over modal", e);
+        }
     }
 
     private void updateGameUI(JSONObject gameState) {
@@ -478,6 +504,8 @@ public class GameRoomController {
                 gameRoom.disconnect();
                 gameRoom.close();
                 gameRoom = null;
+                Main.roomId = null;
+                Main.opponent = null;
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error during shutdown", e);
             }
