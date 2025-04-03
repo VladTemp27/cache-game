@@ -10,7 +10,6 @@ import (
 	"os"
 	"sync"
 	"time"
-	"bytes"
 
 	"github.com/gorilla/websocket"
 )
@@ -185,10 +184,6 @@ func gameLoop(game *Game, gameID string) {
 
 	// Send game end event
 	sendGameEndEvent(game, gameID)
-	
-	if err := game.saveGameToDB(gameID); err != nil {
-		fmt.Println("[ERROR] Failed to save game data to the database:", err)
-	}
 
 	if winner != -1 {
 		fmt.Printf("[TIME UP] Game ID: %s | Game Over! %s wins with %d points\n", gameID, game.Usernames[winner], game.Scores[winner])
@@ -322,6 +317,10 @@ func handleDisconnection(gameID string, playerIdx int) {
 	defer game.Mutex.Unlock()
 
 	if game.GameStatus == "game_end" {
+		// Check if both players are disconnected
+		if game.Players[0] == nil && game.Players[1] == nil {
+			go cleanupGameRoom(gameID)
+		}
 		return
 	}
 
@@ -344,11 +343,6 @@ func handlePlayerTimeout(game *Game, playerIdx int, gameID string) {
 
 		// Send game end event
 		sendGameEndEvent(game, gameID)
-
-		err := game.saveGameToDB(gameID)
-		if err != nil {
-			fmt.Println("[ERROR] Failed to save game data to the database:", err)
-		}
 	}
 }
 
@@ -438,11 +432,6 @@ func handleQuit(gameID string, playerIdx int) {
 
 	// Send game end event
 	sendGameEndEvent(game, gameID)
-
-	err := game.saveGameToDB(gameID)
-	if err != nil {
-		fmt.Println("[ERROR] Failed to save game data to the database:", err)
-	}
 }
 
 // Function to handle flipping cards, check if they match, and notify both players of the cards being flipped
@@ -513,6 +502,39 @@ func handleMatch(game *Game, playerIndex int, cardIndex int) {
 		game.Paired[cardIndex] = true
 	}
 	fmt.Printf("[MATCH] %s matches successfully! +10 points | Round: %d\n", game.Usernames[playerIndex], game.Round)
+
+	// Check if all cards are paired
+	allMatched := true
+	for _, paired := range game.Paired {
+		if !paired {
+			allMatched = false
+			break
+		}
+	}
+
+	if allMatched {
+		game.GameStatus = "game_end"
+		game.LoopRunning = false
+
+		// Determine the winner
+		winner := -1
+		if game.Scores[0] > game.Scores[1] {
+			winner = 0
+		} else if game.Scores[1] > game.Scores[0] {
+			winner = 1
+		}
+		game.Winner = winner
+
+		// Send game end event
+		sendGameEndEvent(game, "")
+
+		if winner != -1 {
+			fmt.Printf("[GAME END] All cards matched! %s wins with %d points\n", game.Usernames[winner], game.Scores[winner])
+		} else {
+			fmt.Printf("[GAME END] All cards matched! It's a tie with %d points each\n", game.Scores[0])
+		}
+		return
+	}
 
 	// Send match event
 	sendMatchEvent(game, "", playerIndex)
@@ -664,50 +686,13 @@ func sendGameEndEvent(game *Game, gameID string) {
 	}
 }
 
-// Function to save game data to the database
-func (game *Game) saveGameToDB(gameID string) error{
-	fmt.Println("[INFO] Saving game data to the database...")
+// Function to clean up a game room
+func cleanupGameRoom(gameID string) {
+	gamesMux.Lock()
+	defer gamesMux.Unlock()
 
-	gameHistoryData := map[string]interface{}{
-		"gameroom_id": gameID,
-		"difficulty": "normal",
-		"player_1": game.Usernames[0],
-        "player_1_score": game.Scores[0],
-        "player_2": game.Usernames[1],
-        "player_2_score": game.Scores[1],
-	}
-
-	  // Convert game data to JSON
-	  jsonData, err := json.Marshal(gameHistoryData)
-	  if err != nil {
-		  return fmt.Errorf("failed to marshal game data: %v", err)
-	  }
-	  
-	  // Create a new HTTP request
-	  req, err := http.NewRequest("POST", "http://localhost/api/gamehistory/upsertGameHistory", bytes.NewBuffer(jsonData))
-	  if err != nil {
-		  return fmt.Errorf("failed to create HTTP request: %v", err)
-	  }
-	  
-	  // Set appropriate headers
-	  req.Header.Set("Content-Type", "application/json")
-	  
-	  // Create an HTTP client and send the request
-	  client := &http.Client{Timeout: 10 * time.Second}
-	  resp, err := client.Do(req)
-	  if err != nil {
-		  return fmt.Errorf("failed to send HTTP request: %v", err)
-	  }
-	  defer resp.Body.Close()
-	  
-	  // Check if the request was successful
-	  if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		  body, _ := io.ReadAll(resp.Body)
-		  return fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
-	  }
-	  
-	  fmt.Println("[INFO] Game data successfully saved to database")
-	  return nil
+	delete(games, gameID)
+	fmt.Printf("[CLEANUP] Game room %s has been removed from the server\n", gameID)
 }
 
 // Function to start the WebSocket server
