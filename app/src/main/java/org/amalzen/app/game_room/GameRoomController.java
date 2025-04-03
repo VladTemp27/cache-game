@@ -60,7 +60,6 @@ public class GameRoomController {
     private boolean[] pairedCards = new boolean[ROWS * COLUMNS];    // Track paired cards
     private String[] cardTexts = new String[ROWS * COLUMNS];
     private boolean waitingForServerResponse = false;
-    private Integer lastFlippedCardIndex = null;
     private Integer firstFlippedCardIndex = null;
     private Integer secondFlippedCardIndex = null;
 
@@ -148,13 +147,18 @@ public class GameRoomController {
         CardComponent card = cardComponents.get(cardIndex);
         card.flipCard();
 
-        if (lastFlippedCardIndex == null) {
-            lastFlippedCardIndex = cardIndex;
+        if (firstFlippedCardIndex == null) {
             firstFlippedCardIndex = cardIndex;
         } else {
             secondFlippedCardIndex = cardIndex;
             waitingForServerResponse = true;
         }
+    }
+
+    private void resetCardTrackingState() {
+        firstFlippedCardIndex = null;
+        secondFlippedCardIndex = null;
+        waitingForServerResponse = false;
     }
 
     private void initializeGameRoom() {
@@ -262,6 +266,15 @@ public class GameRoomController {
         if (!card.isFlipped()) {
             card.flipCard();
         }
+
+        // Track flipped cards
+        if (firstFlippedCardIndex == null) {
+            firstFlippedCardIndex = cardIndex;
+            LOGGER.info("First card flipped (by opponent): " + cardIndex);
+        } else {
+            secondFlippedCardIndex = cardIndex;
+            LOGGER.info("Second card flipped (by opponent): " + cardIndex);
+        }
     }
 
     // This event provides the initial game state when the game is ready, such as the cards, opponentName, and time duration
@@ -315,8 +328,7 @@ public class GameRoomController {
 
         // Reset waiting state
         waitingForServerResponse = false;
-        lastFlippedCardIndex = null;
-
+        resetCardTrackingState();
         // Process matched cards information
         if (gameState.has("paired")) {
             try {
@@ -370,42 +382,41 @@ public class GameRoomController {
 
         // Reset state variables
         waitingForServerResponse = false;
-        lastFlippedCardIndex = null;
+        resetCardTrackingState();
 
-        // Flip back cards with delay if they aren't paired
+        // Schedule flip back for cards if needed
         if (firstCard != null && firstCard >= 0 && firstCard < pairedCards.length && !pairedCards[firstCard]) {
-            LOGGER.info("Scheduling flip back for first card: " + firstCard);
             flipBackCardWithDelay(firstCard);
         }
 
         if (secondCard != null && secondCard >= 0 && secondCard < pairedCards.length && !pairedCards[secondCard]) {
-            LOGGER.info("Scheduling flip back for second card: " + secondCard);
             flipBackCardWithDelay(secondCard);
         }
-
-        // Only reset indices after scheduling the flips
-        firstFlippedCardIndex = null;
-        secondFlippedCardIndex = null;
     }
 
     private void flipBackCardWithDelay(int cardIndex) {
+        LOGGER.info("Flipping back card: " + cardIndex);
         if (cardIndex < 0 || cardIndex >= cardComponents.size()) {
             LOGGER.warning("Invalid card index: " + cardIndex);
             return;
         }
 
         CardComponent card = cardComponents.get(cardIndex);
-        if (card.isFlipped()) {
-            // Use JavaFX animation instead of Thread for UI operations
-            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.millis(1000));
-            pause.setOnFinished(event -> {
-                if (card.isFlipped() && !pairedCards[cardIndex]) {
+        javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.millis(3000));
+        pause.setOnFinished(event -> {
+            // Only check if the card is paired - don't use isFlipped() for the condition
+            if (!pairedCards[cardIndex]) {
+                // Force the card to show its back
+                if (card.isFlipped()) {
                     card.flipCard();
-                    LOGGER.info("Card " + cardIndex + " flipped back");
                 }
-            });
-            pause.play();
-        }
+                LOGGER.info("Card " + cardIndex + " flipped back successfully");
+            } else {
+                LOGGER.info("Card " + cardIndex + " is paired, not flipping back");
+            }
+        });
+        pause.play();
+        LOGGER.info("Scheduled card " + cardIndex + " to flip back after delay");
     }
 
     private void handleGameEndEvent(JSONObject gameState) {
