@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const User = require("../models/User");
-const { verify } = require("crypto");
 
 const userSeedPath = path.join(__dirname, "../data/user.json");
 
@@ -10,24 +9,34 @@ const updateUserJSON = async () => {
     fs.writeFileSync(userSeedPath, JSON.stringify(allUsers, null, 2));
 };
 
-// Upsert user
 const upsertUser = async (userData) => {
     const { username } = userData;
+    
+    const existingUser = await User.findOne({ username });
+    
+    let updateData = { ...userData };
+    
+    if (existingUser && userData.total_score !== undefined && !userData.password) {
+        updateData = {
+            ...existingUser.toObject(),
+            total_score: userData.total_score
+        };
+    }
+    
     const result = await User.findOneAndUpdate(
         { username },
-        userData,
+        updateData,
         { upsert: true, new: true, setDefaultsOnInsert: true }
     );
+    
     await updateUserJSON();
     return result;
 };
 
-// Get all users
 const getAllUsers = async () => {
     return await User.find();
 };
 
-// check for an existing user
 const verifyUser = async (username) => {
     return await User.findOne({ username });
 };
