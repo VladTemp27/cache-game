@@ -1,6 +1,7 @@
 package org.amalzen.app.leaderboards;
 
 import org.amalzen.app.APIs;
+import org.amalzen.app.Main;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,6 +31,7 @@ public class LeaderboardModel {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(API_URL))
                     .header("Content-Type", "application/json")
+                    .header("Authorization", Main.sessionId)
                     .GET()
                     .build();
 
