@@ -370,7 +370,9 @@ public class GameRoomController {
                                 // Make sure paired cards are flipped
                                 if (!card.isFlipped()) {
                                     card.flipCard();
-                                    AudioHandler.playSound(ResourcePath.CORRECT_PAIR_EFFECT.getPath());
+                                    if (AudioHandler.isEffectPlaying()) {
+                                        AudioHandler.playSound(ResourcePath.CORRECT_PAIR_EFFECT.getPath());
+                                    }
                                 }
 
                                 LOGGER.info("Card " + cardIndex + " is paired, flipped and disabled");
@@ -426,7 +428,9 @@ public class GameRoomController {
                 // Force the card to show its back
                 if (card.isFlipped()) {
                     card.flipCard();
-                    AudioHandler.playSound(ResourcePath.INCORRECT_PAIR_EFFECT.getPath());
+                    if (AudioHandler.isEffectPlaying()) {
+                        AudioHandler.playSound(ResourcePath.INCORRECT_PAIR_EFFECT.getPath());
+                    }
                 }
                 LOGGER.info("Card " + cardIndex + " flipped back successfully");
             } else {

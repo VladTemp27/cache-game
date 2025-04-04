@@ -124,4 +124,8 @@ public class AudioHandler {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public static boolean isEffectPlaying() {
+        return effectPlayer != null && effectPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+    }
 }
