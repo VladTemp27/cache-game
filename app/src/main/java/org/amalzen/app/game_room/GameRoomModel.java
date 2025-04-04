@@ -1,7 +1,6 @@
 package org.amalzen.app.game_room;
 
 import org.amalzen.app.APIs;
-import org.amalzen.app.Main;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,9 +18,8 @@ public class GameRoomModel implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(GameRoomModel.class.getName());
     private final String SERVER_URL = APIs.GR_URL.getValue();
     private final String gameId;
-    private final int playerId;
-    private String username = Main.username;
-    private final String token = Main.sessionId;
+    private final String sessionId;
+    private final String username;
 
     // WebSocket and connection state
     private WebSocket webSocket;
@@ -61,9 +59,9 @@ public class GameRoomModel implements AutoCloseable {
     private long reconnectDelayMs = 2000;
     private int reconnectAttempts = 0;
 
-    public GameRoomModel(String gameId, int playerId, String username) {
+    public GameRoomModel(String gameId, String sessionId, String username) {
         this.gameId = gameId;
-        this.playerId = playerId;
+        this.sessionId = sessionId;
         this.username = username;
         this.callbackExecutor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "GameRoomClient-Callback");
@@ -85,9 +83,9 @@ public class GameRoomModel implements AutoCloseable {
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
 
-            String url = SERVER_URL + "?gameID=" + gameId + "&player=" + playerId + "&username=" + username;
+            String url = SERVER_URL + "?gameID=" + gameId + "&player=" + sessionId + "&username=" + username;
             LOGGER.info("Attempting to connect to " + url);
-            LOGGER.info("Authentication: username=" + username + ", token present=" + (token != null));
+            LOGGER.info("Authentication: username=" + username + ", token present=" + (sessionId != null));
 
             CompletableFuture<WebSocket> ws = client.newWebSocketBuilder()
                     .header("User-Agent", "JavaFX-Client")
@@ -406,6 +404,7 @@ public class GameRoomModel implements AutoCloseable {
         // Handle events based on event type
         if (response.has("event")) {
             String eventType = response.getString("event");
+            LOGGER.info("Received event: " + eventType);
 
             switch (eventType) {
                 case "game_ready":
@@ -413,6 +412,9 @@ public class GameRoomModel implements AutoCloseable {
                     break;
                 case "players_ready":
                     handlePlayersReadyEvent(response);
+                    break;
+                case "card_flip":
+                    handCardFlipEvent(response);
                     break;
                 case "cards_matched":
                     handleCardsMatchedEvent(response);
@@ -428,6 +430,16 @@ public class GameRoomModel implements AutoCloseable {
                     break;
             }
         }
+    }
+
+    private void handCardFlipEvent(JSONObject response) {
+        LOGGER.fine("Handling card flipped event: " + response.toString(2));
+        int flippedIndex = response.getInt("cardIndex");
+        runCallback(() -> {
+            if (onCardFlipped != null) {
+                onCardFlipped.accept(flippedIndex);
+            }
+        });
     }
 
     private void handleGameReadyEvent(JSONObject response) {
@@ -489,9 +501,6 @@ public class GameRoomModel implements AutoCloseable {
             if (onCardsMatched != null) {
                 onCardsMatched.accept(paired);
             }
-            if (onTurnSwitch != null) {
-                onTurnSwitch.accept(whoseTurn);
-            }
         });
     }
 
@@ -531,6 +540,12 @@ public class GameRoomModel implements AutoCloseable {
                     state.put("timeDuration", timeRemaining);
                     handler.accept(state);
                 })
+                .onCardFlipped(cardIndex -> {
+                    JSONObject state = new JSONObject();
+                    state.put("event", "card_flip");
+                    state.put("flipped", cardIndex);
+                    handler.accept(state);
+                })
                 .onCardsMatched(pairedCards -> {
                     JSONObject state = new JSONObject();
                     state.put("event", "cards_matched");
@@ -554,29 +569,6 @@ public class GameRoomModel implements AutoCloseable {
                     state.put("timer", time);
                     handler.accept(state);
                 });
-    }
-
-    public void startClientSideTimer() {
-        if (timeRemaining <= 0) return;
-
-        ScheduledExecutorService timerExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r, "GameRoomClient-Timer");
-            t.setDaemon(true);
-            return t;
-        });
-
-        timerExecutor.scheduleAtFixedRate(() -> {
-            if (connected && timeRemaining > 0) {
-                timeRemaining--;
-                runCallback(() -> {
-                    if (onTimerUpdate != null) {
-                        onTimerUpdate.accept(timeRemaining);
-                    }
-                });
-            } else {
-                timerExecutor.shutdown();
-            }
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     // WebSocket listener implementation

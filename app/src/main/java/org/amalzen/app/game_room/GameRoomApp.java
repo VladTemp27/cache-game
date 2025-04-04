@@ -39,7 +39,7 @@ public class GameRoomApp extends Application {
 
         // Initialize the controller with parameters
         GameRoomController controller = loader.getController();
-        controller.setGameParameters(gameId, playerId, username);
+        controller.setGameParameters(gameId, String.valueOf(playerId), username);
 
         // Create the scene
         Scene scene = new Scene(root);
@@ -54,9 +54,9 @@ public class GameRoomApp extends Application {
         Logger rootLogger = Logger.getLogger("");
         rootLogger.setLevel(verbose ? Level.FINE : Level.INFO);
 
-        // Suppress excessive websocket logging
+        // Set GameRoomModel to always show INFO logs at minimum
         Logger.getLogger("org.amalzen.app.game_room.GameRoomModel").setLevel(
-                verbose ? Level.FINE : Level.WARNING);
+                verbose ? Level.FINE : Level.INFO);
     }
 
     public static void main(String[] args) {

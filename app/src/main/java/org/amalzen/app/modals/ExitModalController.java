@@ -34,6 +34,11 @@ public class ExitModalController {
                     // Call cleanup to properly close WebSocket connections
                     ((org.amalzen.app.match_making.MatchmakingController) controller).cleanup();
                 }
+
+                if (controller instanceof org.amalzen.app.game_room.GameRoomController) {
+                    // Call shutdown to properly close WebSocket connections
+                    ((org.amalzen.app.game_room.GameRoomController) controller).shutdown();
+                }
             }
 
             // Then change scene to main menu

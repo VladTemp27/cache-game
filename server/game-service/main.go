@@ -317,6 +317,10 @@ func handleDisconnection(gameID string, playerIdx int) {
 	defer game.Mutex.Unlock()
 
 	if game.GameStatus == "game_end" {
+		// Check if both players are disconnected
+		if game.Players[0] == nil && game.Players[1] == nil {
+			go cleanupGameRoom(gameID)
+		}
 		return
 	}
 
@@ -499,6 +503,39 @@ func handleMatch(game *Game, playerIndex int, cardIndex int) {
 	}
 	fmt.Printf("[MATCH] %s matches successfully! +10 points | Round: %d\n", game.Usernames[playerIndex], game.Round)
 
+	// Check if all cards are paired
+	allMatched := true
+	for _, paired := range game.Paired {
+		if !paired {
+			allMatched = false
+			break
+		}
+	}
+
+	if allMatched {
+		game.GameStatus = "game_end"
+		game.LoopRunning = false
+
+		// Determine the winner
+		winner := -1
+		if game.Scores[0] > game.Scores[1] {
+			winner = 0
+		} else if game.Scores[1] > game.Scores[0] {
+			winner = 1
+		}
+		game.Winner = winner
+
+		// Send game end event
+		sendGameEndEvent(game, "")
+
+		if winner != -1 {
+			fmt.Printf("[GAME END] All cards matched! %s wins with %d points\n", game.Usernames[winner], game.Scores[winner])
+		} else {
+			fmt.Printf("[GAME END] All cards matched! It's a tie with %d points each\n", game.Scores[0])
+		}
+		return
+	}
+
 	// Send match event
 	sendMatchEvent(game, "", playerIndex)
 }
@@ -631,11 +668,18 @@ func sendTurnSwitchEvent(game *Game, gameID string) {
 func sendGameEndEvent(game *Game, gameID string) {
 	for i, player := range game.Players {
 		if player != nil {
+			var winnerUsername string
+			if game.Winner != -1 {
+				winnerUsername = game.Usernames[game.Winner]
+			} else {
+				winnerUsername = "tie" // Indicate a tie if no winner
+			}
+
 			event := map[string]interface{}{
-				"event":     "game_end",
-				"winner":    game.Winner,
-				"scores":    game.Scores,
-				"usernames": game.Usernames,
+				"event":  "game_end",
+				"winner": winnerUsername,
+				"yourScore": game.Scores[i],
+				"oppScore":  game.Scores[1-i],
 			}
 
 			message, err := json.Marshal(event)
@@ -647,6 +691,15 @@ func sendGameEndEvent(game *Game, gameID string) {
 			player.WriteMessage(websocket.TextMessage, message)
 		}
 	}
+}
+
+// Function to clean up a game room
+func cleanupGameRoom(gameID string) {
+	gamesMux.Lock()
+	defer gamesMux.Unlock()
+
+	delete(games, gameID)
+	fmt.Printf("[CLEANUP] Game room %s has been removed from the server\n", gameID)
 }
 
 // Function to start the WebSocket server

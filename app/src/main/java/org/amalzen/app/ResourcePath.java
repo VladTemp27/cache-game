@@ -12,7 +12,7 @@ public enum ResourcePath {
     GAME_ROOM("view/game-room.fxml"),
     CARD("view/card.fxml"),
     LEADERBOARD_COMPONENT("view/leaderboard-component.fxml"),
-
+    GAME_OVER_MODAL("view/game-over-modal.fxml"),
     EXIT_MODAL("view/exit-modal.fxml"),
     VICTORY_MODAL("view/victory-modal.fxml"),
     DEFEAT_MODAL("view/defeat-modal.fxml"),
