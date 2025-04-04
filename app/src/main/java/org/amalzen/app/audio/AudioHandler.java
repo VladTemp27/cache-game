@@ -14,9 +14,39 @@ public class AudioHandler {
     private static MediaPlayer musicPlayer, effectPlayer;
     private static String currentMusic, currentEffect;
     private static boolean audioOutputAlerted = false;
+    private static boolean musicMuted = false;
+    private static boolean effectsMuted = false;
+    private static double musicVolume = 0.1;
+    private static double effectsVolume = 0.3;
+
+    public static void setMusicMuted(boolean muted) {
+        musicMuted = muted;
+        if (musicPlayer != null) {
+            musicPlayer.setMute(muted);
+        }
+    }
+
+    public static void setEffectsMuted(boolean muted) {
+        effectsMuted = muted;
+        if (effectPlayer != null) {
+            effectPlayer.setMute(muted);
+        }
+    }
+
+    public static boolean isMusicMuted() {
+        return musicMuted;
+    }
+
+    public static boolean isEffectsMuted() {
+        return effectsMuted;
+    }
 
     public static void playSound(String path) {
         try {
+            if (path != null && path.contains("/effects/") && effectsMuted) {
+                return;
+            }
+
             if (path == null) {
                 stopAudio(musicPlayer);
                 currentMusic = null;
@@ -72,6 +102,11 @@ public class AudioHandler {
             System.out.println("Audio loaded successfully: " + path);
             player.setCycleCount(cycleCount);
             player.setVolume(volume);
+            if (isMusic) {
+                player.setMute(musicMuted);
+            } else {
+                player.setMute(effectsMuted);
+            }
             player.play();
         });
 

@@ -17,6 +17,10 @@ public enum ResourcePath {
     VICTORY_MODAL("view/victory-modal.fxml"),
     DEFEAT_MODAL("view/defeat-modal.fxml"),
     LOGOUT_MODAL("view/logout-modal.fxml"),
+    SETTINGS_MODAL("view/settings-modal.fxml"),
+
+    SOUND_ON_ICON("images/volume-on.png"),
+    SOUND_OFF_ICON("images/volume-off.png"),
 
     FLIP_CARD_EFFECT("audio/effects/flip-card-effect.mp3"),
     CORRECT_PAIR_EFFECT("audio/effects/correct-pair-effect.mp3"),

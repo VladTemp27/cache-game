@@ -46,7 +46,7 @@ public class GameRoomController {
     @FXML
     private Label homeScore;
     @FXML
-    private Button cancelButton;
+    private Button settingsButton;
     @FXML
     private HBox HBox1;
     @FXML
@@ -71,10 +71,10 @@ public class GameRoomController {
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing GameRoom");
         AudioHandler.playSound(ResourcePath.GAME_ROOM_MUSIC.getPath());
-        cancelButton.setOnMouseClicked(event -> {
+        settingsButton.setOnMouseClicked(event -> {
             if (gameRoom != null) {
                 gameRoomPane.getProperties().put("controller", this);
-                Main.showModals(ResourcePath.EXIT_MODAL.getPath(), gameRoomPane);
+                Main.showModals(ResourcePath.SETTINGS_MODAL.getPath(), gameRoomPane);
 
             }
         });
