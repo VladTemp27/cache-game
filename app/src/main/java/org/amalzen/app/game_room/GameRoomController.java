@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import org.amalzen.app.Main;
 import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 import org.amalzen.app.components.CardComponent;
 import org.amalzen.app.modals.GameOverModalController;
 import org.json.JSONArray;
@@ -69,6 +70,7 @@ public class GameRoomController {
     @FXML
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing GameRoom");
+        AudioHandler.playSound(ResourcePath.GAME_ROOM_MUSIC.getPath());
         cancelButton.setOnMouseClicked(event -> {
             if (gameRoom != null) {
                 gameRoomPane.getProperties().put("controller", this);
@@ -119,8 +121,10 @@ public class GameRoomController {
 
                     // Add card click handler directly to the card component
                     cardRoot.setOnMouseClicked(event -> {
+
                         if (canFlipCard(cardIndex)) {
                             handleCardFlip(cardIndex);
+                            AudioHandler.playSound(ResourcePath.FLIP_CARD_EFFECT.getPath());
                         }
                     });
 
@@ -366,6 +370,7 @@ public class GameRoomController {
                                 // Make sure paired cards are flipped
                                 if (!card.isFlipped()) {
                                     card.flipCard();
+                                    AudioHandler.playSound(ResourcePath.CORRECT_PAIR_EFFECT.getPath());
                                 }
 
                                 LOGGER.info("Card " + cardIndex + " is paired, flipped and disabled");
@@ -421,6 +426,7 @@ public class GameRoomController {
                 // Force the card to show its back
                 if (card.isFlipped()) {
                     card.flipCard();
+                    AudioHandler.playSound(ResourcePath.INCORRECT_PAIR_EFFECT.getPath());
                 }
                 LOGGER.info("Card " + cardIndex + " flipped back successfully");
             } else {
@@ -460,8 +466,10 @@ public class GameRoomController {
             if (winner.equals("tie")) {
                 controller.setGameOutcome(GameOverModalController.GameOutcome.TIE);
             } else if (winner.equals(username)) {
+                AudioHandler.playSound(ResourcePath.VICTORY_SOUND.getPath());
                 controller.setGameOutcome(GameOverModalController.GameOutcome.WIN);
             } else {
+                AudioHandler.playSound(ResourcePath.DEFEAT_SOUND.getPath());
                 controller.setGameOutcome(GameOverModalController.GameOutcome.LOSE);
             }
 

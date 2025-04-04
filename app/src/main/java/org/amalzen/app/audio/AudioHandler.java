@@ -43,7 +43,7 @@ public class AudioHandler {
                     stopAudio(effectPlayer);
                 }
                 currentEffect = path;
-                startAudio(path, 0.8, 1, false);
+                startAudio(path, 0.3, 1, false);
             } else {
                 System.err.println("Unknown audio type for path: " + path);
             }

@@ -10,11 +10,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import org.amalzen.app.ResourcePath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,8 @@ public class CardComponent {
         rotateLabelOut.setFromAngle(0);
         rotateLabelOut.setToAngle(90);
 
+        AudioClip flipSound = new AudioClip(getClass().getResource(ResourcePath.FLIP_CARD_EFFECT.getPath()).toString());
+
         ParallelTransition parallelOut = new ParallelTransition(rotateOut, rotateLabelOut);
         parallelOut.setOnFinished(event -> {
             isFlipped = !isFlipped;
@@ -113,6 +116,7 @@ public class CardComponent {
                 cardButton.setDisable(false); // Re-enable the button
             });
             parallelIn.play();
+            flipSound.play();
         });
 
         parallelOut.play();
