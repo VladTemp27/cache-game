@@ -1,4 +1,8 @@
 # Distribution Guide
+```sh
+mvn clean javafx:jlink
+```
+This will save a JavaFX runtime image in the `target` directory. The runtime image is a self-contained Java application that includes the JavaFX runtime and your application code.
 
 ## Building Native Applications
 

@@ -121,13 +121,13 @@
                 <version>0.0.8</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>org.amalzen.app/org.amalzen.app.Main</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
+                            <jlinkImagePath>${project.basedir}/dist</jlinkImagePath>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
@@ -145,7 +145,7 @@
                     <vendor>Amalzen</vendor>
                     <destination>target/dist</destination>
                     <module>org.amalzen.app/org.amalzen.app.Main</module>
-                    <runtimeImage>target/app</runtimeImage>
+                    <runtimeImage>${project.basedir}/dist/app</runtimeImage>
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
