@@ -20,7 +20,7 @@
             </image>
         </ImageView>
         <Button fx:id="backButton" layoutX="59.0" layoutY="47.0" mnemonicParsing="false" prefHeight="64.0"
-                prefWidth="64.0" style="-fx-background-color: transparent;" text="Button" AnchorPane.leftAnchor="36.0"
+                prefWidth="64.0" style="-fx-background-color: transparent;" AnchorPane.leftAnchor="36.0"
                 AnchorPane.topAnchor="30.0"/>
     </children>
 </AnchorPane>
