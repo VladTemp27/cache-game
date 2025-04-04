@@ -61,6 +61,7 @@ public class MatchmakingController {
         matchmakingModel.onConnected(handleOnConnected())
                 .onQueueSuccess(handleOnQueueSuccess())
                 .onMatchFound(handleOnMatchFound())
+                .onQueueTimeout(handleOnQueueTimeout())
                 .onConnectionClosed(handleOnConnectionClosed())
                 .onError(handleOnError());
 
@@ -104,21 +105,21 @@ public class MatchmakingController {
         }
     }
 
-    public Runnable handleOnConnected(){
+    public Runnable handleOnConnected() {
         return () -> {
             matchmakingModel.enterQueue();
         };
     }
 
-    public Runnable handleOnQueueSuccess(){
+    public Runnable handleOnQueueSuccess() {
         return () -> {
             LOGGER.info("Successfully entered matchmaking queue");
         };
     }
 
-    public Consumer<JSONObject> handleOnMatchFound(){
+    public Consumer<JSONObject> handleOnMatchFound() {
         return response -> {
-            if(matchFound) return;
+            if (matchFound) return;
             matchFound = true;
 
             LOGGER.log(Level.INFO, "Matchmaking queue has been entered: " + response);
@@ -140,13 +141,30 @@ public class MatchmakingController {
         };
     }
 
-    public Runnable handleOnConnectionClosed(){
+    public Consumer<String> handleOnQueueTimeout() {
+        return message -> {
+            LOGGER.log(Level.INFO, "Queue timeout: {0}", message);
+            Platform.runLater(() -> {
+//                Alert timeoutAlert = new Alert(Alert.AlertType.INFORMATION);
+//                timeoutAlert.setTitle("Queue Timeout");
+//                timeoutAlert.setHeaderText("Matchmaking Queue Timeout");
+//                timeoutAlert.setContentText("No match was found: " + message);
+//                timeoutAlert.show();
+
+                Platform.runLater(() -> {
+                    Main.ChangeScene(ResourcePath.MAIN_MENU.getPath());
+                });
+            });
+        };
+    }
+
+    public Runnable handleOnConnectionClosed() {
         return () -> {
             LOGGER.info("Connection to matchmaking service closed");
         };
     }
 
-    public Consumer<Throwable> handleOnError(){
+    public Consumer<Throwable> handleOnError() {
         return error -> {
             LOGGER.log(Level.WARNING, "Matchmaking error", error);
         };

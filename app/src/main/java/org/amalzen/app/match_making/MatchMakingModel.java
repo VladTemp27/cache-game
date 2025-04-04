@@ -33,6 +33,7 @@ public class MatchMakingModel implements AutoCloseable {
     private Runnable onQueueSuccess;
     private Consumer<JSONObject> onMatchFound;
     private Runnable onConnectionClosed;
+    private Consumer<String> onQueueTimeout;
     private Consumer<Throwable> onError;
 
     // Reconnection configuration
@@ -259,6 +260,10 @@ public class MatchMakingModel implements AutoCloseable {
         this.onMatchFound = handler;
         return this;
     }
+    public MatchMakingModel onQueueTimeout(Consumer<String> handler) {
+        this.onQueueTimeout = handler;
+        return this;
+    }
 
     public MatchMakingModel onConnectionClosed(Runnable handler) {
         this.onConnectionClosed = handler;
@@ -364,7 +369,7 @@ public class MatchMakingModel implements AutoCloseable {
             return;
         }
 
-        LOGGER.info("PARSING RESPONSE");
+        LOGGER.info("PARSING RESPONSE" + response.toString());
         switch (response.getString("type")){
             case "welcome":
                 LOGGER.info("Connected to server: " + response.optString("message"));
@@ -388,6 +393,19 @@ public class MatchMakingModel implements AutoCloseable {
             case "error":
                 if (onError != null) {
                     onError.accept(new RuntimeException(response.optString("message", "Unknown error")));
+                }
+                break;
+            case "queue_timeout":
+                String timeoutMessage = response.optString("message", "Queue timed out");
+                LOGGER.info("Queue timeout: " + timeoutMessage);
+                if (onQueueTimeout != null) {
+                    onQueueTimeout.accept(timeoutMessage);
+                } else {
+                    // Default behavior if no handler is registered
+                    cancelQueue();
+                    if (onError != null) {
+                        onError.accept(new RuntimeException("Queue timeout: " + timeoutMessage));
+                    }
                 }
                 break;
             default:
