@@ -14,9 +14,26 @@ public enum ResourcePath {
     LEADERBOARD_COMPONENT("view/leaderboard-component.fxml"),
     GAME_OVER_MODAL("view/game-over-modal.fxml"),
     EXIT_MODAL("view/exit-modal.fxml"),
-//    VICTORY_MODAL("view/victory-modal.fxml"),
-//    DEFEAT_MODAL("view/defeat-modal.fxml"),
-    LOGOUT_MODAL("view/logout-modal.fxml");
+    VICTORY_MODAL("view/victory-modal.fxml"),
+    DEFEAT_MODAL("view/defeat-modal.fxml"),
+    LOGOUT_MODAL("view/logout-modal.fxml"),
+    SETTINGS_MODAL("view/settings-modal.fxml"),
+
+    SOUND_ON_ICON("images/volume-on.png"),
+    SOUND_OFF_ICON("images/volume-off.png"),
+
+    FLIP_CARD_EFFECT("audio/effects/flip-card-effect.mp3"),
+    CORRECT_PAIR_EFFECT("audio/effects/correct-pair-effect.mp3"),
+    INCORRECT_PAIR_EFFECT("audio/effects/incorrect-pair-effect.mp3"),
+    VICTORY_SOUND("audio/effects/victory-sound.mp3"),
+    DEFEAT_SOUND("audio/effects/defeat-sound.mp3"),
+
+    MATCHMAKING_MUSIC("audio/music/matchmaking-music.wav"),
+    GAME_ROOM_MUSIC("audio/music/game-room-music.wav"),
+    MAIN_MENU_MUSIC("audio/music/main-menu-music.wav");
+
+
+
 
 
     private final String path;

@@ -9,6 +9,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import org.amalzen.app.ResourcePath;
+import org.amalzen.app.audio.AudioHandler;
 
 public class GameOverModalController {
 
