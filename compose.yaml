@@ -5,12 +5,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    volumes:
-      - ./server/rest-api:/app
-      - node_modules:/app/node_modules
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - CHOKIDAR_USEPOLLING=true
+      - MONGO_URI=mongodb://root:example@mongo:27017/cache_game?authSource=admin
+      - PORT=8080
     networks:
       - internal
 
@@ -33,6 +32,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
     networks:
       - internal
 
@@ -48,6 +49,31 @@ services:
       ME_CONFIG_BASICAUTH: false
     depends_on:
       - mongo  # Added explicit dependency
+    networks:
+      - internal
+
+  matchmaking-service:
+    build:
+      context: ./server/matchmaking-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+      - CLUSTER=prod-cluster-1
+    depends_on:
+      - mongo
+    networks:
+      - internal
+
+  game-service:
+    build:
+      context: ./server/game-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo
     networks:
       - internal
 

@@ -1,0 +1,74 @@
+[
+  {
+    "_id": "67db052dc7f4394cdce279ce",
+    "username": "aaron",
+    "__v": 0,
+    "password": "aaron",
+    "token": "testToken1",
+    "total_score": 100
+  },
+  {
+    "_id": "67db052dc7f4394cdce279cf",
+    "username": "benny",
+    "__v": 0,
+    "password": "benny",
+    "token": "testToken2",
+    "total_score": 200
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d0",
+    "username": "lestat",
+    "__v": 0,
+    "password": "lestat",
+    "token": "testToken3",
+    "total_score": 300
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d1",
+    "username": "marven",
+    "__v": 0,
+    "password": "marven",
+    "token": "testToken4",
+    "total_score": 400
+  },
+  {
+    "_id": "67db052dc7f4394cdce279d2",
+    "username": "geo",
+    "__v": 0,
+    "password": "geo",
+    "token": "testToken2",
+    "total_score": 200
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b84",
+    "username": "lenar",
+    "__v": 0,
+    "password": "lenar",
+    "token": "testToken1",
+    "total_score": 100
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b85",
+    "username": "geb",
+    "__v": 0,
+    "password": "geb",
+    "token": "testToken3",
+    "total_score": 300
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b86",
+    "username": "sean",
+    "__v": 0,
+    "password": "sean",
+    "token": "testToken4",
+    "total_score": 400
+  },
+  {
+    "_id": "67db2d03f88e4cd3347e0b87",
+    "username": "testUser1",
+    "__v": 0,
+    "password": "testPassword1",
+    "token": "testToken5",
+    "total_score": 500
+  }
+]

@@ -1,0 +1,211 @@
+[
+    {
+        "pair_id": 24,
+        "pair": {
+            "answer": "Swift",
+            "question": "Often described as “Objective C without the baggage of C”"
+        }
+    },
+    {
+        "pair_id": 25,
+        "pair": {
+            "answer": "Transpiler",
+            "question": "Translates one language into another"
+        }
+    },
+    {
+        "pair_id": 26,
+        "pair": {
+            "answer": "Lovelace",
+            "question": "Has a programming language named after her (Lastname)"
+        }
+    },
+    {
+        "pair_id": 27,
+        "pair": {
+            "answer": "FORTRAN",
+            "question": "A programming language used for scientific computing"
+        }
+    },
+    {
+        "pair_id": 28,
+        "pair": {
+            "answer": "Declarative",
+            "question": "Focuses on what the program should accomplish rather than how"
+        }
+    },
+    {
+        "pair_id": 29,
+        "pair": {
+            "answer": "Unix",
+            "question": "A multitasking, multiuser operating system with a modular design."
+        }
+    },
+    {
+        "pair_id": 30,
+        "pair": {
+            "answer": "Debug",
+            "question": "To remove errors in a program"
+        }
+    },
+    {
+        "pair_id": 31,
+        "pair": {
+            "answer": "Bjarne",
+            "question": "First name of the creator of C++"
+        }
+    },
+    {
+        "pair_id": 32,
+        "pair": {
+            "answer": "Plankalkul",
+            "question": "The first programming language introduced in 1940’s"
+        }
+    },
+    {
+        "pair_id": 33,
+        "pair": {
+            "answer": "Simula",
+            "question": "The programming language that introduced object-oriented programming concepts"
+        }
+    },
+    {
+        "pair_id": 34,
+        "pair": {
+            "answer": "Interpreted",
+            "question": "A language which executes without the need of a compiler"
+        }
+    },
+    {
+        "pair_id": 35,
+        "pair": {
+            "answer": "McCarthy",
+            "question": "Last name of the developer of the LISP programming language. This person created a programming language that became very important for artificial intelligence research."
+        }
+    },
+    {
+        "pair_id": 36,
+        "pair": {
+            "answer": "Matsumoto",
+            "question": "Last name of the creator of Ruby Programming Language"
+        }
+    },
+    {
+        "pair_id": 37,
+        "pair": {
+            "answer": "ADA",
+            "question": "A high level language used in defense and aerospace"
+        }
+    },
+    {
+        "pair_id": 38,
+        "pair": {
+            "answer": "Functional",
+            "question": "Treats computation as function evaluation."
+        }
+    },
+    {
+        "pair_id": 39,
+        "pair": {
+            "answer": "Java",
+            "question": "Minecraft edition made with this programming language"
+        }
+    },
+    {
+        "pair_id": 40,
+        "pair": {
+            "answer": "Alan Turing",
+            "question": "A test was named after this person"
+        }
+    },
+    {
+        "pair_id": 41,
+        "pair": {
+            "answer": "Ruby",
+            "question": "A dynamic, object-oriented language named after a gemstone"
+        }
+    },
+    {
+        "pair_id": 42,
+        "pair": {
+            "answer": "John Backus",
+            "question": "Developed the Formula Translator and Backus Naur Form"
+        }
+    },
+    {
+        "pair_id": 43,
+        "pair": {
+            "answer": "Compiler",
+            "question": "Translates code to machine language"
+        }
+    },
+    {
+        "pair_id": 44,
+        "pair": {
+            "answer": "MUMPS",
+            "question": "Language from Massachusetts General Hospital"
+        }
+    },
+    {
+        "pair": {
+            "answer": "Nygaard",
+            "question": "Lastname of one of the developers/designers of Simula"
+        }
+    },
+    {
+        "pair_id": 46,
+        "pair": {
+            "answer": "COBOL",
+            "question": "Used by American Express for their banking system"
+        }
+    },
+    {
+        "pair_id": 47,
+        "pair": {
+            "answer": "Grace Hopper",
+            "question": "Designer of COBOL"
+        }
+    },
+    {
+        "pair_id": 48,
+        "pair": {
+            "answer": "Kotlin",
+            "question": "Android mobile app development programming language"
+        }
+    },
+    {
+        "pair_id": 49,
+        "pair": {
+            "answer": "Python",
+            "question": "Created in 1991, popular for AI and automation"
+        }
+    },
+    {
+        "pair_id": 50,
+        "pair": {
+            "answer": "Guido",
+            "question": "First name of the creator of Python"
+        }
+    },
+    {
+        "pair_id": 51,
+        "pair": {
+            "answer": "Framework",
+            "question": "Pre-built tools for faster software development"
+        }
+    },
+    {
+        "pair_id": 52,
+        "pair": {
+            "answer": "JavaScript",
+            "question": "Powers interactive web pages, mainly for client-side behavior"
+        }
+    },
+    {
+        "pair_id": 53,
+        "pair": {
+            "answer": "Lisp",
+            "question": "A programming language used for data manipulation and AI research"
+        }
+    }
+]
